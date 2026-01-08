@@ -4,17 +4,18 @@ on:
   push:
     branches:
       - main
-      - develop
+      - dev
       - "feature/**"
       - "hotfix/**"
   pull_request:
     branches:
       - main
-      - develop
+      - dev
+      - "feature/**"
 
 env:
-  NODE_VERSION: "18.x"
-  CACHE_NAME: "npm-cache"
+  NODE_VERSION: "20.x"
+  PNPM_VERSION: "8"
 
 jobs:
   # ============================================
@@ -34,16 +35,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 🔍 Run ESLint
-        run: npm run lint
+        run: pnpm lint
 
       - name: 💎 Check Prettier formatting
-        run: npm run format:check
+        run: pnpm format:check
 
       - name: 📊 Upload ESLint results
         if: failure()
@@ -68,13 +73,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 📝 Run TypeScript type check
-        run: npm run type-check
+        run: pnpm type-check
 
   # ============================================
   # JOB 3: BUILD
@@ -92,13 +101,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 🏗️ Build application
-        run: npm run build
+        run: pnpm build
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           NODE_ENV: production
@@ -111,7 +124,7 @@ jobs:
           retention-days: 7
 
       - name: 📈 Analyze bundle size
-        run: npm run analyze
+        run: pnpm analyze
         continue-on-error: true
 
   # ============================================
@@ -129,14 +142,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
 
-      - name: 🔒 Run npm audit
-        run: npm audit --audit-level=moderate
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔒 Run pnpm audit
+        run: pnpm audit --audit-level=moderate
         continue-on-error: true
 
       - name: 🔍 Check for outdated dependencies
-        run: npm outdated || true
+        run: pnpm outdated || true
 
   # ============================================
   # JOB 5: COMMIT LINT (PR only)
@@ -156,10 +176,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 📝 Validate commit messages
         run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
