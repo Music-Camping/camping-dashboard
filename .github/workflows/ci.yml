@@ -1,0 +1,200 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - "feature/**"
+      - "hotfix/**"
+  pull_request:
+    branches:
+      - main
+      - develop
+
+env:
+  NODE_VERSION: "18.x"
+  CACHE_NAME: "npm-cache"
+
+jobs:
+  # ============================================
+  # JOB 1: LINT AND FORMAT CHECK
+  # ============================================
+  lint:
+    name: 🔍 Lint & Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Run ESLint
+        run: npm run lint
+
+      - name: 💎 Check Prettier formatting
+        run: npm run format:check
+
+      - name: 📊 Upload ESLint results
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: eslint-results
+          path: eslint-report.json
+          retention-days: 7
+
+  # ============================================
+  # JOB 2: TYPE CHECK
+  # ============================================
+  typecheck:
+    name: 📝 Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 📝 Run TypeScript type check
+        run: npm run type-check
+
+  # ============================================
+  # JOB 3: BUILD
+  # ============================================
+  build:
+    name: 🏗️ Build Application
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck]
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NODE_ENV: production
+
+      - name: 📊 Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: .next
+          retention-days: 7
+
+      - name: 📈 Analyze bundle size
+        run: npm run analyze
+        continue-on-error: true
+
+  # ============================================
+  # JOB 4: DEPENDENCY AUDIT
+  # ============================================
+  security:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 🔒 Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: 🔍 Check for outdated dependencies
+        run: npm outdated || true
+
+  # ============================================
+  # JOB 5: COMMIT LINT (PR only)
+  # ============================================
+  commitlint:
+    name: 📝 Commit Lint
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 📝 Validate commit messages
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+  # ============================================
+  # JOB 6: PR COMMENT (Summary)
+  # ============================================
+  pr-comment:
+    name: 💬 PR Summary Comment
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, build, security]
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: 💬 Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ needs.build.result }}' === 'success' ? '✅' : '❌';
+            const comment = `
+            ## ${status} CI Pipeline Results
+
+            | Check | Status |
+            |-------|--------|
+            | Lint | ${{ needs.lint.result == 'success' && '✅ Passed' || '❌ Failed' }} |
+            | Type Check | ${{ needs.typecheck.result == 'success' && '✅ Passed' || '❌ Failed' }} |
+            | Build | ${{ needs.build.result == 'success' && '✅ Passed' || '❌ Failed' }} |
+            | Security Audit | ${{ needs.security.result == 'success' && '✅ Passed' || '⚠️ Warning' }} |
+
+            ${status === '✅' ? '**Ready to merge!** 🚀' : '**Please fix the issues before merging.** 🔧'}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
