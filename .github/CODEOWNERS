@@ -1,0 +1,18 @@
+# Default owners for everything in the repo
+* @Music-Camping/camping-dashboard-maintainers
+
+# CI/CD Configuration
+/.github/ @Music-Camping/camping-dashboard-maintainers
+
+# Package and dependencies
+/package.json @Music-Camping/camping-dashboard-maintainers
+/pnpm-lock.yaml @Music-Camping/camping-dashboard-maintainers
+
+# Configuration files
+/.eslintrc.cjs @Music-Camping/camping-dashboard-maintainers
+/.prettierrc.json @Music-Camping/camping-dashboard-maintainers
+/commitlint.config.js @Music-Camping/camping-dashboard-maintainers
+/tailwind.config.ts @Music-Camping/camping-dashboard-maintainers
+
+# Husky and Git hooks
+/.husky/ @Music-Camping/camping-dashboard-maintainers
