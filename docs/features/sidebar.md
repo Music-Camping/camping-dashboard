@@ -15,12 +15,12 @@ Sidebar colapsável com navegação principal da aplicação.
 - Modo colapsado: mostrar apenas ícone
 - Destacar o item da rota atual
 - Manter estado (expandido/colapsado) entre sessões
-- Use o sheet component do shadcn
+- Use o sidebar component do shadcn
 
 ### Nice to Have
 
 - Animação suave na transição
-- Versão mobile responsiva usando Sheet do shadcn/ui
+- Versão mobile responsiva usando sidebar do shadcn/ui
 - Tooltip nos ícones quando colapsada
 
 ## User Flow
