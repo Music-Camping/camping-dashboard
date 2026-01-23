@@ -48,6 +48,8 @@
 }
 
 :root {
+  --theme-transition-duration: 0.6s;
+  --theme-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -122,5 +124,41 @@
   }
   body {
     @apply bg-background text-foreground;
+    transition:
+      background-color var(--theme-transition-duration)
+        var(--theme-transition-timing),
+      color var(--theme-transition-duration) var(--theme-transition-timing);
+  }
+
+  /* Transições suaves para elementos que mudam com o tema */
+  html {
+    transition: background-color var(--theme-transition-duration)
+      var(--theme-transition-timing);
+  }
+
+  /* Transições para componentes específicos */
+  [data-slot="sidebar"],
+  header,
+  main,
+  div,
+  section,
+  article {
+    transition:
+      background-color var(--theme-transition-duration)
+        var(--theme-transition-timing),
+      border-color var(--theme-transition-duration)
+        var(--theme-transition-timing),
+      color var(--theme-transition-duration) var(--theme-transition-timing);
+  }
+
+  /* Transições específicas para elementos interativos */
+  button,
+  [role="button"],
+  a,
+  input,
+  select,
+  textarea {
+    transition: all var(--theme-transition-duration)
+      var(--theme-transition-timing);
   }
 }

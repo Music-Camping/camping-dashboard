@@ -1,0 +1,43 @@
+"use client";
+
+import * as React from "react";
+
+import type {
+  FilterContextValue,
+  FilterState,
+  PeriodFilter,
+} from "@/lib/types/filters";
+
+const FilterContext = React.createContext<FilterContextValue | null>(null);
+
+export function FilterProvider({ children }: { children: React.ReactNode }) {
+  const [filters, setFilters] = React.useState<FilterState>({
+    period: "7d",
+    profileId: null,
+  });
+
+  const setPeriod = React.useCallback((period: PeriodFilter) => {
+    setFilters((prev) => ({ ...prev, period }));
+  }, []);
+
+  const setProfileId = React.useCallback((profileId: string | null) => {
+    setFilters((prev) => ({ ...prev, profileId }));
+  }, []);
+
+  const value = React.useMemo<FilterContextValue>(
+    () => ({ filters, setPeriod, setProfileId }),
+    [filters, setPeriod, setProfileId],
+  );
+
+  return (
+    <FilterContext.Provider value={value}>{children}</FilterContext.Provider>
+  );
+}
+
+export function useFilters() {
+  const context = React.useContext(FilterContext);
+  if (!context) {
+    throw new Error("useFilters must be used within a FilterProvider");
+  }
+  return context;
+}
