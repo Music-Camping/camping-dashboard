@@ -34,10 +34,10 @@ export default function DashboardPage() {
               <CardContent>
                 <p>Inscritos (somando perfis)</p>
                 <p className="text-lg font-bold">
-                  {formatNumber(data?.youtube?.subscribers?.total?.latest ?? 0)}
+                  {formatNumber(data?.total?.youtube?.followers?.latest ?? 0)}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {Object.entries(data?.youtube.subscribers)
+                  {Object.entries(data)
                     .filter(([key]) => key !== "total")
                     .map(([profile, profileData]) => (
                       <Badge
@@ -47,7 +47,10 @@ export default function DashboardPage() {
                       >
                         <span>{profile}</span>
                         <span>
-                          {formatNumber((profileData as any).latest ?? 0)}
+                          {formatNumber(
+                            (profileData as any)?.youtube.followers?.latest ??
+                              0,
+                          )}
                         </span>
                       </Badge>
                     ))}
@@ -65,7 +68,7 @@ export default function DashboardPage() {
                 <CardTitle>YouTube - Canais</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-3">
-                {Object.entries(data?.youtube.subscribers)
+                {Object.entries(data)
                   .filter(([key]) => key !== "total")
                   .map(([profile, profileData]) => (
                     <Badge
@@ -75,7 +78,9 @@ export default function DashboardPage() {
                     >
                       <span>{profile}</span>
                       <span className="text-lg font-semibold">
-                        {formatNumber((profileData as any).latest ?? 0)}{" "}
+                        {formatNumber(
+                          (profileData as any)?.youtube?.followers?.latest ?? 0,
+                        )}{" "}
                         inscritos
                       </span>
                     </Badge>
