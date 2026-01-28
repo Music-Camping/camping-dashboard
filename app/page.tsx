@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { useDashboard } from "@/lib/hooks/dashboard";
 import { formatNumber } from "@/lib/utils";
-import { LayoutDashboardIcon, YoutubeIcon } from "lucide-react";
+import { InstagramIcon, LayoutDashboardIcon, YoutubeIcon } from "lucide-react";
 
 export default function DashboardPage() {
   const { data, isLoading } = useDashboard();
@@ -58,7 +58,38 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
-          <h2 className="mt-4 mb-2 inline-flex items-center gap-2 text-xl font-bold">
+          <h2 className="mt-6 mb-4 inline-flex items-center gap-2 text-xl font-bold">
+            <InstagramIcon className="size-6" />
+            Instagram
+          </h2>
+          <div className="grid grid-cols-1">
+            <Card className="w-full gap-3">
+              <CardHeader>
+                <CardTitle>Instagram – Seguidores</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-3">
+                {Object.entries(data)
+                  .filter(([key]) => key !== "total")
+                  .map(([profile, profileData]) => (
+                    <Badge
+                      variant="secondary"
+                      className="h-auto min-w-sm flex-col items-start rounded-lg px-5 py-3 text-base"
+                      key={profile}
+                    >
+                      <span>{profile}</span>
+                      <span className="text-lg font-semibold">
+                        {formatNumber(
+                          (profileData as any)?.instagram?.followers?.latest ??
+                            0,
+                        )}{" "}
+                        seguidores
+                      </span>
+                    </Badge>
+                  ))}
+              </CardContent>
+            </Card>
+          </div>
+          <h2 className="mt-6 mb-4 inline-flex items-center gap-2 text-xl font-bold">
             <YoutubeIcon className="size-6" />
             YouTube
           </h2>
