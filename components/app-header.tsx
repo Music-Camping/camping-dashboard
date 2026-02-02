@@ -1,21 +1,52 @@
 "use client";
 
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
+import { ChevronDownIcon, UsersIcon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useFilters } from "@/hooks/use-filters";
-import { MOCK_PROFILES, PERIOD_OPTIONS } from "@/lib/types/filters";
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useFilters } from "@/hooks/use-filters";
+import { PERIOD_OPTIONS } from "@/lib/types/filters";
 
 export function AppHeader() {
-  const { filters, setPeriod, setProfileId } = useFilters();
+  const {
+    filters,
+    setPeriod,
+    togglePerformer,
+    setSelectedPerformers,
+    availablePerformers,
+  } = useFilters();
+
+  const selectedCount = filters.selectedPerformers.length;
+  const allSelected =
+    selectedCount === 0 || selectedCount === availablePerformers.length;
+
+  const getPerformerLabel = () => {
+    if (allSelected || selectedCount === 0) {
+      return "Todos os Performers";
+    }
+    if (selectedCount === 1) {
+      return filters.selectedPerformers[0];
+    }
+    return `${selectedCount} selecionados`;
+  };
+
+  const handleSelectAll = () => {
+    if (allSelected) {
+      setSelectedPerformers([]);
+    } else {
+      setSelectedPerformers([]);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4">
@@ -39,22 +70,44 @@ export function AppHeader() {
 
       <Separator orientation="vertical" className="h-4" />
 
-      <Select
-        value={filters.profileId ?? "all"}
-        onValueChange={(value) => setProfileId(value === "all" ? null : value)}
-      >
-        <SelectTrigger size="sm" className="w-[180px]">
-          <SelectValue placeholder="Todos os Perfis" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Todos os Perfis</SelectItem>
-          {MOCK_PROFILES.map((profile) => (
-            <SelectItem key={profile.id} value={profile.id}>
-              {profile.name}
-            </SelectItem>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-[180px] justify-between"
+          >
+            <span className="flex items-center gap-2">
+              <UsersIcon className="size-4" />
+              <span className="truncate">{getPerformerLabel()}</span>
+            </span>
+            <ChevronDownIcon className="size-4 opacity-50" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-[200px]">
+          <DropdownMenuLabel>Performers</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuCheckboxItem
+            checked={allSelected}
+            onCheckedChange={handleSelectAll}
+          >
+            Todos
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuSeparator />
+          {availablePerformers.map((performer) => (
+            <DropdownMenuCheckboxItem
+              key={performer}
+              checked={
+                filters.selectedPerformers.length === 0 ||
+                filters.selectedPerformers.includes(performer)
+              }
+              onCheckedChange={() => togglePerformer(performer)}
+            >
+              {performer}
+            </DropdownMenuCheckboxItem>
           ))}
-        </SelectContent>
-      </Select>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       <Separator orientation="vertical" className="h-4" />
 
