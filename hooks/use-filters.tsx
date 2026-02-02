@@ -6,6 +6,7 @@ import type {
   FilterContextValue,
   FilterState,
   PeriodFilter,
+  SelectedPerformers,
 } from "@/lib/types/filters";
 
 const FilterContext = React.createContext<FilterContextValue | null>(null);
@@ -13,20 +14,56 @@ const FilterContext = React.createContext<FilterContextValue | null>(null);
 export function FilterProvider({ children }: { children: React.ReactNode }) {
   const [filters, setFilters] = React.useState<FilterState>({
     period: "7d",
-    profileId: null,
+    selectedPerformers: [],
   });
+
+  const [availablePerformers, setAvailablePerformersState] = React.useState<
+    string[]
+  >([]);
 
   const setPeriod = React.useCallback((period: PeriodFilter) => {
     setFilters((prev) => ({ ...prev, period }));
   }, []);
 
-  const setProfileId = React.useCallback((profileId: string | null) => {
-    setFilters((prev) => ({ ...prev, profileId }));
+  const setSelectedPerformers = React.useCallback(
+    (performers: SelectedPerformers) => {
+      setFilters((prev) => ({ ...prev, selectedPerformers: performers }));
+    },
+    [],
+  );
+
+  const togglePerformer = React.useCallback((performer: string) => {
+    setFilters((prev) => {
+      const current = prev.selectedPerformers;
+      const isSelected = current.includes(performer);
+      const newSelected = isSelected
+        ? current.filter((p) => p !== performer)
+        : [...current, performer];
+      return { ...prev, selectedPerformers: newSelected };
+    });
+  }, []);
+
+  const setAvailablePerformers = React.useCallback((performers: string[]) => {
+    setAvailablePerformersState(performers);
   }, []);
 
   const value = React.useMemo<FilterContextValue>(
-    () => ({ filters, setPeriod, setProfileId }),
-    [filters, setPeriod, setProfileId],
+    () => ({
+      filters,
+      setPeriod,
+      setSelectedPerformers,
+      togglePerformer,
+      availablePerformers,
+      setAvailablePerformers,
+    }),
+    [
+      filters,
+      setPeriod,
+      setSelectedPerformers,
+      togglePerformer,
+      availablePerformers,
+      setAvailablePerformers,
+    ],
   );
 
   return (
