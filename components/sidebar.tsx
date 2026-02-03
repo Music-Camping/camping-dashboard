@@ -16,7 +16,6 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
 import { AppHeader } from "@/components/app-header";
 import { FilterProvider } from "@/hooks/use-filters";
 
@@ -39,16 +38,20 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
     <SidebarProvider defaultOpen>
       <FilterProvider>
         <Sidebar collapsible="icon">
-          <SidebarHeader>
-            <div className="flex items-center gap-2 px-2 py-1.5">
-              <h2 className="text-lg font-semibold text-sidebar-foreground group-data-[collapsible=icon]:hidden">
-                Dashboard
+          <SidebarHeader className="h-16 border-b p-0">
+            <div className="flex h-full items-center gap-2 px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+              <img
+                src="/camping.png"
+                alt="Camping"
+                className="size-8 shrink-0 rounded-md"
+              />
+              <h2 className="font-[family-name:var(--font-montserrat)] text-lg font-extrabold tracking-wide text-[#E8DED2] group-data-[collapsible=icon]:hidden">
+                CAMPING
               </h2>
             </div>
           </SidebarHeader>
           <SidebarContent>
             <SidebarGroup>
-              <Separator className="my-2" />
               <SidebarGroupContent>
                 <SidebarMenu>
                   {navItems.map((item) => {
