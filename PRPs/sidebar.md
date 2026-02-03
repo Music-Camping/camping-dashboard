@@ -18,13 +18,56 @@ with Next.js App Router navigation, active route highlighting, and localStorage 
 
 **Success Definition**:
 
-- Sidebar displays project title and 3 menu items (Dashboard, Relatórios, Configurações)
+- Sidebar displays project logo and brand name "CAMPING" with 3 menu items (Dashboard, Relatórios, Configurações)
 - Toggle button collapses/expands sidebar (icon-only vs icon+text)
 - Active route is visually highlighted
 - Sidebar state (expanded/collapsed) persists in localStorage across page reloads
 - Smooth animations for collapse/expand transitions
 - Responsive mobile behavior using shadcn/ui sidebar mobile patterns
 - Tooltips appear on icons when sidebar is collapsed
+
+## Branding Implementation
+
+### Logo & Typography
+
+- **Logo**: `camping.png` (32x32px / size-8) displayed in sidebar header
+- **Brand Name**: "CAMPING" in uppercase
+- **Font**: Montserrat ExtraBold (800 weight) via `--font-montserrat` CSS variable
+- **Color**: `#E8DED2` for brand text
+
+### Responsive Behavior
+
+- **Expanded State**: Logo + "CAMPING" text aligned left with `gap-2` spacing
+- **Collapsed State**: Logo centered, text hidden via `group-data-[collapsible=icon]:hidden`
+- **Header Height**: Fixed `h-16` to align with main AppHeader border
+
+### Font Setup (layout.tsx)
+
+```typescript
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+  weight: ["800"],
+});
+// Added to body className: ${montserrat.variable}
+```
+
+### Sidebar Header Structure
+
+```tsx
+<SidebarHeader className="h-16 border-b p-0">
+  <div className="flex h-full items-center gap-2 px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+    <img
+      src="/camping.png"
+      alt="Camping"
+      className="size-8 shrink-0 rounded-md"
+    />
+    <h2 className="font-[family-name:var(--font-montserrat)] text-lg font-extrabold tracking-wide text-[#E8DED2] group-data-[collapsible=icon]:hidden">
+      CAMPING
+    </h2>
+  </div>
+</SidebarHeader>
+```
 
 ## User Persona
 
