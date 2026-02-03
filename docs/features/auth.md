@@ -1,10 +1,19 @@
-# PRD: Tela de Login - Plataforma Camping
+# PRD: Autenticação - Plataforma Camping
+
+> **Status:** Implementado (UI) | **Última atualização:** 2026-02-03
 
 ## 1. Visão Geral
 
 **Objetivo:** Permitir que usuários acessem suas contas de forma segura e rápida.
 
 **Contexto:** Primeira tela de contato do usuário com a plataforma de campeonatos. Deve transmitir confiança, agilidade e a identidade visual competitiva do Camping.
+
+### Páginas Implementadas
+
+| Rota               | Status       | Descrição                    |
+| ------------------ | ------------ | ---------------------------- |
+| `/login`           | Implementado | Tela de login com validação  |
+| `/forgot-password` | Implementado | Tela de recuperação de senha |
 
 ---
 
@@ -71,3 +80,55 @@
 | **Erro de validação** | Campos com borda vermelha + mensagem           |
 | **Loading**           | Botão desabilitado + indicador de carregamento |
 | **Erro de API**       | Toast com mensagem de erro                     |
+
+---
+
+## 8. Tela de Recuperação de Senha
+
+### Requisitos Funcionais
+
+| Funcionalidade              | Descrição                                |
+| --------------------------- | ---------------------------------------- |
+| **Campo de Email**          | Entrada para e-mail do usuário           |
+| **Botão Enviar**            | Submete a solicitação de recuperação     |
+| **Validação em tempo real** | Feedback imediato ao usuário sobre erros |
+| **Toast de sucesso**        | Notificação confirmando envio do e-mail  |
+| **Link voltar**             | Retorna para a tela de login             |
+
+### Fluxo do Usuário
+
+1. Usuário clica em "Esqueci minha senha" na tela de login
+2. É redirecionado para `/forgot-password`
+3. Preenche o e-mail
+4. Clica em "Enviar"
+5. **Se válido:** Toast de sucesso aparece
+6. **Se inválido:** Mensagem de erro no campo
+7. Pode clicar em "Voltar para o login"
+
+---
+
+## 9. Arquivos Implementados
+
+```
+app/
+├── (auth)/
+│   ├── login/
+│   │   └── page.tsx          # Tela de login
+│   └── forgot-password/
+│       └── page.tsx          # Tela de recuperação
+└── (dashboard)/
+    └── layout.tsx            # Layout com sidebar
+
+components/ui/
+├── checkbox.tsx              # Componente de checkbox
+└── sonner.tsx                # Componente de toast
+```
+
+---
+
+## 10. Próximos Passos
+
+- [ ] Integrar com API de autenticação
+- [ ] Implementar lógica de "Lembrar de mim"
+- [ ] Implementar envio real de e-mail de recuperação
+- [ ] Criar tela de redefinição de senha (`/reset-password`)
