@@ -1,11 +1,20 @@
 import useSWR from "swr";
 
-const fetcher = (...args: Parameters<typeof fetch>) =>
-  fetch(...args).then((res) => res.json());
+const fetcher = async (...args: Parameters<typeof fetch>) => {
+  const res = await fetch(...args);
+  if (res.status === 401) {
+    window.location.href = "/login";
+    throw new Error("Unauthorized");
+  }
+  if (!res.ok) {
+    throw new Error("API error");
+  }
+  return res.json();
+};
 
 export function useDashboard() {
   const { data, error, isLoading } = useSWR(
-    "http://localhost:8000/api/dashboard",
+    "/api/proxy/api/dashboard",
     fetcher,
   );
 
