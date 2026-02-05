@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { login } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -102,31 +103,17 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      // Simulate API call - replace with actual authentication logic
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate success for demo purposes
-          // In production, this would be an actual API call
-          if (email && password) {
-            resolve({ success: true });
-          } else {
-            reject(new Error("Credenciais inválidas"));
-          }
-        }, 1500);
-      });
+      const result = await login(email, password);
 
-      // Store remember me preference if needed
-      if (rememberMe) {
-        localStorage.setItem("rememberMe", "true");
+      if (result.success) {
+        if (rememberMe) {
+          localStorage.setItem("rememberMe", "true");
+        }
+        toast.success("Login realizado com sucesso!");
+        router.push("/");
+      } else {
+        toast.error(result.error || "Erro ao fazer login. Tente novamente.");
       }
-
-      router.push("/");
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Erro ao fazer login. Tente novamente.",
-      );
     } finally {
       setIsLoading(false);
     }

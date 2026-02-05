@@ -3,10 +3,16 @@
 import * as React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboardIcon, FileTextIcon, SettingsIcon } from "lucide-react";
+import {
+  LayoutDashboardIcon,
+  FileTextIcon,
+  SettingsIcon,
+  LogOutIcon,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -18,6 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import { AppHeader } from "@/components/app-header";
 import { FilterProvider } from "@/hooks/use-filters";
+import { logout } from "@/lib/auth/actions";
 
 type NavItem = {
   label: string;
@@ -76,6 +83,16 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
               </SidebarGroupContent>
             </SidebarGroup>
           </SidebarContent>
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton tooltip="Sair" onClick={() => logout()}>
+                  <LogOutIcon />
+                  <span>Sair</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
         </Sidebar>
         <SidebarInset>
           <AppHeader />
