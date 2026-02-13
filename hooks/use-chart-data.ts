@@ -10,7 +10,7 @@ import type {
 } from "@/lib/types/dashboard";
 import type { PeriodFilter } from "@/lib/types/filters";
 
-type Platform = "youtube" | "instagram";
+type Platform = "youtube" | "instagram" | "spotify";
 type Metric = keyof PlatformMetrics;
 
 function getDateThreshold(period: PeriodFilter): Date {

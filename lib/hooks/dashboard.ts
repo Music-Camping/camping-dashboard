@@ -1,3 +1,5 @@
+"use client";
+
 import useSWR from "swr";
 
 const fetcher = async (...args: Parameters<typeof fetch>) => {
@@ -16,6 +18,11 @@ export function useDashboard() {
   const { data, error, isLoading } = useSWR(
     "/api/proxy/api/dashboard",
     fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 60000,
+    },
   );
 
   return {

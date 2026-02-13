@@ -14,11 +14,13 @@ export interface PlatformMetrics {
   views?: MetricData; // YouTube only
   video_count?: MetricData; // YouTube only
   post_count?: MetricData; // Instagram only
+  monthly_listeners?: MetricData; // Spotify only
 }
 
 export interface PerformerData {
   youtube?: PlatformMetrics;
   instagram?: PlatformMetrics;
+  spotify?: PlatformMetrics;
 }
 
 export interface DashboardResponse {
