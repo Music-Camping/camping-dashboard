@@ -18,8 +18,8 @@ export function useLocalStorage<T>(
         if (item) {
           setStoredValue(JSON.parse(item));
         }
-      } catch (error) {
-        console.error(`Error reading localStorage key "${key}":`, error);
+      } catch {
+        // Failed to read from localStorage
       }
       setIsHydrated(true);
     }
@@ -30,8 +30,8 @@ export function useLocalStorage<T>(
     if (isHydrated && typeof window !== "undefined") {
       try {
         window.localStorage.setItem(key, JSON.stringify(storedValue));
-      } catch (error) {
-        console.error(`Error saving to localStorage:`, error);
+      } catch {
+        // Failed to save to localStorage
       }
     }
   }, [key, storedValue, isHydrated]);
