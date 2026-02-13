@@ -24,12 +24,12 @@ export default async function DashboardPage() {
         monthlyListeners: { latest: 0, entries: [] },
         rankings: [],
         rankingsByPerformer: Object.entries(spotifyTracksRaw).map(
-          ([performer, performerData]) => ({
+          ([performer, performerData]: [string, any]) => ({
             performer,
             // Ordenar tracks por plays (maior para menor) e mostrar todas
             rankings: performerData.tracks
-              .sort((a, b) => b.plays.latest - a.plays.latest)
-              .map((track, idx) => ({
+              .sort((a: any, b: any) => b.plays.latest - a.plays.latest)
+              .map((track: any, idx: number) => ({
                 position: idx + 1,
                 previousPosition: idx + 1,
                 trackId: track.external_id,
@@ -42,8 +42,8 @@ export default async function DashboardPage() {
           }),
         ),
         allTracks: Object.entries(spotifyTracksRaw).flatMap(
-          ([performer, performerData]) =>
-            performerData.tracks.map((track) => ({
+          ([performer, performerData]: [string, any]) =>
+            performerData.tracks.map((track: any) => ({
               id: track.external_id,
               name: track.name,
               performer,
