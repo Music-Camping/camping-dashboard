@@ -1,145 +1,82 @@
-"use client";
+import { Suspense } from "react";
 
-import { useEffect } from "react";
-import { InstagramIcon, YoutubeIcon } from "lucide-react";
-
-import { MetricCard } from "@/components/dashboard/metric-card";
-import { MetricsChart } from "@/components/dashboard/metrics-chart";
+import { DashboardClient } from "@/components/dashboard/dashboard-client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useChartData } from "@/hooks/use-chart-data";
-import { useFilters } from "@/hooks/use-filters";
-import { useDashboard } from "@/lib/hooks/dashboard";
+import {
+  getDashboardData,
+  getSpotifyTracksData,
+} from "@/lib/api/dashboard-server";
+import type { SpotifyMetrics } from "@/lib/types/spotify";
 
-export default function DashboardPage() {
-  const { data, isLoading } = useDashboard();
-  const { filters, setAvailablePerformers } = useFilters();
-  const { selectedPerformers, period } = filters;
+// ✅ Revalidar a cada 3 horas (10800 segundos)
+export const revalidate = 10800;
 
-  // Extract and set available performers from API data
-  useEffect(() => {
-    if (data) {
-      const performers = Object.keys(data).filter((key) => key !== "total");
-      setAvailablePerformers(performers);
-    }
-  }, [data, setAvailablePerformers]);
+export default async function DashboardPage() {
+  // ✅ Fetch no servidor com cache de 3h
+  const [data, spotifyTracksRaw] = await Promise.all([
+    getDashboardData(),
+    getSpotifyTracksData(),
+  ]);
 
-  // Get chart data for YouTube and Instagram followers
-  const youtubeChartData = useChartData(
-    data,
-    "youtube",
-    "followers",
-    selectedPerformers,
-    period,
-  );
-  const instagramChartData = useChartData(
-    data,
-    "instagram",
-    "followers",
-    selectedPerformers,
-    period,
-  );
-
-  // Calculate totals based on selected performers
-  const getAggregatedMetrics = (
-    platform: "youtube" | "instagram",
-    metric: "followers" | "views" | "video_count" | "post_count",
-  ) => {
-    if (!data) return { latest: 0, entries: [] };
-
-    // If no performers selected, use total
-    if (selectedPerformers.length === 0) {
-      return data.total?.[platform]?.[metric] ?? { latest: 0, entries: [] };
-    }
-
-    // Otherwise, sum up selected performers
-    let total = 0;
-    const allEntries: Array<{ value: number; datetime: string }> = [];
-
-    selectedPerformers.forEach((performer) => {
-      const performerData = data[performer];
-      if (performerData?.[platform]?.[metric]) {
-        total += performerData[platform]![metric]!.latest;
-        allEntries.push(...performerData[platform]![metric]!.entries);
+  // Transform Spotify tracks to SpotifyMetrics format
+  const spotifyData: SpotifyMetrics | undefined = spotifyTracksRaw
+    ? {
+        monthlyListeners: { latest: 0, entries: [] },
+        rankings: [],
+        rankingsByPerformer: Object.entries(spotifyTracksRaw).map(
+          ([performer, performerData]) => ({
+            performer,
+            // Ordenar tracks por plays (maior para menor) e mostrar todas
+            rankings: performerData.tracks
+              .sort((a, b) => b.plays.latest - a.plays.latest)
+              .map((track, idx) => ({
+                position: idx + 1,
+                previousPosition: idx + 1,
+                trackId: track.external_id,
+                trackName: track.name,
+                artistName: performer,
+                thumbnail: track.thumbnail,
+                streams: track.plays.latest,
+                change: "same" as const,
+              })),
+          }),
+        ),
+        allTracks: Object.entries(spotifyTracksRaw).flatMap(
+          ([performer, performerData]) =>
+            performerData.tracks.map((track) => ({
+              id: track.external_id,
+              name: track.name,
+              performer,
+              thumbnail: track.thumbnail,
+              plays: track.plays.latest,
+            })),
+        ),
+        playlists: [],
       }
-    });
-
-    return { latest: total, entries: allEntries };
-  };
-
-  const youtubeFollowers = getAggregatedMetrics("youtube", "followers");
-  const youtubeViews = getAggregatedMetrics("youtube", "views");
-  const youtubeVideos = getAggregatedMetrics("youtube", "video_count");
-  const instagramFollowers = getAggregatedMetrics("instagram", "followers");
-  const instagramPosts = getAggregatedMetrics("instagram", "post_count");
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col gap-4 p-4">
-        <div className="grid grid-cols-5 gap-3">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className="h-32" />
-          ))}
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <Skeleton className="h-64" />
-          <Skeleton className="h-64" />
-        </div>
-      </div>
-    );
-  }
+    : undefined;
 
   return (
-    <div className="flex flex-col gap-4 p-4">
-      {/* Metric Cards Row */}
-      <div className="grid grid-cols-5 gap-3">
-        {/* YouTube Metrics */}
-        <MetricCard
-          title="Inscritos"
-          value={youtubeFollowers.latest}
-          entries={youtubeFollowers.entries}
-          icon={<YoutubeIcon className="size-4 text-red-500" />}
-        />
-        <MetricCard
-          title="Views"
-          value={youtubeViews.latest}
-          entries={youtubeViews.entries}
-          icon={<YoutubeIcon className="size-4 text-red-500" />}
-        />
-        <MetricCard
-          title="Vídeos"
-          value={youtubeVideos.latest}
-          entries={youtubeVideos.entries}
-          icon={<YoutubeIcon className="size-4 text-red-500" />}
-        />
-
-        {/* Instagram Metrics */}
-        <MetricCard
-          title="Seguidores"
-          value={instagramFollowers.latest}
-          entries={instagramFollowers.entries}
-          icon={<InstagramIcon className="size-4 text-pink-500" />}
-        />
-        <MetricCard
-          title="Posts"
-          value={instagramPosts.latest}
-          entries={instagramPosts.entries}
-          icon={<InstagramIcon className="size-4 text-pink-500" />}
-        />
-      </div>
-
-      {/* Charts Row */}
-      <div className="grid grid-cols-2 gap-4">
-        <MetricsChart
-          title="Inscritos (YouTube)"
-          data={youtubeChartData}
-          icon={<YoutubeIcon className="size-4 text-red-500" />}
-        />
-        <MetricsChart
-          title="Seguidores (Instagram)"
-          data={instagramChartData}
-          icon={<InstagramIcon className="size-4 text-pink-500" />}
-        />
-      </div>
-    </div>
+    <Suspense
+      fallback={
+        <div className="flex flex-col gap-4 p-4">
+          <Skeleton className="h-80" />
+          <div className="grid grid-cols-5 gap-3">
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Skeleton className="h-64" />
+            <Skeleton className="h-64" />
+          </div>
+          <Skeleton className="h-64" />
+          <Skeleton className="h-96" />
+        </div>
+      }
+    >
+      <DashboardClient initialData={data} spotifyData={spotifyData} />
+    </Suspense>
   );
 }
