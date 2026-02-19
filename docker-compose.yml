@@ -1,12 +1,4 @@
 services:
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./docker/certbot/www/:/var/www/certbot
-      - ./docker/certbot/conf/:/etc/letsencrypt
-    networks:
-      - camping_dashboard_front_network
-
   app:
     build:
       context: .
@@ -18,23 +10,8 @@ services:
     expose:
       - "3000"
     networks:
-      - camping_dashboard_front_network
-
-  nginx:
-    image: nginx:latest
-    container_name: camping_nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./docker/nginx/:/etc/nginx/conf.d/
-      - ./docker/certbot/www:/var/www/certbot/
-      - ./docker/certbot/conf/:/etc/nginx/ssl/
-    depends_on:
-      - app
-    networks:
-      - camping_dashboard_front_network
+      - nginx-proxy-net
 
 networks:
-  camping_dashboard_front_network:
-    driver: bridge
+  nginx-proxy-net:
+    external: true
