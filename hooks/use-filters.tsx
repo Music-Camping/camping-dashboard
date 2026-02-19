@@ -44,7 +44,16 @@ export function FilterProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setAvailablePerformers = React.useCallback((performers: string[]) => {
-    setAvailablePerformersState(performers);
+    setAvailablePerformersState((prev) => {
+      // Only update if the array actually changed
+      if (
+        prev.length === performers.length &&
+        prev.every((p, i) => p === performers[i])
+      ) {
+        return prev;
+      }
+      return performers;
+    });
   }, []);
 
   const value = React.useMemo<FilterContextValue>(

@@ -25,6 +25,7 @@ import {
 import { AppHeader } from "@/components/app-header";
 import { FilterProvider } from "@/hooks/use-filters";
 import { logout } from "@/lib/auth/actions";
+import { usePresentationContext } from "@/contexts/presentation-context";
 
 type NavItem = {
   label: string;
@@ -40,6 +41,16 @@ const navItems: NavItem[] = [
 
 export function AppSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { isPresentationMode } = usePresentationContext();
+
+  // Se estiver em modo apresentação, renderizar apenas o conteúdo
+  if (isPresentationMode) {
+    return (
+      <FilterProvider>
+        <div className="h-screen w-screen overflow-hidden">{children}</div>
+      </FilterProvider>
+    );
+  }
 
   return (
     <SidebarProvider defaultOpen>

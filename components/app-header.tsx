@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDownIcon, UsersIcon } from "lucide-react";
+import { ChevronDownIcon, MonitorIcon, UsersIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,11 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useFilters } from "@/hooks/use-filters";
 import { PERIOD_OPTIONS } from "@/lib/types/filters";
 
-export function AppHeader() {
+interface AppHeaderProps {
+  onStartPresentation?: () => void;
+}
+
+export function AppHeader({ onStartPresentation }: AppHeaderProps = {}) {
   const {
     filters,
     setPeriod,
@@ -25,6 +29,16 @@ export function AppHeader() {
     setSelectedPerformers,
     availablePerformers,
   } = useFilters();
+
+  // Dispatch custom event to start presentation
+  const handleStartPresentation = () => {
+    if (onStartPresentation) {
+      onStartPresentation();
+    } else {
+      // Dispatch event for page to handle
+      window.dispatchEvent(new CustomEvent("start-presentation"));
+    }
+  };
 
   const selectedCount = filters.selectedPerformers.length;
   const allSelected =
@@ -110,6 +124,16 @@ export function AppHeader() {
       </DropdownMenu>
 
       <Separator orientation="vertical" className="h-4" />
+
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={handleStartPresentation}
+        title="Modo Apresentação"
+      >
+        <MonitorIcon className="size-[1.2rem]" />
+        <span className="sr-only">Modo Apresentação</span>
+      </Button>
 
       <ThemeToggle />
     </header>

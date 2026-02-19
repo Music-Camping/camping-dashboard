@@ -2,6 +2,8 @@
 
 import useSWR from "swr";
 
+import type { MusicTrack } from "@/lib/types/music-catalog";
+
 const fetcher = async (...args: Parameters<typeof fetch>) => {
   const res = await fetch(...args);
   if (res.status === 401) {
@@ -14,9 +16,9 @@ const fetcher = async (...args: Parameters<typeof fetch>) => {
   return res.json();
 };
 
-export function useDashboard() {
-  const { data, error, isLoading } = useSWR(
-    "/api/proxy/api/dashboard",
+export function useMusicCatalog() {
+  const { data, error, isLoading, mutate } = useSWR<MusicTrack[]>(
+    "/api/proxy/api/dashboard/songs",
     fetcher,
     {
       revalidateOnFocus: false,
@@ -26,8 +28,9 @@ export function useDashboard() {
   );
 
   return {
-    data,
+    tracks: data || [],
     isLoading,
     isError: error,
+    mutate,
   };
 }

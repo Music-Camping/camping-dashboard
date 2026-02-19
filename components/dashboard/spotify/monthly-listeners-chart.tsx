@@ -1,0 +1,142 @@
+"use client";
+
+import { format, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useTheme } from "next-themes";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
+import { ChartTooltip } from "@/components/dashboard/chart-tooltip";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { ChartDataPoint } from "@/lib/types/dashboard";
+import { cn, formatCompactNumber } from "@/lib/utils";
+
+interface MonthlyListenersChartProps {
+  data: ChartDataPoint[];
+  title?: string;
+  icon?: React.ReactNode;
+  className?: string;
+}
+
+export function MonthlyListenersChart({
+  data,
+  title = "Ouvintes Mensais",
+  icon,
+  className,
+}: MonthlyListenersChartProps) {
+  const { resolvedTheme } = useTheme();
+
+  // Use light theme as default during SSR, no flash since colors are similar
+  const isDark = resolvedTheme === "dark";
+
+  const gradientId = "gradient-monthly-listeners";
+
+  const strokeColor = isDark ? "#22c55e" : "#16a34a"; // green-500 / green-600
+  const fillColor = isDark ? "#22c55e" : "#16a34a";
+  const mutedColor = isDark ? "#a1a1aa" : "#71717a";
+
+  const xAxisTicks =
+    data.length > 1 ? [data[0].date, data[data.length - 1].date] : [];
+
+  if (data.length === 0) {
+    return (
+      <Card className={cn("w-full", className)}>
+        <CardHeader className="pb-2">
+          <CardTitle className="inline-flex items-center gap-2 text-base">
+            {icon}
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex h-48 items-center justify-center text-muted-foreground">
+            Dados insuficientes para gerar gráfico
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className={cn("w-full", className)}>
+      <CardHeader className="pb-2">
+        <CardTitle className="inline-flex items-center gap-2 text-base">
+          {icon}
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pb-4">
+        <div className="h-48">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={data}
+              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="0%"
+                    stopColor={fillColor}
+                    stopOpacity={isDark ? 0.35 : 0.2}
+                  />
+                  <stop offset="100%" stopColor={fillColor} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+
+              <CartesianGrid
+                vertical={false}
+                strokeDasharray="3 3"
+                className="stroke-muted"
+              />
+
+              <XAxis
+                dataKey="date"
+                ticks={xAxisTicks}
+                tickFormatter={(value) =>
+                  format(parseISO(value), "dd MMM", { locale: ptBR })
+                }
+                tick={{ fill: mutedColor, fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+                tickMargin={8}
+              />
+
+              <YAxis
+                tickFormatter={formatCompactNumber}
+                tick={{ fill: mutedColor, fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+                width={45}
+              />
+
+              <Tooltip content={<ChartTooltip />} />
+
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke={strokeColor}
+                strokeWidth={2}
+                fill={`url(#${gradientId})`}
+                fillOpacity={1}
+                connectNulls
+                dot={{ r: 3, fill: strokeColor, strokeWidth: 0 }}
+                activeDot={{
+                  r: 6,
+                  fill: strokeColor,
+                  stroke: isDark ? "#000000" : "#ffffff",
+                  strokeWidth: 2,
+                }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

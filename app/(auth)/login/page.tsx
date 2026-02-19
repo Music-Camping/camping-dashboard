@@ -19,6 +19,7 @@ import {
   FieldError,
   FieldLabel,
 } from "@/components/ui/field";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface FormErrors {
   email?: string;
@@ -120,7 +121,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col items-center space-y-4 pb-2">
           <Image
