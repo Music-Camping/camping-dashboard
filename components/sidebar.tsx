@@ -43,71 +43,72 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isPresentationMode } = usePresentationContext();
 
-  // Se estiver em modo apresentação, renderizar apenas o conteúdo
-  if (isPresentationMode) {
-    return (
-      <FilterProvider>
-        <div className="h-screen w-screen overflow-hidden">{children}</div>
-      </FilterProvider>
-    );
-  }
-
   return (
     <SidebarProvider defaultOpen>
       <FilterProvider>
-        <Sidebar collapsible="icon">
-          <SidebarHeader className="h-16 border-b p-0">
-            <div className="flex h-full items-center gap-2 px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
-              <img
-                src="/camping.png"
-                alt="Camping"
-                className="size-8 shrink-0 rounded-md"
-              />
-              <h2 className="font-[family-name:var(--font-montserrat)] text-lg font-extrabold tracking-wide text-[#E8DED2] group-data-[collapsible=icon]:hidden">
-                CAMPING
-              </h2>
-            </div>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {navItems.map((item) => {
-                    const isActive = pathname === item.href;
-                    const Icon = item.icon;
-                    return (
-                      <SidebarMenuItem key={item.href}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={isActive}
-                          tooltip={item.label}
-                        >
-                          <Link href={item.href}>
-                            <Icon />
-                            <span>{item.label}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-          <SidebarFooter>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Sair" onClick={() => logout()}>
-                  <LogOutIcon />
-                  <span>Sair</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarFooter>
-        </Sidebar>
+        {!isPresentationMode && (
+          <Sidebar collapsible="icon">
+            <SidebarHeader className="h-16 border-b p-0">
+              <div className="flex h-full items-center gap-2 px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+                <img
+                  src="/camping.png"
+                  alt="Camping"
+                  className="size-8 shrink-0 rounded-md"
+                />
+                <h2 className="font-[family-name:var(--font-montserrat)] text-lg font-extrabold tracking-wide text-[#E8DED2] group-data-[collapsible=icon]:hidden">
+                  CAMPING
+                </h2>
+              </div>
+            </SidebarHeader>
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {navItems.map((item) => {
+                      const isActive = pathname === item.href;
+                      const Icon = item.icon;
+                      return (
+                        <SidebarMenuItem key={item.href}>
+                          <SidebarMenuButton
+                            asChild
+                            isActive={isActive}
+                            tooltip={item.label}
+                          >
+                            <Link href={item.href}>
+                              <Icon />
+                              <span>{item.label}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton tooltip="Sair" onClick={() => logout()}>
+                    <LogOutIcon />
+                    <span>Sair</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarFooter>
+          </Sidebar>
+        )}
         <SidebarInset>
-          <AppHeader />
-          <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+          {!isPresentationMode && <AppHeader />}
+          <div
+            className={
+              isPresentationMode
+                ? "h-screen overflow-hidden"
+                : "flex flex-1 flex-col gap-4 p-4"
+            }
+          >
+            {children}
+          </div>
         </SidebarInset>
       </FilterProvider>
     </SidebarProvider>
