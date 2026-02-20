@@ -4,6 +4,7 @@ import { ImageIcon, InstagramIcon, UsersIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardResponse, PlatformMetrics } from "@/lib/types/dashboard";
+import { cn } from "@/lib/utils";
 
 import { MetricCard } from "../metric-card";
 import { MetricCardWithBreakdown } from "../metric-card-breakdown";
@@ -13,12 +14,14 @@ interface InstagramSectionProps {
   data?: PlatformMetrics;
   fullDashboardData?: DashboardResponse;
   chartData: Array<{ date: string; value: number }>;
+  tvMode?: boolean;
 }
 
 export function InstagramSection({
   data,
   fullDashboardData,
   chartData,
+  tvMode,
 }: InstagramSectionProps) {
   if (!data) {
     return (
@@ -45,7 +48,9 @@ export function InstagramSection({
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div
+        className={cn("grid gap-3", tvMode ? "grid-cols-2" : "sm:grid-cols-2")}
+      >
         {fullDashboardData ? (
           <>
             <MetricCardWithBreakdown

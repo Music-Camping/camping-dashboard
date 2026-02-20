@@ -4,6 +4,7 @@ import { EyeIcon, VideoIcon, YoutubeIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardResponse, PlatformMetrics } from "@/lib/types/dashboard";
+import { cn } from "@/lib/utils";
 
 import { MetricCard } from "../metric-card";
 import { MetricCardWithBreakdown } from "../metric-card-breakdown";
@@ -13,12 +14,14 @@ interface YouTubeSectionProps {
   data?: PlatformMetrics;
   fullDashboardData?: DashboardResponse;
   chartData: Array<{ date: string; value: number }>;
+  tvMode?: boolean;
 }
 
 export function YouTubeSection({
   data,
   fullDashboardData,
   chartData,
+  tvMode,
 }: YouTubeSectionProps) {
   if (!data) {
     return (
@@ -45,7 +48,12 @@ export function YouTubeSection({
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div
+        className={cn(
+          "grid gap-3",
+          tvMode ? "grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3",
+        )}
+      >
         {fullDashboardData ? (
           <>
             <MetricCardWithBreakdown
@@ -76,7 +84,7 @@ export function YouTubeSection({
               />
             )}
 
-            {data.video_count && (
+            {!tvMode && data.video_count && (
               <MetricCardWithBreakdown
                 title="Vídeos"
                 totalValue={data.video_count.latest}
@@ -107,7 +115,7 @@ export function YouTubeSection({
                 icon={<EyeIcon className="size-4 text-red-500" />}
               />
             )}
-            {data.video_count && (
+            {!tvMode && data.video_count && (
               <MetricCard
                 title="Vídeos"
                 value={data.video_count.latest}
