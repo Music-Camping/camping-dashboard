@@ -159,7 +159,7 @@ export function SpotifyHub({
               <h3 className="mb-3 text-sm font-medium text-muted-foreground">
                 Outras Músicas
               </h3>
-              <ScrollArea className="h-48 rounded-lg border">
+              <ScrollArea className="h-64 rounded-lg border">
                 <div className="divide-y">
                   {otherTracks.map((track, index) => (
                     <div
