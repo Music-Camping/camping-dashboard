@@ -545,6 +545,7 @@ export function DashboardClient({
             followersChartData={spotifyFollowersChartData}
             listenersChartData={spotifyListenersChartData}
             isLoading={false}
+            period={period}
           />
 
           <Separator />
@@ -554,6 +555,7 @@ export function DashboardClient({
             data={youtubeData}
             fullDashboardData={initialData || undefined}
             chartData={youtubeChartData}
+            period={period}
           />
 
           <Separator />
@@ -563,6 +565,7 @@ export function DashboardClient({
             data={instagramData}
             fullDashboardData={initialData || undefined}
             chartData={instagramChartData}
+            period={period}
           />
 
           <Separator />

@@ -27,11 +27,16 @@ export function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
     ? ((value - previousValue) / previousValue) * 100
     : null;
 
+  const labelStr = label as string;
+  // Full datetime key (today filter) — e.g. "2026-02-23T09:15:00"
+  const isDateTime = labelStr.includes("T") && labelStr.includes(":");
+  const formattedDate = isDateTime
+    ? format(parseISO(labelStr), "HH:mm")
+    : format(parseISO(labelStr), "dd MMM yy", { locale: ptBR });
+
   return (
     <div className="rounded-lg bg-foreground px-3 py-2 text-background shadow-lg">
-      <p className="text-xs opacity-70">
-        {format(parseISO(label as string), "dd MMM yy", { locale: ptBR })}
-      </p>
+      <p className="text-xs opacity-70">{formattedDate}</p>
       <p className="text-lg font-semibold">{formatCompactNumber(value)}</p>
       {change !== null && (
         <p

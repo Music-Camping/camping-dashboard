@@ -22,6 +22,7 @@ export function useDashboard() {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       dedupingInterval: 60000,
+      refreshInterval: 600000,
     },
   );
 

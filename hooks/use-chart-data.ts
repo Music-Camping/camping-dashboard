@@ -18,8 +18,6 @@ function getDateThreshold(period: PeriodFilter): Date {
   now.setHours(0, 0, 0, 0);
 
   switch (period) {
-    case "today":
-      return now;
     case "7d":
       return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     case "30d":
@@ -27,6 +25,13 @@ function getDateThreshold(period: PeriodFilter): Date {
     default:
       return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
   }
+}
+
+function getBucketKey(datetime: string, period: PeriodFilter): string {
+  if (period === "today") {
+    return datetime; // full datetime = one point per recording moment
+  }
+  return datetime.split("T")[0]; // date only for 7d/30d
 }
 
 export function useChartData(
@@ -49,7 +54,6 @@ export function useChartData(
     if (!metricData?.entries) return [];
 
     const { entries } = metricData;
-    const threshold = getDateThreshold(period);
 
     // Filter by selected performers if any are selected
     // If none selected, use all entries (treat as "all selected")
@@ -60,26 +64,61 @@ export function useChartData(
             (e) => e.performer && selectedPerformers.includes(e.performer),
           );
 
+    // Compute threshold — for 'today', anchor on the latest recorded timestamp
+    // (data-relative), not on wall-clock time
+    let threshold: Date;
+    if (period === "today") {
+      const latestDatetime = filteredEntries.reduce(
+        (max, e) => (e.datetime > max ? e.datetime : max),
+        filteredEntries[0]?.datetime ?? "",
+      );
+      threshold = new Date(
+        new Date(latestDatetime).getTime() - 24 * 60 * 60 * 1000,
+      );
+    } else {
+      threshold = getDateThreshold(period);
+    }
+
     // Filter by period
     const periodFiltered = filteredEntries.filter((e) => {
       const entryDate = new Date(e.datetime);
       return entryDate >= threshold;
     });
 
-    // Group by date and sum values
-    const byDate = new Map<string, number>();
+    // Step 1: last value per (bucket, performer) — keep only the latest entry
+    // per performer within each time bucket to avoid summing cumulative snapshots
+    const bucketPerformer = new Map<
+      string,
+      Map<string, { value: number; datetime: string }>
+    >();
     periodFiltered.forEach((entry) => {
-      const dateKey = entry.datetime.split("T")[0];
-      byDate.set(dateKey, (byDate.get(dateKey) || 0) + entry.value);
+      const bucketKey = getBucketKey(entry.datetime, period);
+      const performer = entry.performer ?? "__single__";
+      if (!bucketPerformer.has(bucketKey))
+        bucketPerformer.set(bucketKey, new Map());
+      const pm = bucketPerformer.get(bucketKey)!;
+      const existing = pm.get(performer);
+      if (!existing || entry.datetime > existing.datetime) {
+        pm.set(performer, { value: entry.value, datetime: entry.datetime });
+      }
     });
 
-    // Convert to array and sort by date ascending
-    const sortedDates = Array.from(byDate.entries()).sort(([a], [b]) =>
+    // Step 2: sum the last-values across performers per bucket
+    const byBucket = new Map<string, number>();
+    bucketPerformer.forEach((performerMap, bucketKey) => {
+      let total = 0;
+      performerMap.forEach(({ value }) => {
+        total += value;
+      });
+      byBucket.set(bucketKey, total);
+    });
+
+    // Step 3: sort ascending and build ChartDataPoint[]
+    const sortedBuckets = Array.from(byBucket.entries()).sort(([a], [b]) =>
       a.localeCompare(b),
     );
 
-    // Build ChartDataPoint array with previousValue
-    const points: ChartDataPoint[] = sortedDates.map(
+    const points: ChartDataPoint[] = sortedBuckets.map(
       ([date, value], index, arr) => ({
         date,
         value,
@@ -87,6 +126,7 @@ export function useChartData(
       }),
     );
 
-    return points;
+    // For 'today': show only the last 9 points
+    return period === "today" ? points.slice(-9) : points;
   }, [data, platform, metric, selectedPerformers, period]);
 }

@@ -4,6 +4,7 @@ import { EyeIcon, VideoIcon, YoutubeIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardResponse, PlatformMetrics } from "@/lib/types/dashboard";
+import type { PeriodFilter } from "@/lib/types/filters";
 import { cn } from "@/lib/utils";
 
 import { MetricCard } from "../metric-card";
@@ -14,6 +15,7 @@ interface YouTubeSectionProps {
   data?: PlatformMetrics;
   fullDashboardData?: DashboardResponse;
   chartData: Array<{ date: string; value: number }>;
+  period: PeriodFilter;
   tvMode?: boolean;
 }
 
@@ -21,6 +23,7 @@ export function YouTubeSection({
   data,
   fullDashboardData,
   chartData,
+  period,
   tvMode,
 }: YouTubeSectionProps) {
   if (!data) {
@@ -60,6 +63,7 @@ export function YouTubeSection({
               title="Inscritos YouTube"
               totalValue={data.followers.latest}
               entries={data.followers.entries}
+              period={period}
               breakdown={Object.entries(fullDashboardData)
                 .filter(([key]) => key !== "total")
                 .map(([performer, performerData]) => ({
@@ -74,6 +78,7 @@ export function YouTubeSection({
                 title="Views Totais"
                 totalValue={data.views.latest}
                 entries={data.views.entries}
+                period={period}
                 breakdown={Object.entries(fullDashboardData)
                   .filter(([key]) => key !== "total")
                   .map(([performer, performerData]) => ({
@@ -89,6 +94,7 @@ export function YouTubeSection({
                 title="Vídeos"
                 totalValue={data.video_count.latest}
                 entries={data.video_count.entries}
+                period={period}
                 breakdown={Object.entries(fullDashboardData)
                   .filter(([key]) => key !== "total")
                   .map(([performer, performerData]) => ({
@@ -105,6 +111,7 @@ export function YouTubeSection({
               title="Inscritos"
               value={data.followers.latest}
               entries={data.followers.entries}
+              period={period}
               icon={<YoutubeIcon className="size-4 text-red-500" />}
             />
             {data.views && (
@@ -112,6 +119,7 @@ export function YouTubeSection({
                 title="Views Totais"
                 value={data.views.latest}
                 entries={data.views.entries}
+                period={period}
                 icon={<EyeIcon className="size-4 text-red-500" />}
               />
             )}
@@ -120,6 +128,7 @@ export function YouTubeSection({
                 title="Vídeos"
                 value={data.video_count.latest}
                 entries={data.video_count.entries}
+                period={period}
                 icon={<VideoIcon className="size-4 text-red-500" />}
               />
             )}

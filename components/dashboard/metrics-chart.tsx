@@ -141,9 +141,14 @@ export function MetricsChart({
               <XAxis
                 dataKey="date"
                 ticks={xAxisTicks}
-                tickFormatter={(value) =>
-                  format(parseISO(value), "dd MMM", { locale: ptBR })
-                }
+                tickFormatter={(value) => {
+                  // Full datetime key (today filter) — e.g. "2026-02-23T09:15:00"
+                  if (value.includes("T") && value.includes(":")) {
+                    return format(parseISO(value), "HH:mm");
+                  }
+                  // Date-only key (7d/30d filter) — e.g. "2026-02-23"
+                  return format(parseISO(value), "dd MMM", { locale: ptBR });
+                }}
                 tick={{
                   fill: mutedColor,
                   fontSize: 12,

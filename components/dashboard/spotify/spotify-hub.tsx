@@ -12,6 +12,7 @@ import type {
   PlatformMetrics,
   DashboardResponse,
 } from "@/lib/types/dashboard";
+import type { PeriodFilter } from "@/lib/types/filters";
 import type { SpotifyMetrics } from "@/lib/types/spotify";
 import { formatCompactNumber } from "@/lib/utils";
 
@@ -26,6 +27,7 @@ interface SpotifyHubProps {
   followersChartData?: ChartDataPoint[];
   listenersChartData?: ChartDataPoint[];
   isLoading?: boolean;
+  period?: PeriodFilter;
 }
 
 export function SpotifyHub({
@@ -35,6 +37,7 @@ export function SpotifyHub({
   followersChartData = [],
   listenersChartData = [],
   isLoading = false,
+  period = "7d",
 }: SpotifyHubProps) {
   // Filter out top 3 tracks from each performer to avoid duplication
   const otherTracks = useMemo(() => {
@@ -98,6 +101,7 @@ export function SpotifyHub({
               title="Seguidores Spotify"
               totalValue={dashboardData.followers.latest}
               entries={dashboardData.followers.entries}
+              period={period}
               breakdown={Object.entries(fullDashboardData)
                 .filter(([key]) => key !== "total")
                 .map(([performer, data]) => ({
@@ -111,6 +115,7 @@ export function SpotifyHub({
                 title="Ouvintes Mensais"
                 totalValue={dashboardData.monthly_listeners.latest}
                 entries={dashboardData.monthly_listeners.entries}
+                period={period}
                 breakdown={Object.entries(fullDashboardData)
                   .filter(([key]) => key !== "total")
                   .map(([performer, data]) => ({
