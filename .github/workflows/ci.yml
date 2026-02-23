@@ -261,6 +261,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint, typecheck, build, security]
     if: github.event_name == 'pull_request'
+    permissions:
+      pull-requests: write
 
     steps:
       - name: 💬 Comment PR
