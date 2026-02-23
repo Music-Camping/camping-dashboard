@@ -152,7 +152,7 @@ jobs:
       - name: 🏗️ Build application
         run: pnpm build
         env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          API_URL: ${{ secrets.API_URL }}
           NODE_ENV: production
 
       - name: 📊 Upload build artifacts
