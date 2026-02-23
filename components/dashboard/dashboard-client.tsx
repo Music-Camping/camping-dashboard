@@ -375,68 +375,110 @@ export function DashboardClient({
                 transition={{ duration: 0.45, ease: "easeInOut" }}
               >
                 {/* ── SPOTIFY ── */}
-                <div className="rounded-xl border bg-card p-6">
-                  <div className="grid grid-cols-[1fr_minmax(0,40%)] gap-6">
-                    {/* Esquerda: header + métricas + gráficos */}
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-center gap-2">
-                        <Music2Icon className="size-5 text-green-500" />
-                        <span className="text-xl font-bold">Spotify</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="rounded-lg bg-muted/50 p-4">
-                          <p className="text-sm text-muted-foreground">
-                            Seguidores
-                          </p>
-                          <p className="text-2xl font-bold tabular-nums">
-                            {tvSpotifyData
-                              ? formatCompactNumber(
-                                  tvSpotifyData.followers.latest,
-                                )
-                              : "—"}
-                          </p>
+                {(tvSpotifyData ||
+                  (presentation.currentPerformer &&
+                    (initialData?.[presentation.currentPerformer]
+                      ?.spotify_playlists?.length ?? 0) > 0)) && (
+                  <div className="rounded-xl border bg-card p-6">
+                    <div className="grid grid-cols-[1fr_minmax(0,40%)] gap-6">
+                      {/* Esquerda: header + métricas + gráficos */}
+                      <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-2">
+                          <Music2Icon className="size-5 text-green-500" />
+                          <span className="text-xl font-bold">Spotify</span>
                         </div>
-                        <div className="rounded-lg bg-muted/50 p-4">
-                          <p className="text-sm text-muted-foreground">
-                            Ouvintes Mensais
-                          </p>
-                          <p className="text-2xl font-bold tabular-nums">
-                            {tvSpotifyData?.monthly_listeners
-                              ? formatCompactNumber(
-                                  tvSpotifyData.monthly_listeners.latest,
-                                )
-                              : "—"}
-                          </p>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="rounded-lg bg-muted/50 p-4">
+                            <p className="text-sm text-muted-foreground">
+                              Seguidores
+                            </p>
+                            <p className="text-2xl font-bold tabular-nums">
+                              {tvSpotifyData
+                                ? formatCompactNumber(
+                                    tvSpotifyData.followers.latest,
+                                  )
+                                : "—"}
+                            </p>
+                          </div>
+                          <div className="rounded-lg bg-muted/50 p-4">
+                            <p className="text-sm text-muted-foreground">
+                              Ouvintes Mensais
+                            </p>
+                            <p className="text-2xl font-bold tabular-nums">
+                              {tvSpotifyData?.monthly_listeners
+                                ? formatCompactNumber(
+                                    tvSpotifyData.monthly_listeners.latest,
+                                  )
+                                : "—"}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex gap-4">
-                        <div className="flex-1">
-                          <MetricsChart
-                            title="Seguidores"
-                            data={tvSpotifyFollowersChartData}
-                            icon={
-                              <Music2Icon className="size-4 text-green-500" />
-                            }
-                          />
-                        </div>
-                        {tvSpotifyData?.monthly_listeners && (
+                        <div className="flex gap-4">
                           <div className="flex-1">
                             <MetricsChart
-                              title="Ouvintes Mensais"
-                              data={tvSpotifyListenersChartData}
+                              title="Seguidores"
+                              data={tvSpotifyFollowersChartData}
                               icon={
                                 <Music2Icon className="size-4 text-green-500" />
                               }
                             />
                           </div>
-                        )}
-                      </div>
-                    </div>
+                          {tvSpotifyData?.monthly_listeners && (
+                            <div className="flex-1">
+                              <MetricsChart
+                                title="Ouvintes Mensais"
+                                data={tvSpotifyListenersChartData}
+                                icon={
+                                  <Music2Icon className="size-4 text-green-500" />
+                                }
+                              />
+                            </div>
+                          )}
+                        </div>
 
-                    {/* Direita: top 3 rankings */}
-                    <TopRankings rankings={currentPerformerTracks} />
+                        {/* Playlists in TV mode (compact) */}
+                        {presentation.currentPerformer &&
+                          (initialData?.[presentation.currentPerformer]
+                            ?.spotify_playlists?.length ?? 0) > 0 && (
+                            <div className="space-y-2">
+                              <p className="text-sm font-medium text-muted-foreground">
+                                Playlists
+                              </p>
+                              {initialData![
+                                presentation.currentPerformer
+                              ].spotify_playlists!.map((playlist, idx) => (
+                                <div
+                                  key={idx}
+                                  className="rounded-lg bg-muted/50 px-4 py-2"
+                                >
+                                  <p className="text-sm font-medium">
+                                    {playlist.name}
+                                  </p>
+                                  <div className="flex gap-4 text-sm text-muted-foreground">
+                                    <span>
+                                      Seguidores:{" "}
+                                      {formatCompactNumber(
+                                        playlist.followers.latest,
+                                      )}
+                                    </span>
+                                    <span>
+                                      Faixas:{" "}
+                                      {formatCompactNumber(
+                                        playlist.track_count.latest,
+                                      )}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                      </div>
+
+                      {/* Direita: top 3 rankings */}
+                      <TopRankings rankings={currentPerformerTracks} />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* ── YOUTUBE + INSTAGRAM ── */}
                 <div className="grid grid-cols-2 gap-4">
@@ -548,25 +590,33 @@ export function DashboardClient({
             period={period}
           />
 
-          <Separator />
+          {(youtubeData?.followers?.latest ?? 0) > 0 && (
+            <>
+              <Separator />
 
-          {/* Section 2: YouTube */}
-          <YouTubeSection
-            data={youtubeData}
-            fullDashboardData={initialData || undefined}
-            chartData={youtubeChartData}
-            period={period}
-          />
+              {/* Section 2: YouTube */}
+              <YouTubeSection
+                data={youtubeData}
+                fullDashboardData={initialData || undefined}
+                chartData={youtubeChartData}
+                period={period}
+              />
+            </>
+          )}
 
-          <Separator />
+          {(instagramData?.followers?.latest ?? 0) > 0 && (
+            <>
+              <Separator />
 
-          {/* Section 3: Instagram */}
-          <InstagramSection
-            data={instagramData}
-            fullDashboardData={initialData || undefined}
-            chartData={instagramChartData}
-            period={period}
-          />
+              {/* Section 3: Instagram */}
+              <InstagramSection
+                data={instagramData}
+                fullDashboardData={initialData || undefined}
+                chartData={instagramChartData}
+                period={period}
+              />
+            </>
+          )}
 
           <Separator />
 

@@ -38,8 +38,10 @@ export function MetricCardWithBreakdown({
   const isPositive = growth.absolute > 0;
   const isNegative = growth.absolute < 0;
 
-  // Sort breakdown by value (descending)
-  const sortedBreakdown = [...breakdown].sort((a, b) => b.value - a.value);
+  // Filter out zero-value performers and sort breakdown by value (descending)
+  const sortedBreakdown = [...breakdown]
+    .filter((item) => item.value > 0)
+    .sort((a, b) => b.value - a.value);
 
   return (
     <Card className={cn("w-full", className)}>

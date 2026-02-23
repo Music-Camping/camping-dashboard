@@ -175,7 +175,6 @@ export function useSpotifyData(selectedPerformers: string[]) {
       rankings,
       rankingsByPerformer,
       allTracks,
-      playlists: [],
     };
   }, [tracksData, topTracks, selectedPerformers, spotifyPerformers]);
 

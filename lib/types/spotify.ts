@@ -19,13 +19,6 @@ export interface SpotifyTrackItem {
   plays: number;
 }
 
-export interface PlaylistData {
-  id: string;
-  name: string;
-  monthlyListeners: number;
-  thumbnail: string;
-}
-
 export interface PerformerRanking {
   performer: string;
   rankings: SpotifyRanking[];
@@ -36,5 +29,4 @@ export interface SpotifyMetrics {
   rankings: SpotifyRanking[];
   rankingsByPerformer: PerformerRanking[];
   allTracks: SpotifyTrackItem[];
-  playlists: PlaylistData[];
 }
