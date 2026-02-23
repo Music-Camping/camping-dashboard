@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    tags:
-      - "v*.*.*"
 
 env:
   NODE_VERSION: "20.x"
@@ -16,29 +14,29 @@ jobs:
   # JOB 1: VALIDATE BEFORE DEPLOY
   # ============================================
   validate:
-    name: ✅ Pre-Deploy Validation
+    name: Pre-Deploy Validation
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 📦 Setup pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: 📦 Get pnpm store directory
+      - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: 📦 Setup pnpm cache
+      - name: Setup pnpm cache
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
@@ -46,73 +44,36 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: 📦 Install dependencies
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🔍 Run all checks
+      - name: Run all checks
         run: pnpm check-all
 
-      - name: 🏗️ Test build
+      - name: Test build
         run: pnpm build
         env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          API_URL: ${{ secrets.API_URL }}
           NODE_ENV: production
 
   # ============================================
-  # JOB 2: DEPLOY TO VERCEL
+  # JOB 2: DEPLOY TO VPS
   # ============================================
-  deploy-vercel:
-    name: 🚀 Deploy to Vercel
+  deploy:
+    name: Deploy to VPS
     runs-on: ubuntu-latest
     needs: validate
-    if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 🚀 Deploy to Vercel
-        uses: amondnet/vercel-action@v25
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: "--prod"
-          working-directory: ./
-
-  # ============================================
-  # JOB 3: CREATE RELEASE (on tag)
-  # ============================================
-  release:
-    name: 📦 Create Release
-    runs-on: ubuntu-latest
-    needs: validate
-    if: startsWith(github.ref, 'refs/tags/')
-
-    steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
-
-      - name: 📦 Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          generate_release_notes: true
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # ============================================
-  # JOB 4: NOTIFY TEAM
-  # ============================================
-  notify:
-    name: 📢 Notify Team
-    runs-on: ubuntu-latest
-    needs: [deploy-vercel]
-    if: always()
-
-    steps:
-      - name: 📢 Send notification
-        run: |
-          echo "Deployment ${{ needs.deploy-vercel.result }}"
-          # Add your notification logic here (Slack, Discord, Email, etc)
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            cd /home/apps/camping-dashboard
+            git pull origin main
+            docker compose up --build -d
+            docker image prune -f
