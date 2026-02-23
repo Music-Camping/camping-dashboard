@@ -1,0 +1,587 @@
+{
+  "MC Cabelinho": {
+    "youtube": {
+      "followers": {
+        "latest": 1500000,
+        "entries": [
+          {
+            "value": 1450000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 1475000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 1500000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "views": {
+        "latest": 250000000,
+        "entries": [
+          {
+            "value": 245000000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 248000000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 250000000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "video_count": {
+        "latest": 150,
+        "entries": [
+          {
+            "value": 148,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 149,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 150,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    },
+    "instagram": {
+      "followers": {
+        "latest": 2100000,
+        "entries": [
+          {
+            "value": 2050000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 2075000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 2100000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "post_count": {
+        "latest": 450,
+        "entries": [
+          {
+            "value": 445,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 448,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 450,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    },
+    "spotify": {
+      "followers": {
+        "latest": 850000,
+        "entries": [
+          {
+            "value": 820000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 835000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 850000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "monthly_listeners": {
+        "latest": 3500000,
+        "entries": [
+          {
+            "value": 3400000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 3450000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 3500000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    }
+  },
+  "Poze do Rodo": {
+    "youtube": {
+      "followers": {
+        "latest": 1800000,
+        "entries": [
+          {
+            "value": 1750000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 1775000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 1800000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "views": {
+        "latest": 280000000,
+        "entries": [
+          {
+            "value": 275000000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 278000000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 280000000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "video_count": {
+        "latest": 165,
+        "entries": [
+          {
+            "value": 163,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 164,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 165,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    },
+    "instagram": {
+      "followers": {
+        "latest": 1950000,
+        "entries": [
+          {
+            "value": 1900000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 1925000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 1950000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "post_count": {
+        "latest": 520,
+        "entries": [
+          {
+            "value": 515,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 518,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 520,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    },
+    "spotify": {
+      "followers": {
+        "latest": 920000,
+        "entries": [
+          {
+            "value": 890000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 905000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 920000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "monthly_listeners": {
+        "latest": 4200000,
+        "entries": [
+          {
+            "value": 4100000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 4150000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 4200000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    }
+  },
+  "Orochi": {
+    "youtube": {
+      "followers": {
+        "latest": 1050000,
+        "entries": [
+          {
+            "value": 1000000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 1025000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 1050000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "views": {
+        "latest": 125000000,
+        "entries": [
+          {
+            "value": 122000000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 124000000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 125000000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "video_count": {
+        "latest": 156,
+        "entries": [
+          {
+            "value": 154,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 155,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 156,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    },
+    "instagram": {
+      "followers": {
+        "latest": 195000,
+        "entries": [
+          {
+            "value": 150000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 165000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 195000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "post_count": {
+        "latest": 245,
+        "entries": [
+          {
+            "value": 240,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 243,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 245,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    },
+    "spotify": {
+      "followers": {
+        "latest": 395000,
+        "entries": [
+          {
+            "value": 320000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 345000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 395000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "monthly_listeners": {
+        "latest": 1250000,
+        "entries": [
+          {
+            "value": 1150000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 1200000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 1250000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    }
+  },
+  "camping.viral": {
+    "youtube": {
+      "followers": {
+        "latest": 598000,
+        "entries": [
+          {
+            "value": 450000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 495000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 598000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "views": {
+        "latest": 68000000,
+        "entries": [
+          {
+            "value": 65000000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 67000000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 68000000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "video_count": {
+        "latest": 203,
+        "entries": [
+          {
+            "value": 200,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 202,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 203,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    },
+    "instagram": {
+      "followers": {
+        "latest": 132000,
+        "entries": [
+          {
+            "value": 95000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 105000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 132000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "post_count": {
+        "latest": 189,
+        "entries": [
+          {
+            "value": 185,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 187,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 189,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    },
+    "spotify": {
+      "followers": {
+        "latest": 230000,
+        "entries": [
+          {
+            "value": 185000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 198000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 230000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      },
+      "monthly_listeners": {
+        "latest": 875000,
+        "entries": [
+          {
+            "value": 800000,
+            "datetime": "2026-01-15T10:00:00Z"
+          },
+          {
+            "value": 835000,
+            "datetime": "2026-01-30T10:00:00Z"
+          },
+          {
+            "value": 875000,
+            "datetime": "2026-02-12T10:00:00Z"
+          }
+        ]
+      }
+    }
+  },
+  "total": {
+    "youtube": {
+      "followers": {
+        "latest": 4948000,
+        "entries": [
+          {
+            "value": 1450000,
+            "datetime": "2026-01-15T10:00:00Z",
+            "performer": "MC Cabelinho"
+          },
+          {
+            "value": 1750000,
+            "datetime": "2026-01-15T10:00:00Z",
+            "performer": "Poze do Rodo"
+          },
+          {
+            "value": 1000000,
+            "datetime": "2026-01-15T10:00:00Z",
+            "performer": "Orochi"
+          },
+          {
+            "value": 450000,
+            "datetime": "2026-01-15T10:00:00Z",
+            "performer": "camping.viral"
+          },
+          {
+            "value": 1500000,
+            "datetime": "2026-02-12T10:00:00Z",
+            "performer": "MC Cabelinho"
+          },
+          {
+            "value": 1800000,
+            "datetime": "2026-02-12T10:00:00Z",
+            "performer": "Poze do Rodo"
+          },
+          {
+            "value": 1050000,
+            "datetime": "2026-02-12T10:00:00Z",
+            "performer": "Orochi"
+          },
+          {
+            "value": 598000,
+            "datetime": "2026-02-12T10:00:00Z",
+            "performer": "camping.viral"
+          }
+        ]
+      },
+      "views": {
+        "latest": 723000000,
+        "entries": []
+      },
+      "video_count": {
+        "latest": 674,
+        "entries": []
+      }
+    },
+    "instagram": {
+      "followers": {
+        "latest": 4377000,
+        "entries": []
+      },
+      "post_count": {
+        "latest": 1404,
+        "entries": []
+      }
+    },
+    "spotify": {
+      "followers": {
+        "latest": 2395000,
+        "entries": []
+      },
+      "monthly_listeners": {
+        "latest": 9825000,
+        "entries": []
+      }
+    }
+  }
+}

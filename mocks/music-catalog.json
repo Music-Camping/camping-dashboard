@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Nova Música do Cabelinho",
+    "status": "recording",
+    "type": "single",
+    "deadline": "2026-03-15T23:59:59Z",
+    "created_at": "2026-02-01T10:00:00Z",
+    "updated_at": "2026-02-12T15:30:00Z"
+  },
+  {
+    "id": 2,
+    "name": "Feat Cabelinho x Poze",
+    "status": "mixing",
+    "type": "feat",
+    "deadline": "2026-04-01T23:59:59Z",
+    "created_at": "2026-01-15T10:00:00Z",
+    "updated_at": "2026-02-10T12:00:00Z"
+  },
+  {
+    "id": 3,
+    "name": "Álbum Camping 2026",
+    "status": "recording",
+    "type": "album_track",
+    "deadline": "2026-06-30T23:59:59Z",
+    "created_at": "2026-01-01T10:00:00Z",
+    "updated_at": "2026-02-05T14:20:00Z"
+  },
+  {
+    "id": 4,
+    "name": "Single Orochi - Trap Escuro",
+    "status": "mastering",
+    "type": "single",
+    "deadline": "2026-03-10T23:59:59Z",
+    "created_at": "2026-01-20T10:00:00Z",
+    "updated_at": "2026-02-11T09:15:00Z"
+  },
+  {
+    "id": 5,
+    "name": "Viral Challenge Song",
+    "status": "pending",
+    "type": "single",
+    "deadline": "2026-02-28T23:59:59Z",
+    "created_at": "2026-02-10T10:00:00Z",
+    "updated_at": "2026-02-10T10:00:00Z"
+  },
+  {
+    "id": 6,
+    "name": "Poze - Vida Loka Part 2",
+    "status": "released",
+    "type": "single",
+    "deadline": "2026-02-01T23:59:59Z",
+    "created_at": "2025-12-15T10:00:00Z",
+    "updated_at": "2026-02-01T10:00:00Z"
+  },
+  {
+    "id": 7,
+    "name": "Feat Orochi x Camping",
+    "status": "mixing",
+    "type": "feat",
+    "deadline": "2026-04-15T23:59:59Z",
+    "created_at": "2026-01-25T10:00:00Z",
+    "updated_at": "2026-02-08T16:45:00Z"
+  },
+  {
+    "id": 8,
+    "name": "Cabelinho - Sentimento",
+    "status": "recording",
+    "type": "album_track",
+    "deadline": "2026-05-20T23:59:59Z",
+    "created_at": "2026-01-10T10:00:00Z",
+    "updated_at": "2026-02-12T11:30:00Z"
+  }
+]
