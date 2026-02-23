@@ -17,10 +17,25 @@ export interface PlatformMetrics {
   monthly_listeners?: MetricData; // Spotify only
 }
 
+export interface SpotifyPlaylistTrack {
+  name: string;
+  thumbnail_url?: string;
+  play_count: string; // string no payload da API — converter com parseInt() ao exibir
+}
+
+export interface SpotifyPlaylistData {
+  name: string;
+  thumbnail_url?: string;
+  followers: MetricData;
+  track_count: MetricData;
+  tracks: SpotifyPlaylistTrack[];
+}
+
 export interface PerformerData {
   youtube?: PlatformMetrics;
   instagram?: PlatformMetrics;
   spotify?: PlatformMetrics;
+  spotify_playlists?: SpotifyPlaylistData[];
 }
 
 export interface DashboardResponse {

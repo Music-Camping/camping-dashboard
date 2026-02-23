@@ -51,7 +51,6 @@ export default async function DashboardPage() {
               plays: track.plays.latest,
             })),
         ),
-        playlists: [],
       }
     : undefined;
 
