@@ -19,6 +19,7 @@ import { formatCompactNumber } from "@/lib/utils";
 import { MetricCardWithBreakdown } from "../metric-card-breakdown";
 import { MetricsChart } from "../metrics-chart";
 import { AnimatedTopTracks } from "./animated-top-tracks";
+import { PlaylistSection } from "./playlist-section";
 
 interface SpotifyHubProps {
   spotifyData?: SpotifyMetrics;
@@ -39,6 +40,12 @@ export function SpotifyHub({
   isLoading = false,
   period = "7d",
 }: SpotifyHubProps) {
+  const hasPlaylistData = fullDashboardData
+    ? Object.entries(fullDashboardData).some(
+        ([k, d]) => k !== "total" && (d.spotify_playlists?.length ?? 0) > 0,
+      )
+    : false;
+
   // Filter out top 3 tracks from each performer to avoid duplication
   const otherTracks = useMemo(() => {
     if (!spotifyData?.allTracks) return [];
@@ -71,7 +78,7 @@ export function SpotifyHub({
     );
   }
 
-  if (!spotifyData && !dashboardData) {
+  if (!spotifyData && !dashboardData && !hasPlaylistData) {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-2">
@@ -147,6 +154,17 @@ export function SpotifyHub({
           </div>
 
           <Separator className="my-6" />
+        </>
+      )}
+
+      {/* Playlist Section — only if at least one performer has spotify_playlists */}
+      {hasPlaylistData && fullDashboardData && (
+        <>
+          <Separator className="my-6" />
+          <PlaylistSection
+            fullDashboardData={fullDashboardData}
+            period={period}
+          />
         </>
       )}
 

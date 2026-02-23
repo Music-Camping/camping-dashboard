@@ -6,6 +6,7 @@ import type {
   ChartDataPoint,
   DashboardResponse,
   MetricData,
+  MetricEntry,
   PlatformMetrics,
 } from "@/lib/types/dashboard";
 import type { PeriodFilter } from "@/lib/types/filters";
@@ -32,6 +33,74 @@ function getBucketKey(datetime: string, period: PeriodFilter): string {
     return datetime; // full datetime = one point per recording moment
   }
   return datetime.split("T")[0]; // date only for 7d/30d
+}
+
+export function buildChartPoints(
+  entries: MetricEntry[],
+  period: PeriodFilter,
+): ChartDataPoint[] {
+  if (!entries || entries.length === 0) return [];
+
+  // Compute threshold — for 'today', data-relative anchor on latest entry datetime
+  let threshold: Date;
+  if (period === "today") {
+    const latestDatetime = entries.reduce(
+      (max, e) => (e.datetime > max ? e.datetime : max),
+      entries[0]?.datetime ?? "",
+    );
+    threshold = new Date(
+      new Date(latestDatetime).getTime() - 24 * 60 * 60 * 1000,
+    );
+  } else {
+    threshold = getDateThreshold(period);
+  }
+
+  // Filter by period
+  const periodFiltered = entries.filter(
+    (e) => new Date(e.datetime) >= threshold,
+  );
+
+  // Last-value-per-(bucket, performer) — same logic as useChartData
+  const bucketPerformer = new Map<
+    string,
+    Map<string, { value: number; datetime: string }>
+  >();
+  periodFiltered.forEach((entry) => {
+    const bucketKey = getBucketKey(entry.datetime, period);
+    const performer = entry.performer ?? "__single__";
+    if (!bucketPerformer.has(bucketKey))
+      bucketPerformer.set(bucketKey, new Map());
+    const pm = bucketPerformer.get(bucketKey)!;
+    const existing = pm.get(performer);
+    if (!existing || entry.datetime > existing.datetime) {
+      pm.set(performer, { value: entry.value, datetime: entry.datetime });
+    }
+  });
+
+  // Sum per bucket
+  const byBucket = new Map<string, number>();
+  bucketPerformer.forEach((performerMap, bucketKey) => {
+    let total = 0;
+    performerMap.forEach(({ value }) => {
+      total += value;
+    });
+    byBucket.set(bucketKey, total);
+  });
+
+  // Sort ascending and build ChartDataPoint[]
+  const sortedBuckets = Array.from(byBucket.entries()).sort(([a], [b]) =>
+    a.localeCompare(b),
+  );
+
+  const points: ChartDataPoint[] = sortedBuckets.map(
+    ([date, value], index, arr) => ({
+      date,
+      value,
+      previousValue: index > 0 ? arr[index - 1][1] : undefined,
+    }),
+  );
+
+  return period === "today" ? points.slice(-9) : points;
 }
 
 export function useChartData(

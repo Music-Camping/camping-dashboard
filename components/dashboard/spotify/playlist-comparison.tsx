@@ -12,7 +12,7 @@ import {
 } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { PlaylistData } from "@/lib/types/spotify";
+import type { SpotifyPlaylistData } from "@/lib/types/dashboard";
 import { cn, formatCompactNumber } from "@/lib/utils";
 
 interface TooltipPayload {
@@ -42,7 +42,7 @@ function PlaylistTooltipContent({
 }
 
 interface PlaylistComparisonProps {
-  playlists: PlaylistData[];
+  playlists: SpotifyPlaylistData[];
   title?: string;
   icon?: React.ReactNode;
   className?: string;
@@ -72,8 +72,8 @@ export function PlaylistComparison({
         ? `${playlist.name.slice(0, 15)}...`
         : playlist.name,
     fullName: playlist.name,
-    listeners: playlist.monthlyListeners,
-    thumbnail: playlist.thumbnail,
+    listeners: playlist.followers.latest,
+    thumbnail: playlist.thumbnail_url,
   }));
 
   if (playlists.length === 0) {
