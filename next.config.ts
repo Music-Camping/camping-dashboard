@@ -5,8 +5,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "i.scdn.co",
-        pathname: "/**",
+        hostname: "**.scdn.co",
+      },
+      {
+        protocol: "https",
+        hostname: "**.spotifycdn.com",
       },
     ],
   },
