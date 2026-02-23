@@ -58,7 +58,7 @@ export function AppHeader({ onStartPresentation }: AppHeaderProps = {}) {
     if (allSelected) {
       setSelectedPerformers([]);
     } else {
-      setSelectedPerformers([]);
+      setSelectedPerformers(availablePerformers);
     }
   };
 

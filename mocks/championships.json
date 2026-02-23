@@ -1,0 +1,114 @@
+[
+  {
+    "id": 1,
+    "title": "Batalha de Música Trap 2026",
+    "starts_at": "2026-02-01T00:00:00Z",
+    "ends_at": "2026-03-01T23:59:59Z",
+    "hashtag": "#BatalhaTrap2026",
+    "contenders": [
+      {
+        "id": 1,
+        "name": "MC Cabelinho",
+        "score": 15000
+      },
+      {
+        "id": 2,
+        "name": "Poze do Rodo",
+        "score": 18500
+      },
+      {
+        "id": 3,
+        "name": "Orochi",
+        "score": 12000
+      },
+      {
+        "id": 4,
+        "name": "camping.viral",
+        "score": 9500
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Desafio Viral do Mês",
+    "starts_at": "2026-02-15T00:00:00Z",
+    "ends_at": "2026-03-15T23:59:59Z",
+    "hashtag": "#DesafioViralFev",
+    "contenders": [
+      {
+        "id": 1,
+        "name": "MC Cabelinho",
+        "score": 8200
+      },
+      {
+        "id": 2,
+        "name": "Poze do Rodo",
+        "score": 7800
+      },
+      {
+        "id": 3,
+        "name": "Orochi",
+        "score": 6500
+      },
+      {
+        "id": 4,
+        "name": "camping.viral",
+        "score": 11000
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Competição de Streaming",
+    "starts_at": "2026-03-01T00:00:00Z",
+    "ends_at": "2026-04-01T23:59:59Z",
+    "hashtag": "#StreamingWars2026",
+    "contenders": [
+      {
+        "id": 1,
+        "name": "MC Cabelinho"
+      },
+      {
+        "id": 2,
+        "name": "Poze do Rodo"
+      },
+      {
+        "id": 3,
+        "name": "Orochi"
+      },
+      {
+        "id": 4,
+        "name": "camping.viral"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Melhor Clipe 2025",
+    "starts_at": "2025-12-01T00:00:00Z",
+    "ends_at": "2026-01-31T23:59:59Z",
+    "hashtag": "#MelhorClipe2025",
+    "contenders": [
+      {
+        "id": 1,
+        "name": "MC Cabelinho",
+        "score": 22000
+      },
+      {
+        "id": 2,
+        "name": "Poze do Rodo",
+        "score": 25500
+      },
+      {
+        "id": 3,
+        "name": "Orochi",
+        "score": 19800
+      },
+      {
+        "id": 4,
+        "name": "camping.viral",
+        "score": 16500
+      }
+    ]
+  }
+]

@@ -1,0 +1,402 @@
+{
+  "MC Cabelinho": {
+    "tracks": [
+      {
+        "id": 1,
+        "external_id": "spotify:track:7K3BhSpAxZBznislvUMVtn",
+        "name": "Mente Confusa",
+        "artist_name": "MC Cabelinho",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b273f7db43292a6a99b21b51d5b4",
+        "plays": {
+          "latest": 15000000,
+          "entries": [
+            {
+              "value": 14500000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 14750000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 15000000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 2,
+        "external_id": "spotify:track:2YpeDb67231RjR0MgVLzsG",
+        "name": "Amor de Verdade",
+        "artist_name": "MC Cabelinho",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b273a1c5c0fe5b3d0c8f9e8c0b2a",
+        "plays": {
+          "latest": 12000000,
+          "entries": [
+            {
+              "value": 11600000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 11800000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 12000000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 3,
+        "external_id": "spotify:track:3n3Ppam7vgaVa1iaRUc9Lp",
+        "name": "Sozinho",
+        "artist_name": "MC Cabelinho",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b2731f8a0b9c5d6e7f8a9b0c1d2e",
+        "plays": {
+          "latest": 9500000,
+          "entries": [
+            {
+              "value": 9200000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 9350000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 9500000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 4,
+        "external_id": "spotify:track:5CtI0qwDJkDQGwXD1H1cLb",
+        "name": "Não é Só Dinheiro",
+        "artist_name": "MC Cabelinho",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b2732a3b4c5d6e7f8a9b0c1d2e3f",
+        "plays": {
+          "latest": 7800000,
+          "entries": [
+            {
+              "value": 7500000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 7650000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 7800000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 5,
+        "external_id": "spotify:track:6KuQTIu1KoTTkIvKKJJYpq",
+        "name": "Louco de Refri",
+        "artist_name": "MC Cabelinho",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b2733b4c5d6e7f8a9b0c1d2e3f40",
+        "plays": {
+          "latest": 6200000,
+          "entries": [
+            {
+              "value": 6000000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 6100000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 6200000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "Poze do Rodo": {
+    "tracks": [
+      {
+        "id": 6,
+        "external_id": "spotify:track:1A2B3C4D5E6F7G8H9I0J1K",
+        "name": "Vida Louca",
+        "artist_name": "Poze do Rodo",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b2734c5d6e7f8a9b0c1d2e3f4051",
+        "plays": {
+          "latest": 18000000,
+          "entries": [
+            {
+              "value": 17500000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 17750000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 18000000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 7,
+        "external_id": "spotify:track:2L3M4N5O6P7Q8R9S0T1U2V",
+        "name": "Ela é Top",
+        "artist_name": "Poze do Rodo",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b2735d6e7f8a9b0c1d2e3f405162",
+        "plays": {
+          "latest": 14500000,
+          "entries": [
+            {
+              "value": 14100000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 14300000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 14500000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 8,
+        "external_id": "spotify:track:3W4X5Y6Z7A8B9C0D1E2F3G",
+        "name": "No Seu Radinho",
+        "artist_name": "Poze do Rodo",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b2736e7f8a9b0c1d2e3f40516273",
+        "plays": {
+          "latest": 11200000,
+          "entries": [
+            {
+              "value": 10900000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 11050000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 11200000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 9,
+        "external_id": "spotify:track:4H5I6J7K8L9M0N1O2P3Q4R",
+        "name": "Giro Loko",
+        "artist_name": "Poze do Rodo",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b2737f8a9b0c1d2e3f4051627384",
+        "plays": {
+          "latest": 9800000,
+          "entries": [
+            {
+              "value": 9500000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 9650000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 9800000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "Orochi": {
+    "tracks": [
+      {
+        "id": 10,
+        "external_id": "spotify:track:5S6T7U8V9W0X1Y2Z3A4B5C",
+        "name": "Invejoso",
+        "artist_name": "Orochi",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b2738a9b0c1d2e3f40516273849a",
+        "plays": {
+          "latest": 13500000,
+          "entries": [
+            {
+              "value": 13100000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 13300000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 13500000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 11,
+        "external_id": "spotify:track:6D7E8F9G0H1I2J3K4L5M6N",
+        "name": "Cabeça Branca",
+        "artist_name": "Orochi",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b2739b0c1d2e3f40516273849ab0",
+        "plays": {
+          "latest": 10800000,
+          "entries": [
+            {
+              "value": 10500000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 10650000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 10800000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 12,
+        "external_id": "spotify:track:7O8P9Q0R1S2T3U4V5W6X7Y",
+        "name": "Sem Dó",
+        "artist_name": "Orochi",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b273c1d2e3f40516273849ab0c1d",
+        "plays": {
+          "latest": 8900000,
+          "entries": [
+            {
+              "value": 8650000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 8775000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 8900000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 13,
+        "external_id": "spotify:track:8Z9A0B1C2D3E4F5G6H7I8J",
+        "name": "Paraíso",
+        "artist_name": "Orochi",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b273d2e3f40516273849ab0c1d2e",
+        "plays": {
+          "latest": 7500000,
+          "entries": [
+            {
+              "value": 7300000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 7400000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 7500000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "camping.viral": {
+    "tracks": [
+      {
+        "id": 14,
+        "external_id": "spotify:track:9K0L1M2N3O4P5Q6R7S8T9U",
+        "name": "Viral do Momento",
+        "artist_name": "camping.viral",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b273e3f40516273849ab0c1d2e3f",
+        "plays": {
+          "latest": 8500000,
+          "entries": [
+            {
+              "value": 8200000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 8350000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 8500000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 15,
+        "external_id": "spotify:track:0V1W2X3Y4Z5A6B7C8D9E0F",
+        "name": "Hit da Quebrada",
+        "artist_name": "camping.viral",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b273f40516273849ab0c1d2e3f40",
+        "plays": {
+          "latest": 6800000,
+          "entries": [
+            {
+              "value": 6600000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 6700000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 6800000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      },
+      {
+        "id": 16,
+        "external_id": "spotify:track:1G2H3I4J5K6L7M8N9O0P1Q",
+        "name": "Som do Baile",
+        "artist_name": "camping.viral",
+        "thumbnail": "https://i.scdn.co/image/ab67616d0000b27340516273849ab0c1d2e3f405",
+        "plays": {
+          "latest": 5200000,
+          "entries": [
+            {
+              "value": 5050000,
+              "datetime": "2026-02-01T00:00:00Z"
+            },
+            {
+              "value": 5125000,
+              "datetime": "2026-02-07T00:00:00Z"
+            },
+            {
+              "value": 5200000,
+              "datetime": "2026-02-12T00:00:00Z"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

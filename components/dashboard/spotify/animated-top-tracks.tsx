@@ -100,7 +100,7 @@ export function AnimatedTopTracks({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.5 }}
-          className="grid grid-cols-1 gap-4 md:grid-cols-[2fr_1fr]"
+          className="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr]"
         >
           {/* #1 - Large card with background image */}
           {top3[0] && (

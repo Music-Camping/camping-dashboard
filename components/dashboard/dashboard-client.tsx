@@ -2,10 +2,15 @@
 
 import { useCallback, useEffect, useMemo } from "react";
 
+import { AnimatePresence, motion } from "framer-motion";
+import { InstagramIcon, Music2Icon, YoutubeIcon } from "lucide-react";
+
 import { PresentationControls } from "@/components/dashboard/presentation-controls";
 import { InstagramSection } from "@/components/dashboard/social-platforms/instagram-section";
 import { YouTubeSection } from "@/components/dashboard/social-platforms/youtube-section";
 import { SpotifyHub } from "@/components/dashboard/spotify/spotify-hub";
+import { TopRankings } from "@/components/dashboard/spotify/top-rankings";
+import { MetricsChart } from "@/components/dashboard/metrics-chart";
 import { MusicTable } from "@/components/dashboard/music-catalog/music-table";
 import { Separator } from "@/components/ui/separator";
 import { usePresentationContext } from "@/contexts/presentation-context";
@@ -15,7 +20,8 @@ import { usePresentationMode } from "@/hooks/use-presentation-mode";
 import { useMusicCatalog } from "@/hooks/use-music-catalog";
 import type { DashboardResponse, PlatformMetrics } from "@/lib/types/dashboard";
 import type { SpotifyMetrics } from "@/lib/types/spotify";
-import { cn } from "@/lib/utils";
+import { PERIOD_OPTIONS } from "@/lib/types/filters";
+import { cn, formatCompactNumber } from "@/lib/utils";
 
 interface DashboardClientProps {
   initialData: DashboardResponse | null;
@@ -27,7 +33,7 @@ export function DashboardClient({
   spotifyData,
 }: DashboardClientProps) {
   const { setIsPresentationMode } = usePresentationContext();
-  const { filters, setAvailablePerformers, setSelectedPerformers } =
+  const { filters, setAvailablePerformers, setSelectedPerformers, setPeriod } =
     useFilters();
   const { selectedPerformers, period } = filters;
   const { tracks: musicTracks } = useMusicCatalog();
@@ -62,7 +68,8 @@ export function DashboardClient({
     window.addEventListener("start-presentation", handleStartPresentation);
     return () =>
       window.removeEventListener("start-presentation", handleStartPresentation);
-  }, [presentation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presentation.startPresentation]);
 
   // Update selected performers when presentation mode changes performer
   useEffect(() => {
@@ -191,12 +198,99 @@ export function DashboardClient({
     [getAggregatedPlatformData],
   );
 
+  // Top 3 tracks for the current performer (used in TV mode ranking panel)
+  const currentPerformerTracks = useMemo(() => {
+    if (!spotifyData?.rankingsByPerformer) return [];
+    const performer = presentation.currentPerformer;
+    if (performer) {
+      return (
+        spotifyData.rankingsByPerformer
+          .find((p) => p.performer === performer)
+          ?.rankings.slice(0, 3) ?? []
+      );
+    }
+    return spotifyData.rankingsByPerformer[0]?.rankings.slice(0, 3) ?? [];
+  }, [spotifyData, presentation.currentPerformer]);
+
+  // ─── TV-specific data ──────────────────────────────────────────────────────
+  // Computed directly from currentPerformer (synchronous), bypassing the
+  // selectedPerformers state that updates asynchronously via useEffect.
+  // This eliminates the "piscada" (flicker) caused by the data lag.
+  const tvPerformers = useMemo(
+    () =>
+      presentation.currentPerformer ? [presentation.currentPerformer] : [],
+    [presentation.currentPerformer],
+  );
+
+  const tvYoutubeData = useMemo(
+    () =>
+      presentation.currentPerformer
+        ? initialData?.[presentation.currentPerformer]?.youtube
+        : youtubeData,
+    [presentation.currentPerformer, initialData, youtubeData],
+  );
+
+  const tvInstagramData = useMemo(
+    () =>
+      presentation.currentPerformer
+        ? initialData?.[presentation.currentPerformer]?.instagram
+        : instagramData,
+    [presentation.currentPerformer, initialData, instagramData],
+  );
+
+  const tvSpotifyData = useMemo(
+    () =>
+      presentation.currentPerformer
+        ? initialData?.[presentation.currentPerformer]?.spotify
+        : spotifyDataFromDashboard,
+    [presentation.currentPerformer, initialData, spotifyDataFromDashboard],
+  );
+
+  const tvYoutubeChartData = useChartData(
+    initialData || undefined,
+    "youtube",
+    "followers",
+    tvPerformers,
+    period,
+  );
+
+  const tvInstagramChartData = useChartData(
+    initialData || undefined,
+    "instagram",
+    "followers",
+    tvPerformers,
+    period,
+  );
+
+  const tvSpotifyFollowersChartData = useChartData(
+    initialData || undefined,
+    "spotify",
+    "followers",
+    tvPerformers,
+    period,
+  );
+
+  const tvSpotifyListenersChartData = useChartData(
+    initialData || undefined,
+    "spotify",
+    "monthly_listeners",
+    tvPerformers,
+    period,
+  );
+
   if (!initialData) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen flex-col items-center justify-center gap-4">
         <p className="text-muted-foreground">
           Não foi possível carregar os dados do dashboard
         </p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          Tentar novamente
+        </button>
       </div>
     );
   }
@@ -212,41 +306,219 @@ export function DashboardClient({
       {/* Presentation Controls - Hidden, only shows when active */}
 
       {presentation.isActive ? (
-        /* TV Layout - Otimizado para caber em uma tela */
-        <div className="grid h-full grid-rows-[auto_1fr] gap-4 overflow-hidden">
-          {/* Performer Header - Destaque grande */}
-          <div className="flex items-center justify-between rounded-lg bg-gradient-to-r from-primary/20 via-primary/10 to-transparent px-6 py-4 shadow-lg">
-            <div className="flex items-center gap-4">
-              <div className="flex size-12 items-center justify-center rounded-full bg-primary/20">
-                <span className="text-2xl font-bold text-primary">
-                  {presentation.currentPerformer?.charAt(0) || ""}
-                </span>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Exibindo dados de
-                </p>
-                <h1 className="text-3xl font-bold tracking-tight">
-                  {presentation.currentPerformer || "Todos"}
-                </h1>
-              </div>
-            </div>
-
-            {/* Progress indicator */}
-            {presentation.autoRotate && (
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground">Próximo em</p>
-                  <p className="text-lg font-semibold">
-                    {presentation.rotationInterval}s
+        /* TV Layout — sem scroll, tudo visível em tela cheia */
+        <div className="grid h-full grid-rows-[auto_1fr] gap-3 overflow-hidden">
+          {/* ROW 1: Header compacto — performer + filtro de período + indicador */}
+          <div className="flex items-center gap-4 rounded-xl border bg-card/80 px-5 py-2.5 shadow-sm backdrop-blur">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={presentation.currentPerformer ?? "all"}
+                className="flex items-center gap-3"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                transition={{ duration: 0.25 }}
+              >
+                <div className="flex size-9 items-center justify-center rounded-full bg-primary/20 text-lg font-bold text-primary">
+                  {presentation.currentPerformer?.charAt(0) ?? "●"}
+                </div>
+                <div>
+                  <p className="mb-0.5 text-xs leading-none text-muted-foreground">
+                    Exibindo
+                  </p>
+                  <p className="text-lg leading-none font-bold">
+                    {presentation.currentPerformer ?? "Todos"}
                   </p>
                 </div>
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="flex-1" />
+
+            {/* Filtro de período */}
+            <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
+              {PERIOD_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setPeriod(option.value)}
+                  className={cn(
+                    "rounded px-3 py-1 text-sm font-medium transition-colors",
+                    period === option.value
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Indicador de auto-rotação */}
+            {presentation.autoRotate && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Próximo em {presentation.rotationInterval}s</span>
                 <div className="size-2 animate-pulse rounded-full bg-green-500" />
               </div>
             )}
           </div>
 
-          {/* Presentation Controls - Floating */}
+          {/* ROW 2: Conteúdo animado — crossfade sem piscada */}
+          <div className="relative min-h-0 overflow-hidden">
+            <AnimatePresence mode="sync">
+              <motion.div
+                key={presentation.currentPerformer ?? "all"}
+                className="absolute inset-0 flex flex-col gap-4 overflow-y-auto"
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ duration: 0.45, ease: "easeInOut" }}
+              >
+                {/* ── SPOTIFY ── */}
+                <div className="rounded-xl border bg-card p-6">
+                  <div className="grid grid-cols-[1fr_minmax(0,40%)] gap-6">
+                    {/* Esquerda: header + métricas + gráficos */}
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center gap-2">
+                        <Music2Icon className="size-5 text-green-500" />
+                        <span className="text-xl font-bold">Spotify</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="rounded-lg bg-muted/50 p-4">
+                          <p className="text-sm text-muted-foreground">
+                            Seguidores
+                          </p>
+                          <p className="text-2xl font-bold tabular-nums">
+                            {tvSpotifyData
+                              ? formatCompactNumber(
+                                  tvSpotifyData.followers.latest,
+                                )
+                              : "—"}
+                          </p>
+                        </div>
+                        <div className="rounded-lg bg-muted/50 p-4">
+                          <p className="text-sm text-muted-foreground">
+                            Ouvintes Mensais
+                          </p>
+                          <p className="text-2xl font-bold tabular-nums">
+                            {tvSpotifyData?.monthly_listeners
+                              ? formatCompactNumber(
+                                  tvSpotifyData.monthly_listeners.latest,
+                                )
+                              : "—"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <MetricsChart
+                            title="Seguidores"
+                            data={tvSpotifyFollowersChartData}
+                            icon={
+                              <Music2Icon className="size-4 text-green-500" />
+                            }
+                          />
+                        </div>
+                        {tvSpotifyData?.monthly_listeners && (
+                          <div className="flex-1">
+                            <MetricsChart
+                              title="Ouvintes Mensais"
+                              data={tvSpotifyListenersChartData}
+                              icon={
+                                <Music2Icon className="size-4 text-green-500" />
+                              }
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Direita: top 3 rankings */}
+                    <TopRankings rankings={currentPerformerTracks} />
+                  </div>
+                </div>
+
+                {/* ── YOUTUBE + INSTAGRAM ── */}
+                <div className="grid grid-cols-2 gap-4">
+                  {/* YouTube */}
+                  <div className="flex flex-col gap-4 rounded-xl border bg-card p-6">
+                    <div className="flex items-center gap-2">
+                      <YoutubeIcon className="size-5 text-red-500" />
+                      <span className="text-xl font-bold">YouTube</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="rounded-lg bg-muted/50 p-4">
+                        <p className="text-sm text-muted-foreground">
+                          Inscritos
+                        </p>
+                        <p className="text-2xl font-bold tabular-nums">
+                          {tvYoutubeData
+                            ? formatCompactNumber(
+                                tvYoutubeData.followers.latest,
+                              )
+                            : "—"}
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-muted/50 p-4">
+                        <p className="text-sm text-muted-foreground">
+                          Views Totais
+                        </p>
+                        <p className="text-2xl font-bold tabular-nums">
+                          {tvYoutubeData?.views
+                            ? formatCompactNumber(tvYoutubeData.views.latest)
+                            : "—"}
+                        </p>
+                      </div>
+                    </div>
+                    <MetricsChart
+                      title="Inscritos"
+                      data={tvYoutubeChartData}
+                      icon={<YoutubeIcon className="size-4 text-red-500" />}
+                    />
+                  </div>
+
+                  {/* Instagram */}
+                  <div className="flex flex-col gap-4 rounded-xl border bg-card p-6">
+                    <div className="flex items-center gap-2">
+                      <InstagramIcon className="size-5 text-pink-500" />
+                      <span className="text-xl font-bold">Instagram</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="rounded-lg bg-muted/50 p-4">
+                        <p className="text-sm text-muted-foreground">
+                          Seguidores
+                        </p>
+                        <p className="text-2xl font-bold tabular-nums">
+                          {tvInstagramData
+                            ? formatCompactNumber(
+                                tvInstagramData.followers.latest,
+                              )
+                            : "—"}
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-muted/50 p-4">
+                        <p className="text-sm text-muted-foreground">Posts</p>
+                        <p className="text-2xl font-bold tabular-nums">
+                          {tvInstagramData?.post_count
+                            ? formatCompactNumber(
+                                tvInstagramData.post_count.latest,
+                              )
+                            : "—"}
+                        </p>
+                      </div>
+                    </div>
+                    <MetricsChart
+                      title="Seguidores"
+                      data={tvInstagramChartData}
+                      icon={<InstagramIcon className="size-4 text-pink-500" />}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Controles flutuantes */}
           <PresentationControls
             isActive={presentation.isActive}
             isFullscreen={presentation.isFullscreen}
@@ -261,45 +533,6 @@ export function DashboardClient({
             onSetInterval={presentation.setRotationInterval}
             onGoToPerformer={presentation.goToPerformer}
           />
-
-          {/* Content Grid - 2x2 layout para TV */}
-          <div className="grid grid-cols-2 grid-rows-2 gap-4 overflow-auto">
-            {/* Spotify */}
-            <div className="overflow-auto">
-              <SpotifyHub
-                spotifyData={spotifyData}
-                dashboardData={spotifyDataFromDashboard}
-                fullDashboardData={initialData || undefined}
-                followersChartData={spotifyFollowersChartData}
-                listenersChartData={spotifyListenersChartData}
-                isLoading={false}
-              />
-            </div>
-
-            {/* YouTube */}
-            <div className="overflow-auto">
-              <YouTubeSection
-                data={youtubeData}
-                fullDashboardData={initialData || undefined}
-                chartData={youtubeChartData}
-              />
-            </div>
-
-            {/* Instagram */}
-            <div className="overflow-auto">
-              <InstagramSection
-                data={instagramData}
-                fullDashboardData={initialData || undefined}
-                chartData={instagramChartData}
-              />
-            </div>
-
-            {/* Championships */}
-            <div className="overflow-auto">
-              {/* ChampionshipsSection será adicionado */}
-              <div className="text-sm text-muted-foreground">Championships</div>
-            </div>
-          </div>
         </div>
       ) : (
         /* Normal Layout - Com scroll */
@@ -331,14 +564,6 @@ export function DashboardClient({
             fullDashboardData={initialData || undefined}
             chartData={instagramChartData}
           />
-
-          <Separator />
-
-          {/* Section 4: Championships */}
-          {/* <ChampionshipsSection championships={championships} /> */}
-          <div className="text-sm text-muted-foreground">
-            Championships section
-          </div>
 
           <Separator />
 

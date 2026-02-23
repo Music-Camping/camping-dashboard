@@ -26,6 +26,20 @@ interface MetricsChartProps {
   title: string;
   icon?: React.ReactNode;
   className?: string;
+  compact?: boolean;
+  fillHeight?: boolean;
+}
+
+function getContentClassName(compact?: boolean, fillHeight?: boolean) {
+  if (compact) return "p-3 pt-1";
+  if (fillHeight) return "flex flex-1 flex-col min-h-0 pb-2";
+  return "pb-4";
+}
+
+function getChartHeightClassName(compact?: boolean, fillHeight?: boolean) {
+  if (compact) return "h-28";
+  if (fillHeight) return "flex-1 min-h-[60px]";
+  return "h-48";
 }
 
 export function MetricsChart({
@@ -33,6 +47,8 @@ export function MetricsChart({
   title,
   icon,
   className,
+  compact,
+  fillHeight,
 }: MetricsChartProps) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -60,15 +76,26 @@ export function MetricsChart({
 
   if (data.length === 0) {
     return (
-      <Card className={cn("w-full", className)}>
-        <CardHeader className="pb-2">
+      <Card
+        className={cn(
+          "w-full",
+          fillHeight && "flex h-full flex-col",
+          className,
+        )}
+      >
+        <CardHeader className={cn("pb-2", compact && "p-3 pb-1")}>
           <CardTitle className="inline-flex items-center gap-2 text-base">
             {icon}
             {title}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex h-48 items-center justify-center text-muted-foreground">
+        <CardContent className={getContentClassName(compact, fillHeight)}>
+          <div
+            className={cn(
+              "flex items-center justify-center text-muted-foreground",
+              getChartHeightClassName(compact, fillHeight),
+            )}
+          >
             Dados insuficientes para gerar gráfico
           </div>
         </CardContent>
@@ -77,15 +104,17 @@ export function MetricsChart({
   }
 
   return (
-    <Card className={cn("w-full", className)}>
-      <CardHeader className="pb-2">
+    <Card
+      className={cn("w-full", fillHeight && "flex h-full flex-col", className)}
+    >
+      <CardHeader className={cn("pb-2", compact && "p-3 pb-1")}>
         <CardTitle className="inline-flex items-center gap-2 text-base">
           {icon}
           {title}
         </CardTitle>
       </CardHeader>
-      <CardContent className="pb-4">
-        <div className="h-48">
+      <CardContent className={getContentClassName(compact, fillHeight)}>
+        <div className={getChartHeightClassName(compact, fillHeight)}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}
