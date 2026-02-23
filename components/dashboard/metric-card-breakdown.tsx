@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { MetricEntry } from "@/lib/types/dashboard";
+import type { PeriodFilter } from "@/lib/types/filters";
 import { calculateGrowth, cn, formatCompactNumber } from "@/lib/utils";
 
 interface PerformerBreakdown {
@@ -19,6 +20,7 @@ interface MetricCardWithBreakdownProps {
   totalValue: number;
   entries: MetricEntry[];
   breakdown: PerformerBreakdown[];
+  period: PeriodFilter;
   icon?: React.ReactNode;
   className?: string;
 }
@@ -28,10 +30,11 @@ export function MetricCardWithBreakdown({
   totalValue,
   entries,
   breakdown,
+  period,
   icon,
   className,
 }: MetricCardWithBreakdownProps) {
-  const growth = calculateGrowth(entries);
+  const growth = calculateGrowth(entries, period);
   const isPositive = growth.absolute > 0;
   const isNegative = growth.absolute < 0;
 

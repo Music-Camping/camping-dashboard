@@ -4,6 +4,7 @@ import { ImageIcon, InstagramIcon, UsersIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardResponse, PlatformMetrics } from "@/lib/types/dashboard";
+import type { PeriodFilter } from "@/lib/types/filters";
 import { cn } from "@/lib/utils";
 
 import { MetricCard } from "../metric-card";
@@ -14,6 +15,7 @@ interface InstagramSectionProps {
   data?: PlatformMetrics;
   fullDashboardData?: DashboardResponse;
   chartData: Array<{ date: string; value: number }>;
+  period: PeriodFilter;
   tvMode?: boolean;
 }
 
@@ -21,6 +23,7 @@ export function InstagramSection({
   data,
   fullDashboardData,
   chartData,
+  period,
   tvMode,
 }: InstagramSectionProps) {
   if (!data) {
@@ -57,6 +60,7 @@ export function InstagramSection({
               title="Seguidores Instagram"
               totalValue={data.followers.latest}
               entries={data.followers.entries}
+              period={period}
               breakdown={Object.entries(fullDashboardData)
                 .filter(([key]) => key !== "total")
                 .map(([performer, performerData]) => ({
@@ -71,6 +75,7 @@ export function InstagramSection({
                 title="Posts"
                 totalValue={data.post_count.latest}
                 entries={data.post_count.entries}
+                period={period}
                 breakdown={Object.entries(fullDashboardData)
                   .filter(([key]) => key !== "total")
                   .map(([performer, performerData]) => ({
@@ -87,6 +92,7 @@ export function InstagramSection({
               title="Seguidores"
               value={data.followers.latest}
               entries={data.followers.entries}
+              period={period}
               icon={<UsersIcon className="size-4 text-pink-500" />}
             />
             {data.post_count && (
@@ -94,6 +100,7 @@ export function InstagramSection({
                 title="Posts"
                 value={data.post_count.latest}
                 entries={data.post_count.entries}
+                period={period}
                 icon={<ImageIcon className="size-4 text-pink-500" />}
               />
             )}

@@ -5,12 +5,14 @@ import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { MetricEntry } from "@/lib/types/dashboard";
+import type { PeriodFilter } from "@/lib/types/filters";
 import { calculateGrowth, cn, formatCompactNumber } from "@/lib/utils";
 
 interface MetricCardProps {
   title: string;
   value: number;
   entries: MetricEntry[];
+  period: PeriodFilter;
   icon?: React.ReactNode;
   className?: string;
 }
@@ -19,10 +21,11 @@ export function MetricCard({
   title,
   value,
   entries,
+  period,
   icon,
   className,
 }: MetricCardProps) {
-  const growth = calculateGrowth(entries);
+  const growth = calculateGrowth(entries, period);
   const isPositive = growth.absolute > 0;
   const isNegative = growth.absolute < 0;
 
