@@ -3,12 +3,7 @@
 import * as React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import {
-  LayoutDashboardIcon,
-  FileTextIcon,
-  SettingsIcon,
-  LogOutIcon,
-} from "lucide-react";
+import { LayoutDashboardIcon, Music2Icon, LogOutIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -35,8 +30,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboardIcon },
-  { label: "Relatórios", href: "/relatorios", icon: FileTextIcon },
-  { label: "Configurações", href: "/configuracoes", icon: SettingsIcon },
+  { label: "Músicas", href: "/musicas", icon: Music2Icon },
 ];
 
 export function AppSidebar({ children }: { children: React.ReactNode }) {
