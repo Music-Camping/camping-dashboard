@@ -11,13 +11,11 @@ import { YouTubeSection } from "@/components/dashboard/social-platforms/youtube-
 import { SpotifyHub } from "@/components/dashboard/spotify/spotify-hub";
 import { TopRankings } from "@/components/dashboard/spotify/top-rankings";
 import { MetricsChart } from "@/components/dashboard/metrics-chart";
-import { MusicTable } from "@/components/dashboard/music-catalog/music-table";
 import { Separator } from "@/components/ui/separator";
 import { usePresentationContext } from "@/contexts/presentation-context";
 import { useChartData } from "@/hooks/use-chart-data";
 import { useFilters } from "@/hooks/use-filters";
 import { usePresentationMode } from "@/hooks/use-presentation-mode";
-import { useMusicCatalog } from "@/hooks/use-music-catalog";
 import type { DashboardResponse, PlatformMetrics } from "@/lib/types/dashboard";
 import type { SpotifyMetrics } from "@/lib/types/spotify";
 import { PERIOD_OPTIONS } from "@/lib/types/filters";
@@ -36,8 +34,6 @@ export function DashboardClient({
   const { filters, setAvailablePerformers, setSelectedPerformers, setPeriod } =
     useFilters();
   const { selectedPerformers, period } = filters;
-  const { tracks: musicTracks } = useMusicCatalog();
-
   // Memoize available performers from data
   const allPerformers = useMemo(() => {
     if (!initialData) return [];
@@ -617,11 +613,6 @@ export function DashboardClient({
               />
             </>
           )}
-
-          <Separator />
-
-          {/* Section 5: Music Catalog */}
-          <MusicTable tracks={musicTracks} />
         </>
       )}
     </div>
