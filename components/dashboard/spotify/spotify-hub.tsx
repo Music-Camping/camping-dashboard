@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Music2Icon, UsersIcon } from "lucide-react";
 import Image from "next/image";
@@ -40,28 +40,62 @@ export function SpotifyHub({
   isLoading = false,
   period = "7d",
 }: SpotifyHubProps) {
+  const [currentPerformerIndex, setCurrentPerformerIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
   const hasPlaylistData = fullDashboardData
     ? Object.entries(fullDashboardData).some(
         ([k, d]) => k !== "total" && (d.spotify_playlists?.length ?? 0) > 0,
       )
     : false;
 
-  // Filter out top 3 tracks from each performer to avoid duplication
-  const otherTracks = useMemo(() => {
-    if (!spotifyData?.allTracks) return [];
-
-    // Get all track names from top 3 of each performer
-    const top3TrackNames = new Set(
-      spotifyData.rankingsByPerformer.flatMap((p) =>
-        p.rankings.slice(0, 3).map((r) => r.trackName),
-      ),
-    );
-
-    // Filter out tracks that are in top 3
-    return spotifyData.allTracks.filter(
-      (track) => !top3TrackNames.has(track.name),
-    );
+  // Get valid performers (with at least 1 ranking)
+  const validPerformers = useMemo(() => {
+    if (!spotifyData) return [];
+    return spotifyData.rankingsByPerformer.filter((p) => p.rankings.length > 0);
   }, [spotifyData]);
+
+  // Auto-rotate between performers every 8 seconds (unless paused)
+  useEffect(() => {
+    if (validPerformers.length <= 1) {
+      return undefined;
+    }
+
+    const interval = setInterval(() => {
+      if (!isPaused) {
+        setCurrentPerformerIndex((prev) => (prev + 1) % validPerformers.length);
+      }
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [validPerformers.length, isPaused]);
+
+  // Reset index if out of bounds
+  useEffect(() => {
+    if (currentPerformerIndex >= validPerformers.length) {
+      setCurrentPerformerIndex(0);
+    }
+  }, [validPerformers.length, currentPerformerIndex]);
+
+  // Filter out top 3 tracks from current performer only
+  const otherTracks = useMemo(() => {
+    if (!spotifyData?.allTracks || validPerformers.length === 0) return [];
+
+    const currentPerformer = validPerformers[currentPerformerIndex];
+    if (!currentPerformer) return [];
+
+    // Get track names from top 3 of current performer
+    const top3TrackNames = new Set(
+      currentPerformer.rankings.slice(0, 3).map((r) => r.trackName),
+    );
+
+    // Filter to current performer's tracks, excluding top 3
+    return spotifyData.allTracks.filter(
+      (track) =>
+        track.performer === currentPerformer.performer &&
+        !top3TrackNames.has(track.name),
+    );
+  }, [spotifyData, currentPerformerIndex, validPerformers]);
 
   if (isLoading) {
     return (
@@ -157,26 +191,19 @@ export function SpotifyHub({
         </>
       )}
 
-      {/* Playlist Section — only if at least one performer has spotify_playlists */}
-      {hasPlaylistData && fullDashboardData && (
-        <>
-          <Separator className="my-6" />
-          <PlaylistSection
-            fullDashboardData={fullDashboardData}
-            period={period}
-          />
-        </>
-      )}
-
       {/* Spotify Rankings & Tracks */}
       {spotifyData && (
         <>
-          {/* Animated Top Tracks - Shows top 3 per performer with rotation */}
+          {/* Animated Top Tracks - Shows top tracks per performer with rotation */}
           <AnimatedTopTracks
             rankingsByPerformer={spotifyData.rankingsByPerformer}
+            currentPerformerIndex={currentPerformerIndex}
+            isPaused={isPaused}
+            onIndexChange={setCurrentPerformerIndex}
+            onTogglePause={() => setIsPaused((prev) => !prev)}
           />
 
-          {/* Other Tracks - Scrollable (excluindo as do top 3) */}
+          {/* Other Tracks - Scrollable (excluding top 3 from current performer) */}
           {otherTracks.length > 0 && (
             <div>
               <h3 className="mb-3 text-sm font-medium text-muted-foreground">
@@ -222,6 +249,17 @@ export function SpotifyHub({
               </ScrollArea>
             </div>
           )}
+        </>
+      )}
+
+      {/* Playlist Section — only if at least one performer has spotify_playlists */}
+      {hasPlaylistData && fullDashboardData && (
+        <>
+          <Separator className="my-6" />
+          <PlaylistSection
+            fullDashboardData={fullDashboardData}
+            period={period}
+          />
         </>
       )}
     </div>
