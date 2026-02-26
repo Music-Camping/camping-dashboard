@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrophyIcon, Music2Icon } from "lucide-react";
+import { TrophyIcon, Music2Icon, PauseIcon, PlayIcon } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatCompactNumber } from "@/lib/utils";
 import type { SpotifyRanking } from "@/lib/types/spotify";
@@ -16,30 +16,23 @@ interface PerformerRanking {
 
 interface AnimatedTopTracksProps {
   rankingsByPerformer: PerformerRanking[];
+  currentPerformerIndex: number;
+  isPaused: boolean;
+  onIndexChange: (index: number) => void;
+  onTogglePause: () => void;
 }
 
 export function AnimatedTopTracks({
   rankingsByPerformer,
+  currentPerformerIndex,
+  isPaused,
+  onIndexChange,
+  onTogglePause,
 }: AnimatedTopTracksProps) {
-  const [currentPerformerIndex, setCurrentPerformerIndex] = useState(0);
-
   // Filtrar apenas performers que têm pelo menos 1 track
   const validPerformers = rankingsByPerformer.filter(
     (p) => p.rankings.length > 0,
   );
-
-  // Auto-rotate entre performers a cada 8 segundos
-  useEffect(() => {
-    if (validPerformers.length <= 1) {
-      return undefined;
-    }
-
-    const interval = setInterval(() => {
-      setCurrentPerformerIndex((prev) => (prev + 1) % validPerformers.length);
-    }, 8000);
-
-    return () => clearInterval(interval);
-  }, [validPerformers.length]);
 
   if (validPerformers.length === 0) {
     return null;
@@ -54,27 +47,43 @@ export function AnimatedTopTracks({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TrophyIcon className="size-5 text-yellow-500" />
-          <h3 className="text-lg font-semibold">Top 3 Tracks</h3>
+          <h3 className="text-lg font-semibold">Top Tracks</h3>
         </div>
 
-        {/* Dots indicator */}
-        {validPerformers.length > 1 && (
-          <div className="flex gap-2">
-            {validPerformers.map((performerData, idx) => (
-              <button
-                key={performerData.performer}
-                type="button"
-                onClick={() => setCurrentPerformerIndex(idx)}
-                className={`h-2 rounded-full transition-all ${
-                  idx === currentPerformerIndex
-                    ? "w-8 bg-green-500"
-                    : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                }`}
-                aria-label={`Go to ${performerData.performer}`}
-              />
-            ))}
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {/* Pause/Play Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onTogglePause}
+            title={isPaused ? "Retomar rotação" : "Pausar rotação"}
+          >
+            {isPaused ? (
+              <PlayIcon className="size-4" />
+            ) : (
+              <PauseIcon className="size-4" />
+            )}
+          </Button>
+
+          {/* Dots indicator */}
+          {validPerformers.length > 1 && (
+            <div className="flex gap-2">
+              {validPerformers.map((performerData, idx) => (
+                <button
+                  key={performerData.performer}
+                  type="button"
+                  onClick={() => onIndexChange(idx)}
+                  className={`h-2 rounded-full transition-all ${
+                    idx === currentPerformerIndex
+                      ? "w-8 bg-green-500"
+                      : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                  }`}
+                  aria-label={`Go to ${performerData.performer}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Performer name tag */}
