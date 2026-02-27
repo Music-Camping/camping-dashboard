@@ -28,8 +28,29 @@ export async function getDashboardData(): Promise<DashboardResponse | null> {
       return null;
     }
 
-    return await res.json();
-  } catch {
+    const rawData = await res.json();
+
+    // Flatten Company -> Performer to just Performer
+    const flattenedData: Record<string, any> = {};
+
+    Object.entries(rawData).forEach(([companyOrTotal, companyData]) => {
+      if (companyOrTotal === "total") {
+        flattenedData.total = companyData as any;
+        return;
+      }
+
+      // If it is a company object, its keys are performers
+      if (typeof companyData === "object" && companyData !== null) {
+        Object.entries(companyData as Record<string, any>).forEach(
+          ([performerName, performerData]) => {
+            flattenedData[performerName] = performerData as any;
+          },
+        );
+      }
+    });
+
+    return flattenedData;
+  } catch (error) {
     return null;
   }
 }
@@ -148,8 +169,29 @@ export async function getSpotifyTracksData() {
       return null;
     }
 
-    return await res.json();
-  } catch {
+    const rawData = await res.json();
+
+    // Flatten Company -> Performer to just Performer
+    const flattenedData: Record<string, any> = {};
+
+    Object.entries(rawData).forEach(([companyOrTotal, companyData]) => {
+      if (companyOrTotal === "total") {
+        flattenedData.total = companyData as any;
+        return;
+      }
+
+      // If it is a company object, its keys are performers
+      if (typeof companyData === "object" && companyData !== null) {
+        Object.entries(companyData as Record<string, any>).forEach(
+          ([performerName, performerData]) => {
+            flattenedData[performerName] = performerData as any;
+          },
+        );
+      }
+    });
+
+    return flattenedData;
+  } catch (error) {
     return null;
   }
 }
