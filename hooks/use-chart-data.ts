@@ -7,6 +7,7 @@ import type {
   DashboardResponse,
   MetricData,
   MetricEntry,
+  MultiLinePoint,
   PlatformMetrics,
 } from "@/lib/types/dashboard";
 import type { PeriodFilter } from "@/lib/types/filters";
@@ -197,5 +198,104 @@ export function useChartData(
 
     // For 'today': show only the last 9 points
     return period === "today" ? points.slice(-9) : points;
+  }, [data, platform, metric, selectedPerformers, period]);
+}
+
+export function useMultiLineChartData(
+  data: DashboardResponse | undefined,
+  platform: Platform,
+  metric: Metric,
+  selectedPerformers: string[],
+  period: PeriodFilter = "30d",
+): { points: MultiLinePoint[]; performers: string[] } {
+  return useMemo(() => {
+    if (!data) return { points: [], performers: [] };
+
+    const totalData = data.total;
+    if (!totalData) return { points: [], performers: [] };
+
+    const platformData = totalData[platform];
+    if (!platformData) return { points: [], performers: [] };
+
+    const metricData = platformData[metric] as MetricData | undefined;
+    if (!metricData?.entries) return { points: [], performers: [] };
+
+    const { entries } = metricData;
+
+    // Filter by selected performers (same as useChartData)
+    const filteredEntries =
+      selectedPerformers.length === 0
+        ? entries
+        : entries.filter(
+            (e) => e.performer && selectedPerformers.includes(e.performer),
+          );
+
+    // Compute threshold — for 'today', data-relative anchor (same as useChartData)
+    let threshold: Date;
+    if (period === "today") {
+      const latestDatetime = filteredEntries.reduce(
+        (max, e) => (e.datetime > max ? e.datetime : max),
+        filteredEntries[0]?.datetime ?? "",
+      );
+      threshold = new Date(
+        new Date(latestDatetime).getTime() - 24 * 60 * 60 * 1000,
+      );
+    } else {
+      threshold = getDateThreshold(period);
+    }
+
+    // Filter by period
+    const periodFiltered = filteredEntries.filter(
+      (e) => new Date(e.datetime) >= threshold,
+    );
+
+    // Last-value-per-(bucket, performer) — same bucketing logic as useChartData
+    const bucketPerformer = new Map<
+      string,
+      Map<string, { value: number; datetime: string }>
+    >();
+    periodFiltered.forEach((entry) => {
+      const bucketKey = getBucketKey(entry.datetime, period);
+      const performer = entry.performer ?? "__single__";
+      if (!bucketPerformer.has(bucketKey))
+        bucketPerformer.set(bucketKey, new Map());
+      const pm = bucketPerformer.get(bucketKey)!;
+      const existing = pm.get(performer);
+      if (!existing || entry.datetime > existing.datetime) {
+        pm.set(performer, { value: entry.value, datetime: entry.datetime });
+      }
+    });
+
+    // Collect all performer IDs (excluding "__single__")
+    const allPerformers = new Set<string>();
+    bucketPerformer.forEach((performerMap) => {
+      performerMap.forEach((_, performer) => {
+        if (performer !== "__single__") allPerformers.add(performer);
+      });
+    });
+
+    // Build MultiLinePoint array — one key per performer per bucket
+    const sortedBuckets = Array.from(bucketPerformer.entries()).sort(
+      ([a], [b]) => a.localeCompare(b),
+    );
+
+    const points: MultiLinePoint[] = sortedBuckets.map(
+      ([date, performerMap]) => {
+        const point: MultiLinePoint = { date };
+        performerMap.forEach(({ value }, performer) => {
+          if (performer !== "__single__") {
+            point[performer] = value;
+          }
+        });
+        return point;
+      },
+    );
+
+    const performers = Array.from(allPerformers);
+
+    // For 'today': show only the last 9 points
+    const finalPoints = period === "today" ? points.slice(-9) : points;
+
+    return { points: finalPoints, performers };
   }, [data, platform, metric, selectedPerformers, period]);
 }
