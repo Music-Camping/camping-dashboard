@@ -13,7 +13,7 @@ import { TopRankings } from "@/components/dashboard/spotify/top-rankings";
 import { MetricsChart } from "@/components/dashboard/metrics-chart";
 import { Separator } from "@/components/ui/separator";
 import { usePresentationContext } from "@/contexts/presentation-context";
-import { useChartData } from "@/hooks/use-chart-data";
+import { useChartData, useMultiLineChartData } from "@/hooks/use-chart-data";
 import { useFilters } from "@/hooks/use-filters";
 import { usePresentationMode } from "@/hooks/use-presentation-mode";
 import type { DashboardResponse, PlatformMetrics } from "@/lib/types/dashboard";
@@ -107,6 +107,43 @@ export function DashboardClient({
     selectedPerformers,
     period,
   );
+
+  // Multi-line chart data (one line per performer when 2+ selected)
+  const youtubeMultiLineData = useMultiLineChartData(
+    initialData || undefined,
+    "youtube",
+    "followers",
+    selectedPerformers,
+    period,
+  );
+  const instagramMultiLineData = useMultiLineChartData(
+    initialData || undefined,
+    "instagram",
+    "followers",
+    selectedPerformers,
+    period,
+  );
+  const spotifyFollowersMultiLineData = useMultiLineChartData(
+    initialData || undefined,
+    "spotify",
+    "followers",
+    selectedPerformers,
+    period,
+  );
+  const spotifyListenersMultiLineData = useMultiLineChartData(
+    initialData || undefined,
+    "spotify",
+    "monthly_listeners",
+    selectedPerformers,
+    period,
+  );
+
+  // Performer objects for multi-line chart legends
+  const performerObjects = useMemo(() => {
+    const ids =
+      selectedPerformers.length > 0 ? selectedPerformers : allPerformers;
+    return ids.map((id) => ({ id, name: id }));
+  }, [selectedPerformers, allPerformers]);
 
   // Calculate aggregated metrics based on selected performers
   const getAggregatedPlatformData = useCallback(
@@ -417,6 +454,7 @@ export function DashboardClient({
                               icon={
                                 <Music2Icon className="size-4 text-green-500" />
                               }
+                              isPresentationMode
                             />
                           </div>
                           {tvSpotifyData?.monthly_listeners && (
@@ -427,6 +465,7 @@ export function DashboardClient({
                                 icon={
                                   <Music2Icon className="size-4 text-green-500" />
                                 }
+                                isPresentationMode
                               />
                             </div>
                           )}
@@ -512,6 +551,7 @@ export function DashboardClient({
                       title="Inscritos"
                       data={tvYoutubeChartData}
                       icon={<YoutubeIcon className="size-4 text-red-500" />}
+                      isPresentationMode
                     />
                   </div>
 
@@ -549,6 +589,7 @@ export function DashboardClient({
                       title="Seguidores"
                       data={tvInstagramChartData}
                       icon={<InstagramIcon className="size-4 text-pink-500" />}
+                      isPresentationMode
                     />
                   </div>
                 </div>
@@ -584,6 +625,9 @@ export function DashboardClient({
             listenersChartData={spotifyListenersChartData}
             isLoading={false}
             period={period}
+            followersMultiLineData={spotifyFollowersMultiLineData.points}
+            listenersMultiLineData={spotifyListenersMultiLineData.points}
+            performers={performerObjects}
           />
 
           {(youtubeData?.followers?.latest ?? 0) > 0 && (
@@ -596,6 +640,8 @@ export function DashboardClient({
                 fullDashboardData={initialData || undefined}
                 chartData={youtubeChartData}
                 period={period}
+                multiLineData={youtubeMultiLineData.points}
+                performers={performerObjects}
               />
             </>
           )}
@@ -610,6 +656,8 @@ export function DashboardClient({
                 fullDashboardData={initialData || undefined}
                 chartData={instagramChartData}
                 period={period}
+                multiLineData={instagramMultiLineData.points}
+                performers={performerObjects}
               />
             </>
           )}

@@ -9,8 +9,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import type {
   ChartDataPoint,
-  PlatformMetrics,
   DashboardResponse,
+  MultiLinePoint,
+  PlatformMetrics,
 } from "@/lib/types/dashboard";
 import type { PeriodFilter } from "@/lib/types/filters";
 import type { SpotifyMetrics } from "@/lib/types/spotify";
@@ -29,6 +30,10 @@ interface SpotifyHubProps {
   listenersChartData?: ChartDataPoint[];
   isLoading?: boolean;
   period?: PeriodFilter;
+  followersMultiLineData?: MultiLinePoint[];
+  listenersMultiLineData?: MultiLinePoint[];
+  performers?: { id: string; name: string }[];
+  isPresentationMode?: boolean;
 }
 
 export function SpotifyHub({
@@ -39,6 +44,10 @@ export function SpotifyHub({
   listenersChartData = [],
   isLoading = false,
   period = "7d",
+  followersMultiLineData,
+  listenersMultiLineData,
+  performers,
+  isPresentationMode,
 }: SpotifyHubProps) {
   const [currentPerformerIndex, setCurrentPerformerIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -175,6 +184,9 @@ export function SpotifyHub({
                 title="Evolução de Seguidores"
                 data={followersChartData}
                 icon={<Music2Icon className="size-4 text-green-500" />}
+                multiLineData={followersMultiLineData}
+                performers={performers}
+                isPresentationMode={isPresentationMode}
               />
             )}
             {listenersChartData.length > 0 &&
@@ -183,6 +195,9 @@ export function SpotifyHub({
                   title="Evolução de Ouvintes Mensais"
                   data={listenersChartData}
                   icon={<Music2Icon className="size-4 text-green-500" />}
+                  multiLineData={listenersMultiLineData}
+                  performers={performers}
+                  isPresentationMode={isPresentationMode}
                 />
               )}
           </div>
