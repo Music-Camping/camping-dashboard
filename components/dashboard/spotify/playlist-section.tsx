@@ -1,16 +1,20 @@
 "use client";
 
+import { useMemo } from "react";
 import Image from "next/image";
 
 import { ListMusicIcon, Music2Icon, UsersIcon } from "lucide-react";
 
+import { MultiPerformerChartWrapper } from "@/components/dashboard/multi-performer-chart-wrapper";
 import { MetricCard } from "@/components/dashboard/metric-card";
-import { MetricsChart } from "@/components/dashboard/metrics-chart";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { buildChartPoints } from "@/hooks/use-chart-data";
 import type { DashboardResponse } from "@/lib/types/dashboard";
 import type { PeriodFilter } from "@/lib/types/filters";
 import { formatCompactNumber } from "@/lib/utils";
+import {
+  extractMultiPerformerPlaylistData,
+  getPerformersFromData,
+} from "@/lib/chart-data-transformer";
 
 interface PlaylistSectionProps {
   fullDashboardData: DashboardResponse;
@@ -21,6 +25,15 @@ export function PlaylistSection({
   fullDashboardData,
   period,
 }: PlaylistSectionProps) {
+  // Extract multi-performer playlist data
+  const multiPerformerPlaylistData = useMemo(() => {
+    return extractMultiPerformerPlaylistData(fullDashboardData, period);
+  }, [fullDashboardData, period]);
+
+  const performersFromPlaylistData = useMemo(() => {
+    return getPerformersFromData(multiPerformerPlaylistData);
+  }, [multiPerformerPlaylistData]);
+
   const performersWithPlaylists = Object.entries(fullDashboardData)
     .filter(
       ([key, data]) =>
@@ -82,13 +95,6 @@ export function PlaylistSection({
                 />
               </div>
 
-              {/* Followers evolution chart */}
-              <MetricsChart
-                title="Evolução de Seguidores"
-                data={buildChartPoints(playlist.followers.entries, period)}
-                icon={<Music2Icon className="size-4 text-green-500" />}
-              />
-
               {/* Tracks scroll area */}
               {playlist.tracks.length > 0 && (
                 <div>
@@ -136,6 +142,21 @@ export function PlaylistSection({
           ))}
         </div>
       ))}
+
+      {/* Multi-Performer Playlist Chart */}
+      {multiPerformerPlaylistData.length > 0 &&
+        performersFromPlaylistData.length > 0 && (
+          <>
+            <div className="border-t pt-6" />
+            <MultiPerformerChartWrapper
+              data={multiPerformerPlaylistData}
+              allPerformers={performersFromPlaylistData}
+              title="Evolução de Seguidores de Playlists - Por Performer"
+              icon={<Music2Icon className="size-4 text-green-500" />}
+              period={period}
+            />
+          </>
+        )}
     </div>
   );
 }

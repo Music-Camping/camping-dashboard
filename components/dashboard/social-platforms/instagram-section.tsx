@@ -1,20 +1,25 @@
 "use client";
 
+import { useMemo } from "react";
+
 import { ImageIcon, InstagramIcon, UsersIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardResponse, PlatformMetrics } from "@/lib/types/dashboard";
 import type { PeriodFilter } from "@/lib/types/filters";
 import { cn } from "@/lib/utils";
+import {
+  extractMultiPerformerData,
+  getPerformersFromData,
+} from "@/lib/chart-data-transformer";
 
+import { MultiPerformerChartWrapper } from "../multi-performer-chart-wrapper";
 import { MetricCard } from "../metric-card";
 import { MetricCardWithBreakdown } from "../metric-card-breakdown";
-import { MetricsChart } from "../metrics-chart";
 
 interface InstagramSectionProps {
   data?: PlatformMetrics;
   fullDashboardData?: DashboardResponse;
-  chartData: Array<{ date: string; value: number }>;
   period: PeriodFilter;
   tvMode?: boolean;
 }
@@ -22,10 +27,21 @@ interface InstagramSectionProps {
 export function InstagramSection({
   data,
   fullDashboardData,
-  chartData,
   period,
   tvMode,
 }: InstagramSectionProps) {
+  const multiPerformerData = useMemo(() => {
+    return extractMultiPerformerData(
+      fullDashboardData,
+      "instagram.followers",
+      period,
+    );
+  }, [fullDashboardData, period]);
+
+  const performersFromData = useMemo(() => {
+    return getPerformersFromData(multiPerformerData);
+  }, [multiPerformerData]);
+
   if (!data) {
     return (
       <Card className="w-full">
@@ -108,11 +124,13 @@ export function InstagramSection({
         )}
       </div>
 
-      {/* Chart */}
-      <MetricsChart
-        title="Evolução de Seguidores"
-        data={chartData}
+      {/* Chart - Per Performer Only */}
+      <MultiPerformerChartWrapper
+        data={multiPerformerData}
+        allPerformers={performersFromData}
+        title="Evolução de Seguidores - Por Performer"
         icon={<InstagramIcon className="size-4 text-pink-500" />}
+        period={period}
       />
     </div>
   );
