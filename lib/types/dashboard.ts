@@ -47,3 +47,10 @@ export interface ChartDataPoint {
   value: number;
   previousValue?: number; // For percentage calculation in tooltip
 }
+
+export interface MultiPerformerChartDataPoint {
+  date: string; // date only (YYYY-MM-DD)
+  datetime?: string; // full datetime with time (ISO format)
+  timestamp: number; // milliseconds since epoch, for proportional time spacing in charts
+  performers: Record<string, number>; // { "João": 100000, "Maria": 200000 }
+}
