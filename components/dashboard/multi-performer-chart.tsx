@@ -166,23 +166,7 @@ export function MultiPerformerChart({
     ];
   }, [data, period]);
 
-  if (data.length === 0 || selectedPerformers.length === 0) {
-    return (
-      <Card className={cn("w-full", className)}>
-        <CardHeader className="pb-2">
-          <CardTitle className="inline-flex items-center gap-2 text-base">
-            {icon}
-            {title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex h-48 items-center justify-center text-muted-foreground">
-            Dados insuficientes
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const hasData = data.length > 0 && selectedPerformers.length > 0;
 
   return (
     <Card className={cn("w-full", className)}>
@@ -192,113 +176,137 @@ export function MultiPerformerChart({
           {title}
         </CardTitle>
       </CardHeader>
-      <CardContent className="pb-4">
-        <div className="h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={data}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-            >
-              <defs>
-                {selectedPerformers.map((performer) => {
-                  const gradientId = getGradientId(performer, isDark);
-                  const color = getPerformerColor(performer);
-                  return (
-                    <linearGradient
-                      key={gradientId}
-                      id={gradientId}
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop
-                        offset="0%"
-                        stopColor={color}
-                        stopOpacity={isDark ? 0.25 : 0.15}
-                      />
-                      <stop offset="100%" stopColor={color} stopOpacity={0} />
-                    </linearGradient>
-                  );
-                })}
-              </defs>
+      <CardContent className="pb-4 transition-all duration-300">
+        {/* Chart or Empty State */}
+        <div
+          className={cn("transition-opacity duration-300", {
+            "opacity-50": !hasData,
+          })}
+        >
+          {hasData ? (
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={data}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    {selectedPerformers.map((performer) => {
+                      const gradientId = getGradientId(performer, isDark);
+                      const color = getPerformerColor(performer);
+                      return (
+                        <linearGradient
+                          key={gradientId}
+                          id={gradientId}
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor={color}
+                            stopOpacity={isDark ? 0.25 : 0.15}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor={color}
+                            stopOpacity={0}
+                          />
+                        </linearGradient>
+                      );
+                    })}
+                  </defs>
 
-              <CartesianGrid
-                vertical={false}
-                strokeDasharray="3 3"
-                className="stroke-muted"
-              />
-
-              <XAxis
-                dataKey={
-                  period === "today" && data[0]?.datetime ? "datetime" : "date"
-                }
-                ticks={xAxisTicks}
-                tickFormatter={(value) => {
-                  // Show time only for "today" period
-                  const isDateTime =
-                    period === "today" &&
-                    value &&
-                    value.includes("T") &&
-                    value.includes(":");
-                  if (isDateTime) {
-                    return format(parseISO(value), "dd/MM HH:mm");
-                  }
-                  return format(parseISO(value), "dd MMM", { locale: ptBR });
-                }}
-                tick={{ fill: mutedColor, fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-                tickMargin={8}
-              />
-
-              <YAxis
-                tickFormatter={formatCompactNumber}
-                tick={{ fill: mutedColor, fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-                width={70}
-              />
-
-              <Tooltip
-                content={<MultiPerformerTooltip period={period} />}
-                cursor={false}
-              />
-
-              {selectedPerformers.map((performer) => {
-                const gradientId = getGradientId(performer, isDark);
-                const color = getPerformerColor(performer);
-                return (
-                  <Area
-                    key={performer}
-                    type="monotone"
-                    dataKey={`performers.${performer}`}
-                    stroke={color}
-                    strokeWidth={2}
-                    fill={`url(#${gradientId})`}
-                    fillOpacity={1}
-                    connectNulls
-                    dot={{ fill: color, r: 3 }}
-                    activeDot={{ r: 5 }}
+                  <CartesianGrid
+                    vertical={false}
+                    strokeDasharray="3 3"
+                    className="stroke-muted"
                   />
-                );
-              })}
-            </AreaChart>
-          </ResponsiveContainer>
+
+                  <XAxis
+                    dataKey={
+                      period === "today" && data[0]?.datetime
+                        ? "datetime"
+                        : "date"
+                    }
+                    ticks={xAxisTicks}
+                    tickFormatter={(value) => {
+                      const isDateTime =
+                        period === "today" &&
+                        value &&
+                        value.includes("T") &&
+                        value.includes(":");
+                      if (isDateTime) {
+                        return format(parseISO(value), "dd/MM HH:mm");
+                      }
+                      return format(parseISO(value), "dd MMM", {
+                        locale: ptBR,
+                      });
+                    }}
+                    tick={{ fill: mutedColor, fontSize: 12 }}
+                    axisLine={false}
+                    tickLine={false}
+                    tickMargin={8}
+                  />
+
+                  <YAxis
+                    tickFormatter={formatCompactNumber}
+                    tick={{ fill: mutedColor, fontSize: 12 }}
+                    axisLine={false}
+                    tickLine={false}
+                    width={70}
+                  />
+
+                  <Tooltip
+                    content={<MultiPerformerTooltip period={period} />}
+                    cursor={false}
+                  />
+
+                  {selectedPerformers.map((performer) => {
+                    const gradientId = getGradientId(performer, isDark);
+                    const color = getPerformerColor(performer);
+                    return (
+                      <Area
+                        key={performer}
+                        type="monotone"
+                        dataKey={`performers.${performer}`}
+                        stroke={color}
+                        strokeWidth={2}
+                        fill={`url(#${gradientId})`}
+                        fillOpacity={1}
+                        connectNulls
+                        dot={{ fill: color, r: 3 }}
+                        activeDot={{ r: 5 }}
+                      />
+                    );
+                  })}
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="flex h-48 items-center justify-center text-sm text-muted-foreground">
+              Selecione performers para visualizar dados
+            </div>
+          )}
         </div>
 
         {/* Legend */}
-        <div className="mt-4 flex flex-wrap gap-3">
-          {selectedPerformers.map((performer) => (
-            <div key={performer} className="flex items-center gap-2">
-              <div
-                className="size-3 rounded-full"
-                style={{ backgroundColor: getPerformerColor(performer) }}
-              />
-              <span className="text-xs text-muted-foreground">{performer}</span>
-            </div>
-          ))}
-        </div>
+        {hasData && (
+          <div className="mt-4 flex flex-wrap gap-3">
+            {selectedPerformers.map((performer) => (
+              <div key={performer} className="flex items-center gap-2">
+                <div
+                  className="size-3 rounded-full"
+                  style={{ backgroundColor: getPerformerColor(performer) }}
+                />
+                <span className="text-xs text-muted-foreground">
+                  {performer}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Filters */}
         {allPerformers &&
