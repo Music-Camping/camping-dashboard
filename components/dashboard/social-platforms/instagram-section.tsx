@@ -3,11 +3,7 @@
 import { ImageIcon, InstagramIcon, UsersIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type {
-  DashboardResponse,
-  MultiLinePoint,
-  PlatformMetrics,
-} from "@/lib/types/dashboard";
+import type { DashboardResponse, PlatformMetrics } from "@/lib/types/dashboard";
 import type { PeriodFilter } from "@/lib/types/filters";
 import { cn } from "@/lib/utils";
 
@@ -21,9 +17,6 @@ interface InstagramSectionProps {
   chartData: Array<{ date: string; value: number }>;
   period: PeriodFilter;
   tvMode?: boolean;
-  multiLineData?: MultiLinePoint[];
-  performers?: { id: string; name: string }[];
-  isPresentationMode?: boolean;
 }
 
 export function InstagramSection({
@@ -32,9 +25,6 @@ export function InstagramSection({
   chartData,
   period,
   tvMode,
-  multiLineData,
-  performers,
-  isPresentationMode,
 }: InstagramSectionProps) {
   if (!data) {
     return (
@@ -123,9 +113,6 @@ export function InstagramSection({
         title="Evolução de Seguidores"
         data={chartData}
         icon={<InstagramIcon className="size-4 text-pink-500" />}
-        multiLineData={multiLineData}
-        performers={performers}
-        isPresentationMode={isPresentationMode}
       />
     </div>
   );

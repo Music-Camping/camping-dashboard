@@ -47,8 +47,3 @@ export interface ChartDataPoint {
   value: number;
   previousValue?: number; // For percentage calculation in tooltip
 }
-
-export interface MultiLinePoint {
-  date: string;
-  [performerId: string]: number | undefined | string; // string only for "date" key
-}

@@ -3,11 +3,7 @@
 import { EyeIcon, VideoIcon, YoutubeIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type {
-  DashboardResponse,
-  MultiLinePoint,
-  PlatformMetrics,
-} from "@/lib/types/dashboard";
+import type { DashboardResponse, PlatformMetrics } from "@/lib/types/dashboard";
 import type { PeriodFilter } from "@/lib/types/filters";
 import { cn } from "@/lib/utils";
 
@@ -21,9 +17,6 @@ interface YouTubeSectionProps {
   chartData: Array<{ date: string; value: number }>;
   period: PeriodFilter;
   tvMode?: boolean;
-  multiLineData?: MultiLinePoint[];
-  performers?: { id: string; name: string }[];
-  isPresentationMode?: boolean;
 }
 
 export function YouTubeSection({
@@ -32,9 +25,6 @@ export function YouTubeSection({
   chartData,
   period,
   tvMode,
-  multiLineData,
-  performers,
-  isPresentationMode,
 }: YouTubeSectionProps) {
   if (!data) {
     return (
@@ -151,9 +141,6 @@ export function YouTubeSection({
         title="Evolução de Inscritos"
         data={chartData}
         icon={<YoutubeIcon className="size-4 text-red-500" />}
-        multiLineData={multiLineData}
-        performers={performers}
-        isPresentationMode={isPresentationMode}
       />
     </div>
   );
