@@ -89,13 +89,13 @@ export function AppHeader({ onStartPresentation }: AppHeaderProps = {}) {
           <Button
             variant="outline"
             size="sm"
-            className="w-[180px] justify-between"
+            className="w-[180px] justify-between gap-2"
           >
-            <span className="flex items-center gap-2">
-              <UsersIcon className="size-4" />
+            <span className="flex min-w-0 items-center gap-2">
+              <UsersIcon className="size-4 shrink-0" />
               <span className="truncate">{getPerformerLabel()}</span>
             </span>
-            <ChevronDownIcon className="size-4 opacity-50" />
+            <ChevronDownIcon className="size-4 shrink-0 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[200px]">

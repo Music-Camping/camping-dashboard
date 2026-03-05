@@ -7,17 +7,17 @@ import Image from "next/image";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import type {
-  ChartDataPoint,
-  PlatformMetrics,
-  DashboardResponse,
-} from "@/lib/types/dashboard";
+import type { PlatformMetrics, DashboardResponse } from "@/lib/types/dashboard";
 import type { PeriodFilter } from "@/lib/types/filters";
 import type { SpotifyMetrics } from "@/lib/types/spotify";
 import { formatCompactNumber } from "@/lib/utils";
+import {
+  extractMultiPerformerData,
+  getPerformersFromData,
+} from "@/lib/chart-data-transformer";
 
+import { MultiPerformerChartWrapper } from "../multi-performer-chart-wrapper";
 import { MetricCardWithBreakdown } from "../metric-card-breakdown";
-import { MetricsChart } from "../metrics-chart";
 import { AnimatedTopTracks } from "./animated-top-tracks";
 import { PlaylistSection } from "./playlist-section";
 
@@ -25,8 +25,6 @@ interface SpotifyHubProps {
   spotifyData?: SpotifyMetrics;
   dashboardData?: PlatformMetrics;
   fullDashboardData?: DashboardResponse;
-  followersChartData?: ChartDataPoint[];
-  listenersChartData?: ChartDataPoint[];
   isLoading?: boolean;
   period?: PeriodFilter;
 }
@@ -35,8 +33,6 @@ export function SpotifyHub({
   spotifyData,
   dashboardData,
   fullDashboardData,
-  followersChartData = [],
-  listenersChartData = [],
   isLoading = false,
   period = "7d",
 }: SpotifyHubProps) {
@@ -54,6 +50,33 @@ export function SpotifyHub({
     if (!spotifyData) return [];
     return spotifyData.rankingsByPerformer.filter((p) => p.rankings.length > 0);
   }, [spotifyData]);
+
+  // Extract multi-performer data for followers
+  const multiPerformerFollowersData = useMemo(() => {
+    return extractMultiPerformerData(
+      fullDashboardData,
+      "spotify.followers",
+      period,
+    );
+  }, [fullDashboardData, period]);
+
+  // Extract multi-performer data for monthly listeners
+  const multiPerformerListenersData = useMemo(() => {
+    return extractMultiPerformerData(
+      fullDashboardData,
+      "spotify.monthly_listeners",
+      period,
+    );
+  }, [fullDashboardData, period]);
+
+  // Get performers from data
+  const performersFromFollowersData = useMemo(() => {
+    return getPerformersFromData(multiPerformerFollowersData);
+  }, [multiPerformerFollowersData]);
+
+  const performersFromListenersData = useMemo(() => {
+    return getPerformersFromData(multiPerformerListenersData);
+  }, [multiPerformerListenersData]);
 
   // Auto-rotate between performers every 8 seconds (unless paused)
   useEffect(() => {
@@ -168,23 +191,25 @@ export function SpotifyHub({
             )}
           </div>
 
-          {/* Charts */}
+          {/* Charts - Per Performer Only - Side by Side */}
           <div className="grid gap-4 md:grid-cols-2">
-            {followersChartData.length > 0 && (
-              <MetricsChart
-                title="Evolução de Seguidores"
-                data={followersChartData}
+            <MultiPerformerChartWrapper
+              data={multiPerformerFollowersData}
+              allPerformers={performersFromFollowersData}
+              title="Evolução de Seguidores - Por Performer"
+              icon={<Music2Icon className="size-4 text-green-500" />}
+              period={period}
+            />
+
+            {dashboardData.monthly_listeners && (
+              <MultiPerformerChartWrapper
+                data={multiPerformerListenersData}
+                allPerformers={performersFromListenersData}
+                title="Evolução de Ouvintes Mensais - Por Performer"
                 icon={<Music2Icon className="size-4 text-green-500" />}
+                period={period}
               />
             )}
-            {listenersChartData.length > 0 &&
-              dashboardData.monthly_listeners && (
-                <MetricsChart
-                  title="Evolução de Ouvintes Mensais"
-                  data={listenersChartData}
-                  icon={<Music2Icon className="size-4 text-green-500" />}
-                />
-              )}
           </div>
 
           <Separator className="my-6" />
