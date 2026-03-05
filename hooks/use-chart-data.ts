@@ -19,12 +19,17 @@ function getDateThreshold(period: PeriodFilter): Date {
   now.setHours(0, 0, 0, 0);
 
   switch (period) {
+    case "today":
+      // For "today", threshold is set dynamically per-data in the hook
+      // This default shouldn't be used, but include for completeness
+      return new Date(now.getTime() - 24 * 60 * 60 * 1000);
     case "7d":
-      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      // 6 days ago = 7 days total (including today)
+      return new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000);
     case "30d":
-      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     default:
-      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      // 29 days ago = 30 days total (including today)
+      return new Date(now.getTime() - 29 * 24 * 60 * 60 * 1000);
   }
 }
 
@@ -100,7 +105,7 @@ export function buildChartPoints(
     }),
   );
 
-  return period === "today" ? points.slice(-9) : points;
+  return period === "today" ? points.slice(-8) : points;
 }
 
 export function useChartData(
@@ -196,6 +201,6 @@ export function useChartData(
     );
 
     // For 'today': show only the last 9 points
-    return period === "today" ? points.slice(-9) : points;
+    return period === "today" ? points.slice(-8) : points;
   }, [data, platform, metric, selectedPerformers, period]);
 }
