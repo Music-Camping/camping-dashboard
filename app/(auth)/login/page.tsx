@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,7 +49,23 @@ function validatePassword(password: string): string | undefined {
 }
 
 export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center p-4">
+          <Loader2 className="size-8 animate-spin" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const deviceId = searchParams.get("device");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [rememberMe, setRememberMe] = React.useState(false);
@@ -110,7 +127,29 @@ export default function LoginPage() {
         if (rememberMe) {
           localStorage.setItem("rememberMe", "true");
         }
-        toast.success("Login realizado com sucesso!");
+
+        if (deviceId) {
+          toast.loading("Autorizando acesso na TV...", { id: "tv-auth" });
+          try {
+            const authRes = await fetch("/api/auth/tv/authorize", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ deviceId }),
+            });
+            if (authRes.ok) {
+              toast.success("Pronto! Sua TV já foi conectada.", {
+                id: "tv-auth",
+              });
+            } else {
+              toast.error("Erro ao autorizar TV.", { id: "tv-auth" });
+            }
+          } catch (err) {
+            toast.error("Erro ao comunicar com a TV", { id: "tv-auth" });
+          }
+        } else {
+          toast.success("Login realizado com sucesso!");
+        }
+
         router.push("/");
       } else {
         toast.error(result.error || "Erro ao fazer login. Tente novamente.");
