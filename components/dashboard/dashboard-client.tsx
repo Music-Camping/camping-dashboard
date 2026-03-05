@@ -78,36 +78,6 @@ export function DashboardClient({
     setSelectedPerformers,
   ]);
 
-  // Get chart data for each platform
-  const youtubeChartData = useChartData(
-    initialData || undefined,
-    "youtube",
-    "followers",
-    selectedPerformers,
-    period,
-  );
-  const instagramChartData = useChartData(
-    initialData || undefined,
-    "instagram",
-    "followers",
-    selectedPerformers,
-    period,
-  );
-  const spotifyFollowersChartData = useChartData(
-    initialData || undefined,
-    "spotify",
-    "followers",
-    selectedPerformers,
-    period,
-  );
-  const spotifyListenersChartData = useChartData(
-    initialData || undefined,
-    "spotify",
-    "monthly_listeners",
-    selectedPerformers,
-    period,
-  );
-
   // Calculate aggregated metrics based on selected performers
   const getAggregatedPlatformData = useCallback(
     (
@@ -580,8 +550,6 @@ export function DashboardClient({
             spotifyData={spotifyData}
             dashboardData={spotifyDataFromDashboard}
             fullDashboardData={initialData || undefined}
-            followersChartData={spotifyFollowersChartData}
-            listenersChartData={spotifyListenersChartData}
             isLoading={false}
             period={period}
           />
@@ -594,7 +562,6 @@ export function DashboardClient({
               <YouTubeSection
                 data={youtubeData}
                 fullDashboardData={initialData || undefined}
-                chartData={youtubeChartData}
                 period={period}
               />
             </>
@@ -608,7 +575,6 @@ export function DashboardClient({
               <InstagramSection
                 data={instagramData}
                 fullDashboardData={initialData || undefined}
-                chartData={instagramChartData}
                 period={period}
               />
             </>
