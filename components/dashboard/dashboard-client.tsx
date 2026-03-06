@@ -416,9 +416,9 @@ export function DashboardClient({
                               </p>
                               {initialData![
                                 presentation.currentPerformer
-                              ].spotify_playlists!.map((playlist, idx) => (
+                              ].spotify_playlists!.map((playlist) => (
                                 <div
-                                  key={idx}
+                                  key={playlist.name}
                                   className="rounded-lg bg-muted/50 px-3 py-2"
                                 >
                                   <p className="text-sm font-medium">
