@@ -59,8 +59,8 @@ export function PlaylistSection({
             {performer}
           </div>
 
-          {playlists.map((playlist, idx) => (
-            <div key={idx} className="space-y-4">
+          {playlists.map((playlist) => (
+            <div key={playlist.name} className="space-y-4">
               {/* Playlist name + thumbnail */}
               <div className="flex items-center gap-3">
                 {playlist.thumbnail_url && (
@@ -103,13 +103,13 @@ export function PlaylistSection({
                   </h5>
                   <ScrollArea className="h-48 rounded-lg border">
                     <div className="divide-y">
-                      {playlist.tracks.map((track, trackIdx) => (
+                      {playlist.tracks.map((track, idx) => (
                         <div
-                          key={trackIdx}
+                          key={track.name}
                           className="flex items-center gap-3 p-3 hover:bg-muted/50"
                         >
                           <span className="w-6 text-center text-sm text-muted-foreground">
-                            {trackIdx + 1}
+                            {idx + 1}
                           </span>
                           {track.thumbnail_url && (
                             <div className="relative size-10 shrink-0 overflow-hidden rounded">

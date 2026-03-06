@@ -129,7 +129,7 @@ export function PlaylistComparison({
               <Bar dataKey="listeners" radius={[0, 4, 4, 0]}>
                 {chartData.map((entry, index) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={entry.fullName}
                     fill={COLORS[index % COLORS.length]}
                   />
                 ))}

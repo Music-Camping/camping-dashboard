@@ -41,7 +41,7 @@ export function ChampionshipsSection({
         <CardContent>
           <div className="grid animate-pulse gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-48 rounded-lg bg-muted" />
+              <div key={`skeleton-${i}`} className="h-48 rounded-lg bg-muted" />
             ))}
           </div>
         </CardContent>
