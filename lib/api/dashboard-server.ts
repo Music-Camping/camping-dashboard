@@ -77,6 +77,7 @@ export async function getDashboardData(): Promise<DashboardResponse | null> {
     });
 
     if (!res.ok) {
+      // eslint-disable-next-line no-console
       console.error(`[API Error] GET /api/dashboard returned ${res.status}`);
       return null;
     }
@@ -84,6 +85,7 @@ export async function getDashboardData(): Promise<DashboardResponse | null> {
     const rawData = await res.json();
     return processCompanyAndPerformers(rawData as Record<string, unknown>);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[API Error] Failed to fetch dashboard data:", error);
     return null;
   }
@@ -200,6 +202,7 @@ export async function getSpotifyTracksData(): Promise<DashboardResponse | null> 
     });
 
     if (!res.ok) {
+      // eslint-disable-next-line no-console
       console.error(
         `[API Error] GET /api/dashboard/spotify/tracks returned ${res.status}`,
       );
@@ -209,6 +212,7 @@ export async function getSpotifyTracksData(): Promise<DashboardResponse | null> 
     const rawData = await res.json();
     return processCompanyAndPerformers(rawData as Record<string, unknown>);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("[API Error] Failed to fetch Spotify tracks data:", error);
     return null;
   }

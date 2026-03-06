@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { MetricsChart } from "@/components/dashboard/metrics-chart";
 import { formatCompactNumber } from "@/lib/utils";
 import type { ChartDataPoint } from "@/lib/types/dashboard";

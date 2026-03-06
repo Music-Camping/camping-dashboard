@@ -28,7 +28,6 @@ interface PresentationControlsProps {
   rotationInterval: number;
   currentPerformer: string | null;
   performers: string[];
-  showingCompany: boolean;
   enabledItems: Record<string, boolean>;
   onStart: () => void;
   onStop: () => void;

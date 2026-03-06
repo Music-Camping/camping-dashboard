@@ -17,7 +17,7 @@ export function PerformerCard({
   instagramFollowers,
 }: PerformerCardProps) {
   return (
-    <div className="relative aspect-[3/2] flex flex-col overflow-hidden rounded-xl border bg-gradient-to-b from-primary/20 to-background shadow-lg">
+    <div className="relative flex aspect-[3/2] flex-col overflow-hidden rounded-xl border bg-gradient-to-b from-primary/20 to-background shadow-lg">
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
@@ -25,7 +25,9 @@ export function PerformerCard({
       <div className="relative flex flex-1 flex-col justify-between p-4">
         {/* Top: Name */}
         <div>
-          <h3 className="text-lg font-bold text-white drop-shadow-lg">{name}</h3>
+          <h3 className="text-lg font-bold text-white drop-shadow-lg">
+            {name}
+          </h3>
         </div>
 
         {/* Bottom: Metrics */}

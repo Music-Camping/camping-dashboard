@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { ChevronLeftIcon, ChevronRightIcon, YoutubeIcon, InstagramIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  YoutubeIcon,
+  InstagramIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MetricsChart } from "@/components/dashboard/metrics-chart";
+import type { DashboardResponse, ChartDataPoint } from "@/lib/types/dashboard";
 import { PerformerCard } from "./performer-card";
 import { SocialMetricsCard } from "./social-metrics-card";
-import type { DashboardResponse, ChartDataPoint } from "@/lib/types/dashboard";
 
 interface CompanyDisplayProps {
   performers: string[];
@@ -48,14 +52,18 @@ export function CompanyDisplay({
 
   // Auto-rotate pages based on rotation interval
   useEffect(() => {
-    if (totalPages <= 1) return;
+    if (totalPages <= 1) {
+      return undefined;
+    }
 
-    const timePerPage = rotationInterval * 1000 / totalPages;
+    const timePerPage = (rotationInterval * 1000) / totalPages;
     const interval = setInterval(() => {
       setCurrentPage((prev) => (prev + 1) % totalPages);
     }, timePerPage);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [rotationInterval, totalPages]);
 
   const currentPerformers = pages[currentPage] ?? [];
@@ -95,7 +103,9 @@ export function CompanyDisplay({
                     spotifyListeners={
                       performerData?.spotify?.monthly_listeners?.latest
                     }
-                    instagramFollowers={performerData?.instagram?.followers.latest}
+                    instagramFollowers={
+                      performerData?.instagram?.followers.latest
+                    }
                   />
                 );
               })}
@@ -108,7 +118,7 @@ export function CompanyDisplay({
                   variant="ghost"
                   size="icon"
                   onClick={goToPrevious}
-                  className="absolute left-2 top-12 bg-black/50 hover:bg-black/70"
+                  className="absolute top-12 left-2 bg-black/50 hover:bg-black/70"
                 >
                   <ChevronLeftIcon className="size-6 text-white" />
                 </Button>
@@ -117,13 +127,13 @@ export function CompanyDisplay({
                   variant="ghost"
                   size="icon"
                   onClick={goToNext}
-                  className="absolute right-2 top-12 bg-black/50 hover:bg-black/70"
+                  className="absolute top-12 right-2 bg-black/50 hover:bg-black/70"
                 >
                   <ChevronRightIcon className="size-6 text-white" />
                 </Button>
 
                 {/* Page indicator */}
-                <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex gap-2">
+                <div className="absolute -bottom-12 left-1/2 flex -translate-x-1/2 gap-2">
                   {pages.map((_, idx) => {
                     const pageId = `page-indicator-${idx}`;
                     return (

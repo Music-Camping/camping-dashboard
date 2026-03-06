@@ -91,6 +91,7 @@ export function validateData<T>(
   const result = schema.safeParse(data);
 
   if (!result.success) {
+    // eslint-disable-next-line no-console
     console.error(`[API Validation Error] ${context}`, {
       errors: result.error.flatten(),
       preview: JSON.stringify(data).slice(0, 200),
