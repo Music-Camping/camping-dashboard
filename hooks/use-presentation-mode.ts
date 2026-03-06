@@ -10,6 +10,44 @@ interface PresentationModeState {
   currentPerformerIndex: number;
 }
 
+/**
+ * usePresentationMode - Manage fullscreen presentation mode with auto-rotation
+ *
+ * Features:
+ * - Toggle fullscreen mode (F11)
+ * - Auto-rotate between performers (30s intervals)
+ * - Manual performer selection
+ * - Pause/resume rotation
+ * - Exit via ESC key
+ *
+ * @param {string[]} performers - List of performer names to rotate through
+ *
+ * @returns {Object} Presentation state and controls
+ * - isActive: Whether presentation mode is running
+ * - isFullscreen: Whether in fullscreen
+ * - currentPerformer: Current performer name
+ * - startPresentation(): Enter presentation mode
+ * - stopPresentation(): Exit presentation mode
+ * - toggleAutoRotate(): Pause/resume auto-rotation
+ * - setCurrentPerformer(index): Select specific performer
+ * - setRotationInterval(seconds): Change rotation speed
+ *
+ * @example
+ * function Dashboard({ performers }) {
+ *   const presentation = usePresentationMode(performers);
+ *
+ *   return (
+ *     <>
+ *       <button onClick={presentation.startPresentation}>
+ *         Start Presentation
+ *       </button>
+ *       {presentation.isActive && (
+ *         <div>Now showing: {presentation.currentPerformer}</div>
+ *       )}
+ *     </>
+ *   );
+ * }
+ */
 export function usePresentationMode(performers: string[]) {
   const [state, setState] = useState<PresentationModeState>({
     isActive: false,

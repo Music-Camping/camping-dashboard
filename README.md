@@ -1,36 +1,126 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎵 Camping Dashboard
 
-## Getting Started
+Multi-platform metrics dashboard for Spotify, YouTube, and Instagram with real-time data visualization and presenter mode.
 
-First, run the development server:
+---
+
+## ✨ Features
+
+- 📊 **Multi-platform Metrics** - Real-time data visualization
+- 🎤 **Artist Rankings** - Top tracks and performance analytics
+- 📈 **Growth Tracking** - Historical metrics with trend analysis
+- 🎥 **Presentation Mode** - Full-screen view with auto-rotation
+- 🎵 **Music Catalog** - Track status management
+- ♿ **Accessible** - WCAG 2.1 compliant
+- 🌙 **Dark Mode** - Theme switching
+
+---
+
+## 🚀 Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Install dependencies
+pnpm install
+
+# Setup environment
+cp .env.example .env.local
+
+# Development server
 pnpm dev
-# or
-bun dev
+
+# Type checking & linting
+pnpm type-check && pnpm lint
+
+# Build for production
+pnpm build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+/app              - Next.js App Router + pages
+/components       - React components (ui/, dashboard/, etc)
+/lib              - Types, utils, hooks, API functions
+/hooks            - Custom React hooks
+/contexts         - React Context providers
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🏗️ Architecture
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Server → Client → UI Pattern**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Server components for data fetching (ISR 3h)
+- Client components for interactivity
+- Context API for global state (minimal)
+- Local hooks for component state
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛠️ Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm dev           # Start dev server
+pnpm build         # Production build
+pnpm start         # Run production server
+pnpm type-check    # TypeScript validation
+pnpm lint          # ESLint validation
+pnpm format        # Prettier formatting
+pnpm check-all     # All validations
+```
+
+---
+
+## 🎨 Tech Stack
+
+- **Framework**: Next.js 16
+- **UI**: React 19, shadcn/ui, Tailwind CSS
+- **Types**: TypeScript strict mode
+- **Data**: SWR, React Query patterns
+- **Forms**: React Hook Form + Zod
+- **Charts**: Recharts
+- **Animations**: Framer Motion
+
+---
+
+## 🔐 Security
+
+- ✅ Bearer token authentication
+- ✅ Server-side token validation
+- ✅ No hardcoded secrets
+- ✅ HTTPS enforced (production)
+- ✅ XSS protection (React auto-escapes)
+
+---
+
+## 📚 Documentation
+
+- [API Routes](./docs/API.md) - Backend integration
+- [Components](./docs/COMPONENTS.md) - Component catalog
+- [Contributing](./CONTRIBUTING.md) - Development guidelines
+
+---
+
+## 🧪 Testing
+
+```bash
+pnpm test              # Run tests
+pnpm test:watch       # Watch mode
+pnpm test:coverage    # Coverage report
+```
+
+---
+
+## 📦 Dependencies
+
+Core: Next.js 16, React 19, TypeScript 5
+UI: Tailwind CSS 4, shadcn/ui, Framer Motion
+Data: SWR, Zod, date-fns
+Dev: ESLint, Prettier, Husky, Vitest
+
+---
+
+**Version**: 0.1.0 | **Last Updated**: 2026-03-06

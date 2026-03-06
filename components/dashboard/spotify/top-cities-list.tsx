@@ -36,7 +36,7 @@ export function TopCitiesList({ data }: TopCitiesListProps) {
       <div className="space-y-1.5">
         {topCities.map((entry, idx) => (
           <div
-            key={`${entry.extra_data?.city}-${idx}`}
+            key={`${entry.extra_data?.city}-${entry.extra_data?.country}`}
             className="flex items-center justify-between rounded-lg bg-gradient-to-r from-muted/40 to-muted/20 px-3 py-2.5 transition-colors hover:from-muted/60 hover:to-muted/30"
           >
             <div className="flex flex-1 items-center gap-3">

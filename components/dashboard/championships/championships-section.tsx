@@ -40,8 +40,16 @@ export function ChampionshipsSection({
         </CardHeader>
         <CardContent>
           <div className="grid animate-pulse gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={`skeleton-${i}`} className="h-48 rounded-lg bg-muted" />
+            {[
+              { id: "skeleton-1", label: "1" },
+              { id: "skeleton-2", label: "2" },
+              { id: "skeleton-3", label: "3" },
+            ].map(({ id, label }) => (
+              <div
+                key={id}
+                className="h-48 rounded-lg bg-muted"
+                aria-label={`Loading skeleton ${label} of 3`}
+              />
             ))}
           </div>
         </CardContent>
