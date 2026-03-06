@@ -27,7 +27,7 @@ export default async function DashboardPage() {
           ([performer, performerData]: [string, any]) => ({
             performer,
             // Ordenar tracks por plays (maior para menor) e mostrar todas
-            rankings: performerData.tracks
+            rankings: (performerData.tracks ?? [])
               .sort((a: any, b: any) => b.plays.latest - a.plays.latest)
               .map((track: any, idx: number) => ({
                 position: idx + 1,
@@ -43,7 +43,7 @@ export default async function DashboardPage() {
         ),
         allTracks: Object.entries(spotifyTracksRaw).flatMap(
           ([performer, performerData]: [string, any]) =>
-            performerData.tracks.map((track: any) => ({
+            (performerData.tracks ?? []).map((track: any) => ({
               id: track.external_id,
               name: track.name,
               performer,
