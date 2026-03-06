@@ -46,19 +46,16 @@ const PERFORMER_COLORS = [
   "#10b981",
 ];
 
-// Map performer names to colors for persistence
-const performerColorMap = new Map<string, string>();
-let colorIndex = 0;
-
+/**
+ * Get consistent color for a performer using stable hash
+ * Ensures same performer always gets same color, regardless of render order
+ */
 function getPerformerColor(performerName: string): string {
-  if (!performerColorMap.has(performerName)) {
-    performerColorMap.set(
-      performerName,
-      PERFORMER_COLORS[colorIndex % PERFORMER_COLORS.length],
-    );
-    colorIndex += 1;
-  }
-  return performerColorMap.get(performerName)!;
+  // Stable hash ensures deterministic color assignment
+  const hash = performerName
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return PERFORMER_COLORS[hash % PERFORMER_COLORS.length];
 }
 
 function getGradientId(performerName: string, isDark: boolean): string {
@@ -69,6 +66,20 @@ function getGradientId(performerName: string, isDark: boolean): string {
   return `gradient-${sanitized}-${isDark ? "dark" : "light"}`;
 }
 
+interface TooltipPayloadEntry {
+  name: string;
+  color: string;
+  value: number | null | undefined;
+  payload?: {
+    datetime?: string;
+    date?: string;
+  };
+}
+
+interface ValidTooltipEntry extends TooltipPayloadEntry {
+  value: number;
+}
+
 function MultiPerformerTooltip({
   active,
   payload,
@@ -76,7 +87,7 @@ function MultiPerformerTooltip({
   period,
 }: {
   active?: boolean;
-  payload?: Array<any>;
+  payload?: TooltipPayloadEntry[];
   label?: string;
   period?: "today" | "7d" | "30d";
 }) {
@@ -100,7 +111,7 @@ function MultiPerformerTooltip({
   // Filter out entries with no value
   const validEntries = payload.filter(
     (entry) => entry.value !== null && entry.value !== undefined,
-  );
+  ) as ValidTooltipEntry[];
 
   if (validEntries.length === 0) return null;
 
@@ -112,9 +123,9 @@ function MultiPerformerTooltip({
       <p className="mb-2 text-xs text-background opacity-70">{formattedDate}</p>
       <div className="space-y-1">
         {sortedEntries.map((entry) => {
-          // Extract performer name from "performers.performerName"
+          // Extract performer name from "performers.performerName" format
           const performerName = entry.name.includes(".")
-            ? entry.name.split(".")[1]
+            ? (entry.name.split(".").pop() ?? entry.name)
             : entry.name;
           return (
             <div key={entry.name} className="flex items-center gap-2">

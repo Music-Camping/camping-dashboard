@@ -49,8 +49,8 @@ export interface ChartDataPoint {
 }
 
 export interface MultiPerformerChartDataPoint {
-  date: string; // date only (YYYY-MM-DD)
-  datetime?: string; // full datetime with time (ISO format)
-  timestamp: number; // milliseconds since epoch, for proportional time spacing in charts
-  performers: Record<string, number>; // { "João": 100000, "Maria": 200000 }
+  date: string; // ISO date string (date part only: "2026-01-30")
+  datetime?: string; // ISO datetime for "today" period with hourly granularity
+  timestamp: number; // Milliseconds since epoch for reliable sorting
+  performers: Record<string, number>; // Map of performer name to metric value
 }
