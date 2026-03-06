@@ -597,7 +597,6 @@ export function DashboardClient({
             rotationInterval={presentation.rotationInterval}
             currentPerformer={presentation.currentPerformer}
             performers={companyPerformers}
-            showingCompany={presentation.showingCompany}
             enabledItems={presentation.enabledItems}
             onStart={presentation.startPresentation}
             onStop={presentation.stopPresentation}
