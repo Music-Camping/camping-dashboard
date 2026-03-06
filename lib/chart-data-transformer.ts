@@ -1,6 +1,7 @@
 import type {
   DashboardResponse,
   MultiPerformerChartDataPoint,
+  MetricEntry,
 } from "@/lib/types/dashboard";
 import type { PeriodFilter } from "@/lib/types/filters";
 
@@ -95,11 +96,6 @@ function consolidateMultiPerformerData(
       };
     })
     .sort((a, b) => a.timestamp - b.timestamp);
-}
-
-interface MetricEntry {
-  value: number;
-  datetime: string;
 }
 
 /**

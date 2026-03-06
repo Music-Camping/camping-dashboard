@@ -7,12 +7,7 @@ import { TrophyIcon, Music2Icon, PauseIcon, PlayIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatCompactNumber } from "@/lib/utils";
-import type { SpotifyRanking } from "@/lib/types/spotify";
-
-interface PerformerRanking {
-  performer: string;
-  rankings: SpotifyRanking[];
-}
+import type { PerformerRanking } from "@/lib/types/spotify";
 
 interface AnimatedTopTracksProps {
   rankingsByPerformer: PerformerRanking[];
