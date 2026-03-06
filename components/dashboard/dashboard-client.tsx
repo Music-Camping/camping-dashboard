@@ -9,7 +9,8 @@ import { PresentationControls } from "@/components/dashboard/presentation-contro
 import { InstagramSection } from "@/components/dashboard/social-platforms/instagram-section";
 import { YouTubeSection } from "@/components/dashboard/social-platforms/youtube-section";
 import { SpotifyHub } from "@/components/dashboard/spotify/spotify-hub";
-import { TopRankings } from "@/components/dashboard/spotify/top-rankings";
+import { TopRankingsPresentation } from "@/components/dashboard/spotify/top-rankings-presentation";
+import { TopCitiesList } from "@/components/dashboard/spotify/top-cities-list";
 import { MetricsChart } from "@/components/dashboard/metrics-chart";
 import { Separator } from "@/components/ui/separator";
 import { usePresentationContext } from "@/contexts/presentation-context";
@@ -345,16 +346,19 @@ export function DashboardClient({
                   (presentation.currentPerformer &&
                     (initialData?.[presentation.currentPerformer]
                       ?.spotify_playlists?.length ?? 0) > 0)) && (
-                  <div className="rounded-xl border bg-card p-6">
-                    <div className="grid grid-cols-[1fr_minmax(0,40%)] gap-6">
-                      {/* Esquerda: header + métricas + gráficos */}
-                      <div className="flex flex-col gap-4">
-                        <div className="flex items-center gap-2">
-                          <Music2Icon className="size-5 text-green-500" />
-                          <span className="text-xl font-bold">Spotify</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="rounded-lg bg-muted/50 p-4">
+                  <div className="rounded-xl border bg-card p-4">
+                    {/* Header */}
+                    <div className="mb-3 flex items-center gap-2">
+                      <Music2Icon className="size-5 text-green-500" />
+                      <span className="text-xl font-bold">Spotify</span>
+                    </div>
+
+                    {/* Main content grid */}
+                    <div className="grid grid-cols-[1fr_minmax(0,40%)] gap-4">
+                      {/* Esquerda: métricas + gráficos + playlists */}
+                      <div className="flex flex-col gap-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="rounded-lg bg-muted/50 p-3">
                             <p className="text-sm text-muted-foreground">
                               Seguidores
                             </p>
@@ -366,7 +370,7 @@ export function DashboardClient({
                                 : "—"}
                             </p>
                           </div>
-                          <div className="rounded-lg bg-muted/50 p-4">
+                          <div className="rounded-lg bg-muted/50 p-3">
                             <p className="text-sm text-muted-foreground">
                               Ouvintes Mensais
                             </p>
@@ -379,7 +383,7 @@ export function DashboardClient({
                             </p>
                           </div>
                         </div>
-                        <div className="flex gap-4">
+                        <div className="flex gap-3">
                           <div className="flex-1">
                             <MetricsChart
                               title="Seguidores"
@@ -415,12 +419,12 @@ export function DashboardClient({
                               ].spotify_playlists!.map((playlist, idx) => (
                                 <div
                                   key={idx}
-                                  className="rounded-lg bg-muted/50 px-4 py-2"
+                                  className="rounded-lg bg-muted/50 px-3 py-2"
                                 >
                                   <p className="text-sm font-medium">
                                     {playlist.name}
                                   </p>
-                                  <div className="flex gap-4 text-sm text-muted-foreground">
+                                  <div className="flex gap-4 text-xs text-muted-foreground">
                                     <span>
                                       Seguidores:{" "}
                                       {formatCompactNumber(
@@ -440,88 +444,111 @@ export function DashboardClient({
                           )}
                       </div>
 
-                      {/* Direita: top 3 rankings */}
-                      <TopRankings rankings={currentPerformerTracks} />
+                      {/* Direita: top 3 rankings + cities */}
+                      <div className="flex flex-col gap-3">
+                        <TopRankingsPresentation
+                          rankings={currentPerformerTracks}
+                        />
+                        <TopCitiesList
+                          data={
+                            presentation.currentPerformer
+                              ? initialData?.[presentation.currentPerformer]
+                              : null
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* ── YOUTUBE + INSTAGRAM ── */}
-                <div className="grid grid-cols-2 gap-4">
-                  {/* YouTube */}
-                  <div className="flex flex-col gap-4 rounded-xl border bg-card p-6">
-                    <div className="flex items-center gap-2">
-                      <YoutubeIcon className="size-5 text-red-500" />
-                      <span className="text-xl font-bold">YouTube</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="rounded-lg bg-muted/50 p-4">
-                        <p className="text-sm text-muted-foreground">
-                          Inscritos
-                        </p>
-                        <p className="text-2xl font-bold tabular-nums">
-                          {tvYoutubeData
-                            ? formatCompactNumber(
-                                tvYoutubeData.followers.latest,
-                              )
-                            : "—"}
-                        </p>
+                {(tvYoutubeData || tvInstagramData) && (
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* YouTube */}
+                    {tvYoutubeData && (
+                      <div className="flex flex-col gap-3 rounded-xl border bg-card p-4">
+                        <div className="flex items-center gap-2">
+                          <YoutubeIcon className="size-5 text-red-500" />
+                          <span className="text-xl font-bold">YouTube</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="rounded-lg bg-muted/50 p-4">
+                            <p className="text-sm text-muted-foreground">
+                              Inscritos
+                            </p>
+                            <p className="text-2xl font-bold tabular-nums">
+                              {tvYoutubeData
+                                ? formatCompactNumber(
+                                    tvYoutubeData.followers.latest,
+                                  )
+                                : "—"}
+                            </p>
+                          </div>
+                          <div className="rounded-lg bg-muted/50 p-4">
+                            <p className="text-sm text-muted-foreground">
+                              Views Totais
+                            </p>
+                            <p className="text-2xl font-bold tabular-nums">
+                              {tvYoutubeData?.views
+                                ? formatCompactNumber(
+                                    tvYoutubeData.views.latest,
+                                  )
+                                : "—"}
+                            </p>
+                          </div>
+                        </div>
+                        <MetricsChart
+                          title="Inscritos"
+                          data={tvYoutubeChartData}
+                          icon={<YoutubeIcon className="size-4 text-red-500" />}
+                        />
                       </div>
-                      <div className="rounded-lg bg-muted/50 p-4">
-                        <p className="text-sm text-muted-foreground">
-                          Views Totais
-                        </p>
-                        <p className="text-2xl font-bold tabular-nums">
-                          {tvYoutubeData?.views
-                            ? formatCompactNumber(tvYoutubeData.views.latest)
-                            : "—"}
-                        </p>
-                      </div>
-                    </div>
-                    <MetricsChart
-                      title="Inscritos"
-                      data={tvYoutubeChartData}
-                      icon={<YoutubeIcon className="size-4 text-red-500" />}
-                    />
-                  </div>
+                    )}
 
-                  {/* Instagram */}
-                  <div className="flex flex-col gap-4 rounded-xl border bg-card p-6">
-                    <div className="flex items-center gap-2">
-                      <InstagramIcon className="size-5 text-pink-500" />
-                      <span className="text-xl font-bold">Instagram</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="rounded-lg bg-muted/50 p-4">
-                        <p className="text-sm text-muted-foreground">
-                          Seguidores
-                        </p>
-                        <p className="text-2xl font-bold tabular-nums">
-                          {tvInstagramData
-                            ? formatCompactNumber(
-                                tvInstagramData.followers.latest,
-                              )
-                            : "—"}
-                        </p>
+                    {/* Instagram */}
+                    {tvInstagramData && (
+                      <div className="flex flex-col gap-3 rounded-xl border bg-card p-4">
+                        <div className="flex items-center gap-2">
+                          <InstagramIcon className="size-5 text-pink-500" />
+                          <span className="text-xl font-bold">Instagram</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="rounded-lg bg-muted/50 p-4">
+                            <p className="text-sm text-muted-foreground">
+                              Seguidores
+                            </p>
+                            <p className="text-2xl font-bold tabular-nums">
+                              {tvInstagramData
+                                ? formatCompactNumber(
+                                    tvInstagramData.followers.latest,
+                                  )
+                                : "—"}
+                            </p>
+                          </div>
+                          <div className="rounded-lg bg-muted/50 p-4">
+                            <p className="text-sm text-muted-foreground">
+                              Posts
+                            </p>
+                            <p className="text-2xl font-bold tabular-nums">
+                              {tvInstagramData?.post_count
+                                ? formatCompactNumber(
+                                    tvInstagramData.post_count.latest,
+                                  )
+                                : "—"}
+                            </p>
+                          </div>
+                        </div>
+                        <MetricsChart
+                          title="Seguidores"
+                          data={tvInstagramChartData}
+                          icon={
+                            <InstagramIcon className="size-4 text-pink-500" />
+                          }
+                        />
                       </div>
-                      <div className="rounded-lg bg-muted/50 p-4">
-                        <p className="text-sm text-muted-foreground">Posts</p>
-                        <p className="text-2xl font-bold tabular-nums">
-                          {tvInstagramData?.post_count
-                            ? formatCompactNumber(
-                                tvInstagramData.post_count.latest,
-                              )
-                            : "—"}
-                        </p>
-                      </div>
-                    </div>
-                    <MetricsChart
-                      title="Seguidores"
-                      data={tvInstagramChartData}
-                      icon={<InstagramIcon className="size-4 text-pink-500" />}
-                    />
+                    )}
                   </div>
-                </div>
+                )}
               </motion.div>
             </AnimatePresence>
           </div>
