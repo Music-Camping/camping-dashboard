@@ -47,3 +47,10 @@ export interface ChartDataPoint {
   value: number;
   previousValue?: number; // For percentage calculation in tooltip
 }
+
+export interface MultiPerformerChartDataPoint {
+  date: string; // ISO date string (date part only: "2026-01-30")
+  datetime?: string; // ISO datetime for "today" period with hourly granularity
+  timestamp: number; // Milliseconds since epoch for reliable sorting
+  performers: Record<string, number>; // Map of performer name to metric value
+}

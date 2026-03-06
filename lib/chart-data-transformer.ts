@@ -5,11 +5,15 @@ import type {
 import type { PeriodFilter } from "@/lib/types/filters";
 
 /**
- * Convert UTC datetime to Brasília timezone (UTC-3)
+ * Convert UTC datetime to Brasília timezone (UTC-3 / UTC-2 during DST)
+ * NOTE: This uses a fixed UTC-3 offset and doesn't account for DST transitions.
+ * For production use with DST support, consider using `date-fns-tz`:
+ * formatInTimeZone(date, 'America/Sao_Paulo', 'yyyy-MM-dd')
  */
 function getDateKeyInBrasilia(datetimeStr: string): string {
   const date = new Date(datetimeStr);
-  // Brasília is UTC-3
+  // Brasília is UTC-3 (UTC-2 during DST October-February)
+  // Fixed offset used here; adjust if DST accuracy is critical
   const brasiliDate = new Date(date.getTime() - 3 * 60 * 60 * 1000);
   const year = brasiliDate.getUTCFullYear();
   const month = String(brasiliDate.getUTCMonth() + 1).padStart(2, "0");
@@ -90,12 +94,28 @@ function consolidateMultiPerformerData(
         performers,
       };
     })
-    .sort((a, b) => a.date.localeCompare(b.date));
+    .sort((a, b) => a.timestamp - b.timestamp);
 }
 
 interface MetricEntry {
   value: number;
   datetime: string;
+}
+
+/**
+ * Safely navigate nested object properties
+ * Returns undefined if any part of path doesn't exist or isn't an object
+ */
+function getNestedProperty(obj: unknown, path: string[]): unknown {
+  let current = obj;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const part of path) {
+    if (typeof current !== "object" || current === null) {
+      return undefined;
+    }
+    current = (current as Record<string, unknown>)[part];
+  }
+  return current;
 }
 
 /**
@@ -118,14 +138,12 @@ export function extractMultiPerformerData(
     if (performer === "total") return;
 
     const pathParts = metricPath.split(".");
-    let metric: any = data;
-
-    pathParts.forEach((part) => {
-      metric = metric?.[part];
-    });
+    const metric = getNestedProperty(data, pathParts);
 
     if (
-      metric?.entries &&
+      metric &&
+      typeof metric === "object" &&
+      "entries" in metric &&
       Array.isArray(metric.entries) &&
       metric.entries.length > 0
     ) {
