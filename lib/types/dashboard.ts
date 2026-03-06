@@ -38,9 +38,13 @@ export interface PerformerData {
   spotify_playlists?: SpotifyPlaylistData[];
 }
 
-export interface DashboardResponse {
-  [performerName: string]: PerformerData;
+export interface CompanyData extends PerformerData {
+  performers: string[];
 }
+
+export type DashboardResponse = Record<string, PerformerData | CompanyData> & {
+  company?: CompanyData;
+};
 
 export interface ChartDataPoint {
   date: string; // ISO date string (date part only: "2026-01-30")
