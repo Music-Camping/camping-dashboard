@@ -166,7 +166,7 @@ export function MetricsChart({
                 }}
                 axisLine={false}
                 tickLine={false}
-                width={45}
+                width={65}
               />
 
               <Tooltip content={<ChartTooltip />} />

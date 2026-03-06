@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { InstagramIcon, Music2Icon, YoutubeIcon } from "lucide-react";
 
 import { PresentationControls } from "@/components/dashboard/presentation-controls";
+import { CompanyDisplay } from "@/components/presentation-mode/company-display";
 import { InstagramSection } from "@/components/dashboard/social-platforms/instagram-section";
 import { YouTubeSection } from "@/components/dashboard/social-platforms/youtube-section";
 import { SpotifyHub } from "@/components/dashboard/spotify/spotify-hub";
@@ -35,11 +36,19 @@ export function DashboardClient({
   const { filters, setAvailablePerformers, setSelectedPerformers, setPeriod } =
     useFilters();
   const { selectedPerformers, period } = filters;
-  // Memoize available performers from data
+  // Memoize available performers from data (excluding company and total)
   const allPerformers = useMemo(() => {
     if (!initialData) return [];
-    return Object.keys(initialData).filter((key) => key !== "total");
+    return Object.keys(initialData).filter(
+      (key) => key !== "total" && key !== "company"
+    );
   }, [initialData]);
+
+  // Extract company performers
+  const companyPerformers = useMemo(() => {
+    if (!initialData?.company) return allPerformers;
+    return (initialData.company as any).performers ?? allPerformers;
+  }, [initialData, allPerformers]);
 
   // Update available performers when data changes
   useEffect(() => {
@@ -279,7 +288,7 @@ export function DashboardClient({
           <div className="flex items-center gap-4 rounded-xl border bg-card/80 px-5 py-2.5 shadow-sm backdrop-blur">
             <AnimatePresence mode="wait">
               <motion.div
-                key={presentation.currentPerformer ?? "all"}
+                key={presentation.showingCompany ? "company" : presentation.currentPerformer ?? "all"}
                 className="flex items-center gap-3"
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -287,14 +296,14 @@ export function DashboardClient({
                 transition={{ duration: 0.25 }}
               >
                 <div className="flex size-9 items-center justify-center rounded-full bg-primary/20 text-lg font-bold text-primary">
-                  {presentation.currentPerformer?.charAt(0) ?? "●"}
+                  {presentation.showingCompany ? "C" : presentation.currentPerformer?.charAt(0) ?? "●"}
                 </div>
                 <div>
                   <p className="mb-0.5 text-xs leading-none text-muted-foreground">
                     Exibindo
                   </p>
                   <p className="text-lg leading-none font-bold">
-                    {presentation.currentPerformer ?? "Todos"}
+                    {presentation.showingCompany ? "Music Camping" : presentation.currentPerformer ?? "Todos"}
                   </p>
                 </div>
               </motion.div>
@@ -333,15 +342,31 @@ export function DashboardClient({
           {/* ROW 2: Conteúdo animado — crossfade sem piscada */}
           <div className="relative min-h-0 overflow-hidden">
             <AnimatePresence mode="sync">
-              <motion.div
-                key={presentation.currentPerformer ?? "all"}
-                className="absolute inset-0 flex flex-col gap-4 overflow-y-auto"
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "-100%" }}
-                transition={{ duration: 0.45, ease: "easeInOut" }}
-              >
-                {/* ── SPOTIFY ── */}
+              {presentation.showingCompany ? (
+                <motion.div
+                  key="company"
+                  className="absolute inset-0 p-4"
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "-100%" }}
+                  transition={{ duration: 0.45, ease: "easeInOut" }}
+                >
+                  <CompanyDisplay
+                    performers={companyPerformers}
+                    rotationInterval={presentation.rotationInterval}
+                    initialData={initialData}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key={presentation.currentPerformer ?? "all"}
+                  className="absolute inset-0 flex flex-col gap-4 overflow-y-auto"
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "-100%" }}
+                  transition={{ duration: 0.45, ease: "easeInOut" }}
+                >
+                  {/* ── SPOTIFY ── */}
                 {(tvSpotifyData ||
                   (presentation.currentPerformer &&
                     (initialData?.[presentation.currentPerformer]
@@ -549,7 +574,8 @@ export function DashboardClient({
                     )}
                   </div>
                 )}
-              </motion.div>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
 
@@ -560,13 +586,16 @@ export function DashboardClient({
             autoRotate={presentation.autoRotate}
             rotationInterval={presentation.rotationInterval}
             currentPerformer={presentation.currentPerformer}
-            performers={allPerformers}
+            performers={companyPerformers}
+            showingCompany={presentation.showingCompany}
+            enabledItems={presentation.enabledItems}
             onStart={presentation.startPresentation}
             onStop={presentation.stopPresentation}
             onToggleFullscreen={presentation.toggleFullscreen}
             onToggleAutoRotate={presentation.toggleAutoRotate}
             onSetInterval={presentation.setRotationInterval}
-            onGoToPerformer={presentation.goToPerformer}
+            onGoToNext={presentation.goToNext}
+            onToggleItem={presentation.toggleItemEnabled}
           />
         </div>
       ) : (

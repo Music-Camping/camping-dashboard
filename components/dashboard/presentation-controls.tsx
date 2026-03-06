@@ -7,6 +7,8 @@ import {
   PauseIcon,
   PlayIcon,
   SettingsIcon,
+  ChevronRightIcon,
+  ToggleRightIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -26,12 +28,15 @@ interface PresentationControlsProps {
   rotationInterval: number;
   currentPerformer: string | null;
   performers: string[];
+  showingCompany: boolean;
+  enabledItems: Record<string, boolean>;
   onStart: () => void;
   onStop: () => void;
   onToggleFullscreen: () => void;
   onToggleAutoRotate: () => void;
   onSetInterval: (seconds: number) => void;
-  onGoToPerformer: (index: number) => void;
+  onGoToNext: () => void;
+  onToggleItem: (name: string) => void;
 }
 
 export function PresentationControls({
@@ -41,12 +46,14 @@ export function PresentationControls({
   rotationInterval,
   currentPerformer,
   performers,
+  enabledItems,
   onStart,
   onStop,
   onToggleFullscreen,
   onToggleAutoRotate,
   onSetInterval,
-  onGoToPerformer,
+  onGoToNext,
+  onToggleItem,
 }: PresentationControlsProps) {
   const intervals = [10, 20, 30, 60, 120];
 
@@ -75,6 +82,16 @@ export function PresentationControls({
           )}
         </Button>
 
+        {/* Next button */}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={onGoToNext}
+          title="Próximo item"
+        >
+          <ChevronRightIcon className="size-4" />
+        </Button>
+
         {/* Fullscreen toggle */}
         <Button
           variant="outline"
@@ -89,14 +106,14 @@ export function PresentationControls({
           )}
         </Button>
 
-        {/* Settings */}
+        {/* Interval Settings */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon">
               <SettingsIcon className="size-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuLabel>Intervalo de Rotação</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {intervals.map((seconds) => (
@@ -108,17 +125,42 @@ export function PresentationControls({
                 {seconds}s {rotationInterval === seconds && "✓"}
               </DropdownMenuItem>
             ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
+        {/* Toggles for rotation */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <ToggleRightIcon className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel>Ativar/Desativar</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel>Ir para Performer</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {performers.map((performer, index) => (
+
+            {/* Company */}
+            <DropdownMenuItem
+              onClick={() => onToggleItem("company")}
+              className="flex items-center justify-between"
+            >
+              <span>Camping (Empresa)</span>
+              <span className="cursor-pointer">
+                {enabledItems.company !== false ? "☑" : "☐"}
+              </span>
+            </DropdownMenuItem>
+
+            {/* Performers */}
+            {performers.map((performer) => (
               <DropdownMenuItem
                 key={performer}
-                onClick={() => onGoToPerformer(index)}
-                className={currentPerformer === performer ? "bg-accent" : ""}
+                onClick={() => onToggleItem(performer)}
+                className="flex items-center justify-between"
               >
-                {performer} {currentPerformer === performer && "✓"}
+                <span>{performer}</span>
+                <span className="cursor-pointer">
+                  {enabledItems[performer] !== false ? "☑" : "☐"}
+                </span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
