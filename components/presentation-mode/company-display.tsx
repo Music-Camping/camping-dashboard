@@ -8,20 +8,26 @@ import {
   InstagramIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { DashboardResponse, ChartDataPoint } from "@/lib/types/dashboard";
+import type { DashboardResponse } from "@/lib/types/dashboard";
+import { buildChartPoints } from "@/hooks/use-chart-data";
+import type { PeriodFilter } from "@/lib/types/filters";
 import { PerformerCard } from "./performer-card";
 import { SocialMetricsCard } from "./social-metrics-card";
 
 interface CompanyDisplayProps {
+  companyName: string;
   performers: string[];
   rotationInterval: number;
   initialData?: DashboardResponse | null;
+  period?: PeriodFilter;
 }
 
 export function CompanyDisplay({
+  companyName,
   performers,
   rotationInterval,
   initialData,
+  period = "30d",
 }: CompanyDisplayProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const performersPerPage = 3;
@@ -37,18 +43,64 @@ export function CompanyDisplay({
 
   const totalPages = pages.length;
 
-  // Mock chart data for YouTube and Instagram
-  const mockChartData: ChartDataPoint[] = useMemo(() => {
-    const today = new Date();
-    return Array.from({ length: 30 }, (_, i) => {
-      const date = new Date(today);
-      date.setDate(date.getDate() - (29 - i));
-      return {
-        date: date.toISOString().split("T")[0],
-        value: Math.floor(Math.random() * 5000000) + 10000000,
-      };
+  // Aggregate metrics from this company's performers
+  const companyMetrics = useMemo(() => {
+    if (!initialData) return null;
+
+    let ytFollowers = 0;
+    let ytViews = 0;
+    const ytFollowersEntries: { value: number; datetime: string }[] = [];
+
+    let igFollowers = 0;
+    let igPosts = 0;
+    const igFollowersEntries: { value: number; datetime: string }[] = [];
+
+    performers.forEach((name) => {
+      const data = initialData[name];
+      if (!data) return;
+
+      if (data.youtube) {
+        ytFollowers += data.youtube.followers?.latest ?? 0;
+        ytViews += data.youtube.views?.latest ?? 0;
+        if (data.youtube.followers?.entries) {
+          ytFollowersEntries.push(
+            ...data.youtube.followers.entries.map((e) => ({
+              value: e.value,
+              datetime: e.datetime,
+              performer: name,
+            })),
+          );
+        }
+      }
+
+      if (data.instagram) {
+        igFollowers += data.instagram.followers?.latest ?? 0;
+        igPosts += data.instagram.post_count?.latest ?? 0;
+        if (data.instagram.followers?.entries) {
+          igFollowersEntries.push(
+            ...data.instagram.followers.entries.map((e) => ({
+              value: e.value,
+              datetime: e.datetime,
+              performer: name,
+            })),
+          );
+        }
+      }
     });
-  }, []);
+
+    return {
+      youtube: {
+        followers: ytFollowers,
+        views: ytViews,
+        chartData: buildChartPoints(ytFollowersEntries, period),
+      },
+      instagram: {
+        followers: igFollowers,
+        posts: igPosts,
+        chartData: buildChartPoints(igFollowersEntries, period),
+      },
+    };
+  }, [initialData, performers, period]);
 
   // Auto-rotate pages based on rotation interval
   useEffect(() => {
@@ -78,9 +130,9 @@ export function CompanyDisplay({
 
   return (
     <div className="relative flex h-full flex-col gap-4 overflow-y-auto">
-      {/* Artistas Title */}
+      {/* Company Title */}
       <div className="px-2">
-        <h2 className="text-xl font-semibold">Artistas</h2>
+        <h2 className="text-xl font-semibold">{companyName} - Artistas</h2>
       </div>
 
       {/* Performers Grid/Carousel */}
@@ -164,18 +216,24 @@ export function CompanyDisplay({
         <SocialMetricsCard
           platform="youtube"
           icon={<YoutubeIcon className="size-5 text-red-500" />}
-          followers={3200000}
-          secondaryMetric={{ label: "Views Totais", value: 450000000 }}
-          chartData={mockChartData}
+          followers={companyMetrics?.youtube.followers ?? 0}
+          secondaryMetric={{
+            label: "Views Totais",
+            value: companyMetrics?.youtube.views ?? 0,
+          }}
+          chartData={companyMetrics?.youtube.chartData ?? []}
         />
 
         {/* Instagram */}
         <SocialMetricsCard
           platform="instagram"
           icon={<InstagramIcon className="size-5 text-pink-500" />}
-          followers={2800000}
-          secondaryMetric={{ label: "Posts", value: 1250 }}
-          chartData={mockChartData}
+          followers={companyMetrics?.instagram.followers ?? 0}
+          secondaryMetric={{
+            label: "Posts",
+            value: companyMetrics?.instagram.posts ?? 0,
+          }}
+          chartData={companyMetrics?.instagram.chartData ?? []}
         />
       </div>
     </div>

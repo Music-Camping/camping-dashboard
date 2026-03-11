@@ -44,11 +44,10 @@ export function DashboardClient({
     );
   }, [initialData]);
 
-  // Extract company performers
-  const companyPerformers = useMemo(() => {
-    if (!initialData?.company) return allPerformers;
-    return initialData.company.performers ?? allPerformers;
-  }, [initialData, allPerformers]);
+  // Extract companies info
+  const companies = useMemo(() => {
+    return initialData?.company?.companies ?? [];
+  }, [initialData]);
 
   // Update available performers when data changes
   useEffect(() => {
@@ -58,7 +57,7 @@ export function DashboardClient({
   }, [allPerformers, setAvailablePerformers]);
 
   // Presentation Mode
-  const presentation = usePresentationMode(allPerformers);
+  const presentation = usePresentationMode(allPerformers, companies);
 
   // Sync presentation mode with context
   useEffect(() => {
@@ -290,7 +289,7 @@ export function DashboardClient({
               <motion.div
                 key={
                   presentation.showingCompany
-                    ? "company"
+                    ? `company-${presentation.currentCompany?.name}`
                     : (presentation.currentPerformer ?? "all")
                 }
                 className="flex items-center gap-3"
@@ -301,7 +300,7 @@ export function DashboardClient({
               >
                 <div className="flex size-9 items-center justify-center rounded-full bg-primary/20 text-lg font-bold text-primary">
                   {presentation.showingCompany
-                    ? "C"
+                    ? (presentation.currentCompany?.name.charAt(0) ?? "C")
                     : (presentation.currentPerformer?.charAt(0) ?? "●")}
                 </div>
                 <div>
@@ -310,7 +309,7 @@ export function DashboardClient({
                   </p>
                   <p className="text-lg leading-none font-bold">
                     {presentation.showingCompany
-                      ? "Music Camping"
+                      ? (presentation.currentCompany?.name ?? "Empresa")
                       : (presentation.currentPerformer ?? "Todos")}
                   </p>
                 </div>
@@ -350,9 +349,9 @@ export function DashboardClient({
           {/* ROW 2: Conteúdo animado — crossfade sem piscada */}
           <div className="relative min-h-0 overflow-hidden">
             <AnimatePresence mode="sync">
-              {presentation.showingCompany ? (
+              {presentation.showingCompany && presentation.currentCompany ? (
                 <motion.div
-                  key="company"
+                  key={`company-${presentation.currentCompany.name}`}
                   className="absolute inset-0 p-4"
                   initial={{ x: "100%" }}
                   animate={{ x: 0 }}
@@ -360,9 +359,11 @@ export function DashboardClient({
                   transition={{ duration: 0.45, ease: "easeInOut" }}
                 >
                   <CompanyDisplay
-                    performers={companyPerformers}
+                    companyName={presentation.currentCompany.name}
+                    performers={presentation.currentCompany.performers}
                     rotationInterval={presentation.rotationInterval}
                     initialData={initialData}
+                    period={period}
                   />
                 </motion.div>
               ) : (
@@ -596,7 +597,8 @@ export function DashboardClient({
             autoRotate={presentation.autoRotate}
             rotationInterval={presentation.rotationInterval}
             currentPerformer={presentation.currentPerformer}
-            performers={companyPerformers}
+            performers={allPerformers}
+            companies={companies}
             enabledItems={presentation.enabledItems}
             onStart={presentation.startPresentation}
             onStop={presentation.stopPresentation}
