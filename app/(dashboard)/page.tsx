@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   getDashboardData,
   getSpotifyTracksData,
+  type SpotifyTrackRaw,
 } from "@/lib/api/dashboard-server";
 import type { SpotifyMetrics } from "@/lib/types/spotify";
 
@@ -24,30 +25,29 @@ export default async function DashboardPage() {
         monthlyListeners: { latest: 0, entries: [] },
         rankings: [],
         rankingsByPerformer: Object.entries(spotifyTracksRaw).map(
-          ([performer, performerData]: [string, any]) => ({
+          ([performer, { tracks }]) => ({
             performer,
-            // Ordenar tracks por plays (maior para menor) e mostrar todas
-            rankings: (performerData.tracks ?? [])
-              .sort((a: any, b: any) => b.plays.latest - a.plays.latest)
-              .map((track: any, idx: number) => ({
+            rankings: [...tracks]
+              .sort((a, b) => b.plays.latest - a.plays.latest)
+              .map((track: SpotifyTrackRaw, idx: number) => ({
                 position: idx + 1,
                 previousPosition: idx + 1,
                 trackId: track.external_id,
                 trackName: track.name,
                 artistName: performer,
-                thumbnail: track.thumbnail,
+                thumbnail: track.thumbnail ?? "",
                 streams: track.plays.latest,
                 change: "same" as const,
               })),
           }),
         ),
         allTracks: Object.entries(spotifyTracksRaw).flatMap(
-          ([performer, performerData]: [string, any]) =>
-            (performerData.tracks ?? []).map((track: any) => ({
+          ([performer, { tracks }]) =>
+            tracks.map((track: SpotifyTrackRaw) => ({
               id: track.external_id,
               name: track.name,
               performer,
-              thumbnail: track.thumbnail,
+              thumbnail: track.thumbnail ?? "",
               plays: track.plays.latest,
             })),
         ),
