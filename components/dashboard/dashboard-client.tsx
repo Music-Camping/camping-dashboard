@@ -47,7 +47,7 @@ export function DashboardClient({
   // Extract company performers
   const companyPerformers = useMemo(() => {
     if (!initialData?.company) return allPerformers;
-    return (initialData.company as any).performers ?? allPerformers;
+    return initialData.company.performers ?? allPerformers;
   }, [initialData, allPerformers]);
 
   // Update available performers when data changes
