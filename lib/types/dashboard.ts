@@ -44,8 +44,14 @@ export interface PerformerData {
   files?: PerformerFiles;
 }
 
+export interface CompanyInfo {
+  name: string;
+  performers: string[];
+}
+
 export interface CompanyData extends PerformerData {
   performers: string[];
+  companies?: CompanyInfo[];
 }
 
 // Raw API response types (new nested format)

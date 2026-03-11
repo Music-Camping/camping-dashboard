@@ -21,6 +21,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import type { CompanyInfo } from "@/lib/types/dashboard";
+
 interface PresentationControlsProps {
   isActive: boolean;
   isFullscreen: boolean;
@@ -28,6 +30,7 @@ interface PresentationControlsProps {
   rotationInterval: number;
   currentPerformer: string | null;
   performers: string[];
+  companies: CompanyInfo[];
   enabledItems: Record<string, boolean>;
   onStart: () => void;
   onStop: () => void;
@@ -45,6 +48,7 @@ export function PresentationControls({
   rotationInterval,
   currentPerformer,
   performers,
+  companies,
   enabledItems,
   onStart,
   onStop,
@@ -138,16 +142,21 @@ export function PresentationControls({
             <DropdownMenuLabel>Ativar/Desativar</DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            {/* Company */}
-            <DropdownMenuItem
-              onClick={() => onToggleItem("company")}
-              className="flex items-center justify-between"
-            >
-              <span>Camping (Empresa)</span>
-              <span className="cursor-pointer">
-                {enabledItems.company !== false ? "☑" : "☐"}
-              </span>
-            </DropdownMenuItem>
+            {/* Companies */}
+            {companies.map((company) => (
+              <DropdownMenuItem
+                key={`company:${company.name}`}
+                onClick={() => onToggleItem(`company:${company.name}`)}
+                className="flex items-center justify-between"
+              >
+                <span>{company.name} (Empresa)</span>
+                <span className="cursor-pointer">
+                  {enabledItems[`company:${company.name}`] !== false
+                    ? "☑"
+                    : "☐"}
+                </span>
+              </DropdownMenuItem>
+            ))}
 
             {/* Performers */}
             {performers.map((performer) => (

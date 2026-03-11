@@ -2,40 +2,40 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-/**
- * Helper type for enabled items list
- */
-type EnabledItem = { type: "company" | "performer"; index?: number };
+import type { CompanyInfo } from "@/lib/types/dashboard";
 
 /**
- * Builds list of enabled rotation items (company + performers)
+ * Helper type for enabled rotation items
+ */
+type EnabledItem =
+  | { type: "company"; companyIndex: number }
+  | { type: "performer"; index: number };
+
+/**
+ * Builds list of enabled rotation items (companies + performers)
  *
- * IMPORTANT: Enabled state semantics:
+ * Enabled state semantics:
  * - true = explicitly enabled
  * - false = explicitly disabled
- * - undefined = enabled by default (default-enabled pattern)
- *
- * This allows new performers/items to be automatically included in rotation
- * without requiring explicit enabledItems[newItem] = true initialization.
- *
- * @param performers - List of performer names
- * @param enabledItems - Record of item names to enabled state (undefined = enabled)
- * @returns Array of enabled items in rotation order (company first, then performers)
+ * - undefined = enabled by default
  */
 function buildEnabledList(
   performers: string[],
+  companies: CompanyInfo[],
   enabledItems: Record<string, boolean>,
 ): EnabledItem[] {
   const enabledList: EnabledItem[] = [];
 
-  // Add company if enabled (undefined/true = enabled)
-  if (enabledItems.company !== false) {
-    enabledList.push({ type: "company" });
-  }
+  // Add each company if enabled (key = "company:<name>")
+  companies.forEach((company, idx) => {
+    if (enabledItems[`company:${company.name}`] !== false) {
+      enabledList.push({ type: "company", companyIndex: idx });
+    }
+  });
 
-  // Add performers if enabled (undefined/true = enabled)
-  performers.forEach((_, idx) => {
-    if (enabledItems[performers[idx]] !== false) {
+  // Add performers if enabled
+  performers.forEach((name, idx) => {
+    if (enabledItems[name] !== false) {
       enabledList.push({ type: "performer", index: idx });
     }
   });
@@ -49,60 +49,30 @@ interface PresentationModeState {
   autoRotate: boolean;
   rotationInterval: number; // em segundos
   currentPerformerIndex: number;
-  showingCompany: boolean;
-  enabledItems: Record<string, boolean>; // company + performers that are in rotation
+  currentCompanyIndex: number | null; // null = showing a performer, number = showing a company
+  enabledItems: Record<string, boolean>;
 }
 
 /**
  * usePresentationMode - Manage fullscreen presentation mode with auto-rotation
  *
- * Features:
- * - Toggle fullscreen mode (F11)
- * - Auto-rotate between performers (30s intervals)
- * - Manual performer selection
- * - Pause/resume rotation
- * - Exit via ESC key
- *
- * @param {string[]} performers - List of performer names to rotate through
- *
- * @returns {Object} Presentation state and controls
- * - isActive: Whether presentation mode is running
- * - isFullscreen: Whether in fullscreen
- * - currentPerformer: Current performer name
- * - startPresentation(): Enter presentation mode
- * - stopPresentation(): Exit presentation mode
- * - toggleAutoRotate(): Pause/resume auto-rotation
- * - setCurrentPerformer(index): Select specific performer
- * - setRotationInterval(seconds): Change rotation speed
- *
- * @example
- * function Dashboard({ performers }) {
- *   const presentation = usePresentationMode(performers);
- *
- *   return (
- *     <>
- *       <button onClick={presentation.startPresentation}>
- *         Start Presentation
- *       </button>
- *       {presentation.isActive && (
- *         <div>Now showing: {presentation.currentPerformer}</div>
- *       )}
- *     </>
- *   );
- * }
+ * Supports multiple companies, each shown as a separate page with its performers.
  */
-export function usePresentationMode(performers: string[]) {
+export function usePresentationMode(
+  performers: string[],
+  companies: CompanyInfo[] = [],
+) {
   const [state, setState] = useState<PresentationModeState>({
     isActive: false,
     isFullscreen: false,
     autoRotate: true,
-    rotationInterval: 30, // 30 segundos por performer
+    rotationInterval: 30,
     currentPerformerIndex: 0,
-    showingCompany: false,
+    currentCompanyIndex: null,
     enabledItems: {},
   });
 
-  // Auto-rotate entre company e performers (apenas os enabled)
+  // Auto-rotate between companies and performers
   useEffect(() => {
     if (!state.isActive || !state.autoRotate || performers.length === 0) {
       return undefined;
@@ -110,17 +80,21 @@ export function usePresentationMode(performers: string[]) {
 
     const interval = setInterval(() => {
       setState((prev) => {
-        const enabledList = buildEnabledList(performers, prev.enabledItems);
-
-        // If no items enabled, don't rotate
-        if (enabledList.length === 0) {
-          return prev;
-        }
+        const enabledList = buildEnabledList(
+          performers,
+          companies,
+          prev.enabledItems,
+        );
+        if (enabledList.length === 0) return prev;
 
         // Find current item in enabled list
         let currentIdx = -1;
-        if (prev.showingCompany) {
-          currentIdx = enabledList.findIndex((item) => item.type === "company");
+        if (prev.currentCompanyIndex !== null) {
+          currentIdx = enabledList.findIndex(
+            (item) =>
+              item.type === "company" &&
+              item.companyIndex === prev.currentCompanyIndex,
+          );
         } else {
           currentIdx = enabledList.findIndex(
             (item) =>
@@ -136,23 +110,28 @@ export function usePresentationMode(performers: string[]) {
         if (nextItem.type === "company") {
           return {
             ...prev,
-            showingCompany: true,
+            currentCompanyIndex: nextItem.companyIndex,
             currentPerformerIndex: 0,
           };
-        } else {
-          return {
-            ...prev,
-            showingCompany: false,
-            currentPerformerIndex: nextItem.index!,
-          };
         }
+        return {
+          ...prev,
+          currentCompanyIndex: null,
+          currentPerformerIndex: nextItem.index!,
+        };
       });
     }, state.rotationInterval * 1000);
 
     return () => clearInterval(interval);
-  }, [state.isActive, state.autoRotate, state.rotationInterval, performers]);
+  }, [
+    state.isActive,
+    state.autoRotate,
+    state.rotationInterval,
+    performers,
+    companies,
+  ]);
 
-  // Monitora mudanças no fullscreen
+  // Monitor fullscreen changes
   useEffect(() => {
     const handleFullscreenChange = () => {
       setState((prev) => ({
@@ -180,8 +159,10 @@ export function usePresentationMode(performers: string[]) {
 
   const startPresentation = useCallback(async () => {
     setState((prev) => {
-      // Initialize enabledItems: company + all performers enabled
-      const initialEnabled: Record<string, boolean> = { company: true };
+      const initialEnabled: Record<string, boolean> = {};
+      companies.forEach((c) => {
+        initialEnabled[`company:${c.name}`] = true;
+      });
       performers.forEach((performer) => {
         initialEnabled[performer] = true;
       });
@@ -190,17 +171,19 @@ export function usePresentationMode(performers: string[]) {
         ...prev,
         isActive: true,
         enabledItems: initialEnabled,
-        showingCompany: true, // Start with company
+        currentCompanyIndex: companies.length > 0 ? 0 : null,
+        currentPerformerIndex: 0,
       };
     });
     await toggleFullscreen();
-  }, [toggleFullscreen, performers]);
+  }, [toggleFullscreen, performers, companies]);
 
   const stopPresentation = useCallback(async () => {
     setState((prev) => ({
       ...prev,
       isActive: false,
       currentPerformerIndex: 0,
+      currentCompanyIndex: null,
     }));
     if (document.fullscreenElement) {
       await document.exitFullscreen();
@@ -215,10 +198,10 @@ export function usePresentationMode(performers: string[]) {
     setState((prev) => ({ ...prev, rotationInterval: seconds }));
   }, []);
 
-  const goToCompany = useCallback(() => {
+  const goToCompany = useCallback((companyIndex: number) => {
     setState((prev) => ({
       ...prev,
-      showingCompany: true,
+      currentCompanyIndex: companyIndex,
       currentPerformerIndex: 0,
     }));
   }, []);
@@ -226,7 +209,7 @@ export function usePresentationMode(performers: string[]) {
   const goToPerformer = useCallback((index: number) => {
     setState((prev) => ({
       ...prev,
-      showingCompany: false,
+      currentCompanyIndex: null,
       currentPerformerIndex: index,
     }));
   }, []);
@@ -243,17 +226,20 @@ export function usePresentationMode(performers: string[]) {
 
   const goToNext = useCallback(() => {
     setState((prev) => {
-      const enabledList = buildEnabledList(performers, prev.enabledItems);
+      const enabledList = buildEnabledList(
+        performers,
+        companies,
+        prev.enabledItems,
+      );
+      if (enabledList.length === 0) return prev;
 
-      // If no items enabled, don't go to next
-      if (enabledList.length === 0) {
-        return prev;
-      }
-
-      // Find current item in enabled list
       let currentIdx = -1;
-      if (prev.showingCompany) {
-        currentIdx = enabledList.findIndex((item) => item.type === "company");
+      if (prev.currentCompanyIndex !== null) {
+        currentIdx = enabledList.findIndex(
+          (item) =>
+            item.type === "company" &&
+            item.companyIndex === prev.currentCompanyIndex,
+        );
       } else {
         currentIdx = enabledList.findIndex(
           (item) =>
@@ -262,31 +248,37 @@ export function usePresentationMode(performers: string[]) {
         );
       }
 
-      // Move to next item
       const nextIdx = (currentIdx + 1) % enabledList.length;
       const nextItem = enabledList[nextIdx]!;
 
       if (nextItem.type === "company") {
         return {
           ...prev,
-          showingCompany: true,
+          currentCompanyIndex: nextItem.companyIndex,
           currentPerformerIndex: 0,
         };
-      } else {
-        return {
-          ...prev,
-          showingCompany: false,
-          currentPerformerIndex: nextItem.index!,
-        };
       }
+      return {
+        ...prev,
+        currentCompanyIndex: null,
+        currentPerformerIndex: nextItem.index!,
+      };
     });
-  }, [performers]);
+  }, [performers, companies]);
 
   const currentPerformer = performers[state.currentPerformerIndex] || null;
+  const currentCompany =
+    state.currentCompanyIndex !== null
+      ? (companies[state.currentCompanyIndex] ?? null)
+      : null;
+  const showingCompany = state.currentCompanyIndex !== null;
 
   return {
     ...state,
+    showingCompany,
     currentPerformer,
+    currentCompany,
+    companies,
     startPresentation,
     stopPresentation,
     toggleFullscreen,
