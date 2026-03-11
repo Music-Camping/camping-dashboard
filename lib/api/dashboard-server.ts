@@ -1,4 +1,5 @@
 import type {
+  CompanyInfo,
   DashboardResponse,
   PerformerData,
   MetricData,
@@ -105,28 +106,56 @@ function transformPerformerMetrics(
  * Transforms into flat DashboardResponse:
  * { company: CompanyData, "Performer1": PerformerData, ... }
  */
+/**
+ * Aggregates a performer's transformed metrics into a running total.
+ * Tags each entry with the performer name for downstream filtering.
+ */
+function aggregatePerformerInto(
+  target: Record<string, Record<string, MetricData>>,
+  source: Partial<PerformerData>,
+  performerName: string,
+): void {
+  const platformKeys = ["youtube", "instagram", "spotify"] as const;
+
+  platformKeys.forEach((platformKey) => {
+    const platformData = source[platformKey];
+    if (!platformData) return;
+
+    const platformTarget = target[platformKey] ?? {};
+    // eslint-disable-next-line no-param-reassign
+    target[platformKey] = platformTarget;
+
+    Object.entries(platformData).forEach(([metricKey, metricData]) => {
+      const md = metricData as MetricData;
+      if (!md?.entries) return;
+
+      if (!platformTarget[metricKey]) {
+        platformTarget[metricKey] = { latest: 0, entries: [] };
+      }
+
+      platformTarget[metricKey].latest += md.latest;
+      platformTarget[metricKey].entries.push(
+        ...md.entries.map((e) => ({ ...e, performer: performerName })),
+      );
+    });
+  });
+}
+
 function processCompanyAndPerformers(
   rawData: Record<string, unknown>,
 ): DashboardResponse | null {
   const processedData: Record<string, unknown> = {};
-  const performerNames: string[] = [];
-  let companyMetrics: Partial<PerformerData> = {};
+  const allPerformerNames: string[] = [];
+  const companies: CompanyInfo[] = [];
 
-  Object.entries(rawData).forEach(([, companyData]) => {
+  // Aggregated metrics across all performers (for company-level totals)
+  const aggregated: Record<string, Record<string, MetricData>> = {};
+
+  Object.entries(rawData).forEach(([companyName, companyData]) => {
     if (typeof companyData !== "object" || companyData === null) return;
 
     const company = companyData as Record<string, unknown>;
-
-    // Transform company-level metrics if present
-    if (
-      company.metrics &&
-      typeof company.metrics === "object" &&
-      Object.keys(company.metrics as object).length > 0
-    ) {
-      companyMetrics = transformPerformerMetrics(
-        company.metrics as Record<string, Record<string, MetricData>>,
-      );
-    }
+    const companyPerformerNames: string[] = [];
 
     // Extract performers from the "performers" key
     const { performers } = company;
@@ -137,34 +166,41 @@ function processCompanyAndPerformers(
         if (typeof performerRaw !== "object" || performerRaw === null) return;
 
         const performer = performerRaw as Record<string, unknown>;
-        performerNames.push(performerName);
+        allPerformerNames.push(performerName);
+        companyPerformerNames.push(performerName);
 
         // Transform performer metrics and attach files
-        const performerData: Record<string, unknown> = {};
+        const transformedData: Record<string, unknown> = {};
 
         if (performer.metrics && typeof performer.metrics === "object") {
-          Object.assign(
-            performerData,
-            transformPerformerMetrics(
-              performer.metrics as Record<string, Record<string, MetricData>>,
-            ),
+          const transformed = transformPerformerMetrics(
+            performer.metrics as Record<string, Record<string, MetricData>>,
           );
+          Object.assign(transformedData, transformed);
+
+          // Aggregate into company totals
+          aggregatePerformerInto(aggregated, transformed, performerName);
         }
 
         if (performer.files && typeof performer.files === "object") {
-          performerData.files = performer.files;
+          transformedData.files = performer.files;
         }
 
-        processedData[performerName] = performerData;
+        processedData[performerName] = transformedData;
       },
     );
+
+    if (companyPerformerNames.length > 0) {
+      companies.push({ name: companyName, performers: companyPerformerNames });
+    }
   });
 
-  // Build company entry: aggregated company metrics + performers list
-  if (performerNames.length > 0) {
+  // Build company entry: aggregated performer metrics + metadata
+  if (allPerformerNames.length > 0) {
     processedData.company = {
-      ...companyMetrics,
-      performers: performerNames,
+      ...aggregated,
+      performers: allPerformerNames,
+      companies,
     };
   }
 

@@ -52,9 +52,16 @@ export const PerformerDataSchema = z.object({
   spotify_playlists: z.array(SpotifyPlaylistDataSchema).optional(),
 });
 
+// Company Info (name + performers list for each company)
+export const CompanyInfoSchema = z.object({
+  name: z.string(),
+  performers: z.array(z.string()),
+});
+
 // Company Data (extends Performer with performers list)
 export const CompanyDataSchema = PerformerDataSchema.extend({
   performers: z.array(z.string()),
+  companies: z.array(CompanyInfoSchema).optional(),
 });
 
 // Dashboard Response (flat structure with optional company)
