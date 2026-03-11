@@ -158,6 +158,9 @@ export function CompanyDisplay({
                     instagramFollowers={
                       performerData?.instagram?.followers.latest
                     }
+                    youtubeSubscribers={
+                      performerData?.youtube?.followers.latest
+                    }
                   />
                 );
               })}
