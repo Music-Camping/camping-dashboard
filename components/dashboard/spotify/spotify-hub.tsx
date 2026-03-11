@@ -41,7 +41,10 @@ export function SpotifyHub({
 
   const hasPlaylistData = fullDashboardData
     ? Object.entries(fullDashboardData).some(
-        ([k, d]) => k !== "total" && (d.spotify_playlists?.length ?? 0) > 0,
+        ([k, d]) =>
+          k !== "total" &&
+          k !== "company" &&
+          (d.spotify_playlists?.length ?? 0) > 0,
       )
     : false;
 
@@ -167,7 +170,7 @@ export function SpotifyHub({
               entries={dashboardData.followers.entries}
               period={period}
               breakdown={Object.entries(fullDashboardData)
-                .filter(([key]) => key !== "total")
+                .filter(([key]) => key !== "total" && key !== "company")
                 .map(([performer, data]) => ({
                   performer,
                   value: data.spotify?.followers?.latest || 0,
@@ -181,7 +184,7 @@ export function SpotifyHub({
                 entries={dashboardData.monthly_listeners.entries}
                 period={period}
                 breakdown={Object.entries(fullDashboardData)
-                  .filter(([key]) => key !== "total")
+                  .filter(([key]) => key !== "total" && key !== "company")
                   .map(([performer, data]) => ({
                     performer,
                     value: data.spotify?.monthly_listeners?.latest || 0,

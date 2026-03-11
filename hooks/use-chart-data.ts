@@ -118,10 +118,10 @@ export function useChartData(
   return useMemo(() => {
     if (!data) return [];
 
-    const totalData = data.total;
-    if (!totalData) return [];
+    const companyData = data.company;
+    if (!companyData) return [];
 
-    const platformData = totalData[platform];
+    const platformData = companyData[platform];
     if (!platformData) return [];
 
     const metricData = platformData[metric] as MetricData | undefined;
