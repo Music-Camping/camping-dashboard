@@ -1,6 +1,6 @@
 "use client";
 
-import { Music2Icon, InstagramIcon } from "lucide-react";
+import { Music2Icon, InstagramIcon, YoutubeIcon } from "lucide-react";
 import { formatCompactNumber } from "@/lib/utils";
 
 interface PerformerCardProps {
@@ -8,6 +8,7 @@ interface PerformerCardProps {
   spotifyFollowers?: number;
   spotifyListeners?: number;
   instagramFollowers?: number;
+  youtubeSubscribers?: number;
 }
 
 export function PerformerCard({
@@ -15,6 +16,7 @@ export function PerformerCard({
   spotifyFollowers,
   spotifyListeners,
   instagramFollowers,
+  youtubeSubscribers,
 }: PerformerCardProps) {
   return (
     <div className="relative flex aspect-[3/2] flex-col overflow-hidden rounded-xl border bg-gradient-to-b from-primary/20 to-background shadow-lg">
@@ -63,6 +65,18 @@ export function PerformerCard({
                 <p className="text-xs opacity-80">Instagram</p>
                 <p className="font-semibold">
                   {formatCompactNumber(instagramFollowers)}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {youtubeSubscribers !== undefined && (
+            <div className="flex items-center gap-2">
+              <YoutubeIcon className="size-4 text-red-400" />
+              <div>
+                <p className="text-xs opacity-80">YouTube</p>
+                <p className="font-semibold">
+                  {formatCompactNumber(youtubeSubscribers)}
                 </p>
               </div>
             </div>

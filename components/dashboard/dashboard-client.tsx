@@ -363,7 +363,6 @@ export function DashboardClient({
                     performers={presentation.currentCompany.performers}
                     rotationInterval={presentation.rotationInterval}
                     initialData={initialData}
-                    period={period}
                   />
                 </motion.div>
               ) : (
