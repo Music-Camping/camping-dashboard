@@ -6,6 +6,23 @@ import type {
 } from "@/lib/types/dashboard";
 import { cookies } from "next/headers";
 
+/**
+ * Track from the spotify/tracks API after processing.
+ * Playlist-level structure: { [playlistOrPerformerName]: { tracks: Track[] } }
+ */
+export interface SpotifyTrackRaw {
+  name: string;
+  external_id: string;
+  url?: string;
+  thumbnail?: string;
+  plays: MetricData;
+}
+
+export type SpotifyTracksResponse = Record<
+  string,
+  { tracks: SpotifyTrackRaw[] }
+>;
+
 const BACKEND_URL = process.env.API_URL || "http://localhost:3001";
 const REVALIDATE_TIME = 10800; // 3 horas em segundos
 
@@ -333,9 +350,40 @@ export async function getMusicCatalogData() {
 }
 
 /**
+ * Processes raw spotify tracks API response.
+ *
+ * API format: { "<Company>": { "<PlaylistOrPerformer>": { "tracks": [...] } } }
+ * Output:     { "<PlaylistOrPerformer>": { tracks: SpotifyTrackRaw[] }, ... }
+ */
+function processSpotifyTracks(
+  rawData: Record<string, unknown>,
+): SpotifyTracksResponse | null {
+  const result: SpotifyTracksResponse = {};
+
+  Object.values(rawData).forEach((companyData) => {
+    if (typeof companyData !== "object" || companyData === null) return;
+
+    Object.entries(companyData as Record<string, unknown>).forEach(
+      ([name, entityData]) => {
+        if (typeof entityData !== "object" || entityData === null) return;
+
+        const entity = entityData as Record<string, unknown>;
+        if (!Array.isArray(entity.tracks)) return;
+
+        result[name] = {
+          tracks: entity.tracks as SpotifyTrackRaw[],
+        };
+      },
+    );
+  });
+
+  return Object.keys(result).length > 0 ? result : null;
+}
+
+/**
  * Fetches Spotify tracks data server-side with 3-hour cache
  */
-export async function getSpotifyTracksData(): Promise<DashboardResponse | null> {
+export async function getSpotifyTracksData(): Promise<SpotifyTracksResponse | null> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;
@@ -361,7 +409,7 @@ export async function getSpotifyTracksData(): Promise<DashboardResponse | null> 
     }
 
     const rawData = await res.json();
-    return processCompanyAndPerformers(rawData as Record<string, unknown>);
+    return processSpotifyTracks(rawData as Record<string, unknown>);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("[API Error] Failed to fetch Spotify tracks data:", error);
