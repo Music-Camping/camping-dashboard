@@ -1,93 +1,54 @@
-import type { DashboardResponse, PerformerData } from "@/lib/types/dashboard";
-import { RawApiResponseSchema, validateData } from "@/lib/api/schemas";
+import type { DashboardResponse } from "@/lib/types/dashboard";
 import { cookies } from "next/headers";
 
 const BACKEND_URL = process.env.API_URL || "http://localhost:3001";
 const REVALIDATE_TIME = 10800; // 3 horas em segundos
 
 /**
- * Transforms nested metrics { platform: { metric: MetricData } }
- * into flat PerformerData { platform: { metric: MetricData } }
+ * Processes raw API response into structured DashboardResponse
  *
- * The new API wraps platform data under "metrics", this unwraps it
- * and maps to known platform keys (youtube, instagram, spotify)
- */
-function transformMetricsToPerformerData(
-  metrics: Record<string, Record<string, unknown>>,
-  files?: Record<string, string>,
-): PerformerData {
-  const result: Record<string, unknown> = {};
-
-  Object.entries(metrics).forEach(([platform, platformMetrics]) => {
-    result[platform] = platformMetrics;
-  });
-
-  if (files) {
-    result.files = files;
-  }
-
-  return result as PerformerData;
-}
-
-/**
- * Processes raw API response (new nested format) into structured DashboardResponse
- *
- * New API format:
- * { "<Company>": { files, metrics, performers: { "<Performer>": { files, metrics } } } }
+ * API format:
+ * { "total": { platform: metrics }, "<Company>": { "<Performer>": { platform: metrics } } }
  *
  * Transforms into flat DashboardResponse:
- * { company: CompanyData, "Performer1": PerformerData, "Performer2": PerformerData }
+ * { company: CompanyData, "Performer1": PerformerData, ... }
  */
 function processCompanyAndPerformers(
   rawData: Record<string, unknown>,
 ): DashboardResponse | null {
-  const validated = validateData(
-    rawData,
-    RawApiResponseSchema,
-    "GET /api/dashboard",
-  );
-
-  if (!validated) {
-    // eslint-disable-next-line no-console
-    console.error("[API] Failed to validate new API format");
-    return null;
-  }
-
-  const companyNames = Object.keys(validated);
-  if (companyNames.length === 0) {
-    return null;
-  }
-
-  const companyName = companyNames[0];
-  const companyApiData = validated[companyName];
-
   const processedData: Record<string, unknown> = {};
   const performerNames: string[] = [];
 
-  // Transform company metrics → "total" equivalent
-  const companyPerformerData = transformMetricsToPerformerData(
-    companyApiData.metrics,
-    companyApiData.files,
-  );
+  Object.entries(rawData).forEach(([key, data]) => {
+    // Keep "total" as company-level aggregate
+    if (key === "total") {
+      processedData.total = data;
+      return;
+    }
 
-  // Flatten each performer
-  Object.entries(companyApiData.performers).forEach(
-    ([performerName, performerApiData]) => {
-      performerNames.push(performerName);
-      processedData[performerName] = transformMetricsToPerformerData(
-        performerApiData.metrics,
-        performerApiData.files,
-      );
-    },
-  );
+    // Skip if not an object
+    if (typeof data !== "object" || data === null) return;
 
-  // Build company entry with performers list
-  processedData.company = {
-    ...companyPerformerData,
-    performers: performerNames,
-  };
+    // Each non-total key is a company — flatten its performers
+    Object.entries(data as Record<string, unknown>).forEach(
+      ([performerName, performerData]) => {
+        if (typeof performerData === "object" && performerData !== null) {
+          performerNames.push(performerName);
+          processedData[performerName] = performerData;
+        }
+      },
+    );
+  });
 
-  return processedData as DashboardResponse;
+  // Build company entry with performers list + total metrics
+  if (performerNames.length > 0) {
+    processedData.company = {
+      ...((processedData.total as Record<string, unknown>) ?? {}),
+      performers: performerNames,
+    };
+  }
+
+  return (processedData as DashboardResponse) || null;
 }
 
 /**
