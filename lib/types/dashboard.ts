@@ -2,6 +2,7 @@ export interface MetricEntry {
   value: number;
   datetime: string; // ISO 8601
   performer?: string; // presente apenas em "total"
+  extra_data?: Record<string, unknown>;
 }
 
 export interface MetricData {
@@ -31,16 +32,35 @@ export interface SpotifyPlaylistData {
   tracks: SpotifyPlaylistTrack[];
 }
 
+export interface PerformerFiles {
+  [key: string]: string; // name -> url mapping
+}
+
 export interface PerformerData {
   youtube?: PlatformMetrics;
   instagram?: PlatformMetrics;
   spotify?: PlatformMetrics;
   spotify_playlists?: SpotifyPlaylistData[];
+  files?: PerformerFiles;
 }
 
 export interface CompanyData extends PerformerData {
   performers: string[];
 }
+
+// Raw API response types (new nested format)
+export interface RawPerformerApiData {
+  files?: PerformerFiles;
+  metrics: Record<string, Record<string, MetricData>>;
+}
+
+export interface RawCompanyApiData {
+  files?: PerformerFiles;
+  metrics: Record<string, Record<string, MetricData>>;
+  performers: Record<string, RawPerformerApiData>;
+}
+
+export type RawApiResponse = Record<string, RawCompanyApiData>;
 
 export type DashboardResponse = Record<string, PerformerData | CompanyData> & {
   company?: CompanyData;

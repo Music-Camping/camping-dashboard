@@ -10,6 +10,7 @@ export const MetricEntrySchema = z.object({
   value: z.number(),
   datetime: z.string(), // ISO 8601
   performer: z.string().optional(), // Only in "total"
+  extra_data: z.record(z.unknown()).optional(),
 });
 
 // Metric Data - Latest value + historical entries
@@ -65,6 +66,27 @@ export const DashboardResponseSchema = z
       !("company" in data) || CompanyDataSchema.safeParse(data.company).success,
     { message: "Invalid company data structure" },
   );
+
+// --- Raw API response schemas (new nested format) ---
+
+// Files mapping (name -> url)
+export const PerformerFilesSchema = z.record(z.string());
+
+// Raw performer from API: { files?, metrics: { platform: { metric: MetricData } } }
+export const RawPerformerApiSchema = z.object({
+  files: PerformerFilesSchema.optional(),
+  metrics: z.record(z.string(), z.record(z.string(), MetricDataSchema)),
+});
+
+// Raw company from API: { files?, metrics, performers }
+export const RawCompanyApiSchema = z.object({
+  files: PerformerFilesSchema.optional(),
+  metrics: z.record(z.string(), z.record(z.string(), MetricDataSchema)),
+  performers: z.record(z.string(), RawPerformerApiSchema),
+});
+
+// Full raw API response: { "<CompanyName>": RawCompanyApiData }
+export const RawApiResponseSchema = z.record(z.string(), RawCompanyApiSchema);
 
 // Type inference from schemas
 export type MetricEntry = z.infer<typeof MetricEntrySchema>;
