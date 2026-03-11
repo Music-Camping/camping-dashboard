@@ -78,7 +78,7 @@ export function InstagramSection({
               entries={data.followers.entries}
               period={period}
               breakdown={Object.entries(fullDashboardData)
-                .filter(([key]) => key !== "total")
+                .filter(([key]) => key !== "total" && key !== "company")
                 .map(([performer, performerData]) => ({
                   performer,
                   value: performerData.instagram?.followers?.latest || 0,
@@ -93,7 +93,7 @@ export function InstagramSection({
                 entries={data.post_count.entries}
                 period={period}
                 breakdown={Object.entries(fullDashboardData)
-                  .filter(([key]) => key !== "total")
+                  .filter(([key]) => key !== "total" && key !== "company")
                   .map(([performer, performerData]) => ({
                     performer,
                     value: performerData.instagram?.post_count?.latest || 0,
