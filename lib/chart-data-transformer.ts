@@ -131,7 +131,7 @@ export function extractMultiPerformerData(
   const allEntries: Array<{ performer: string; entries: MetricEntry[] }> = [];
 
   Object.entries(fullDashboardData).forEach(([performer, data]) => {
-    if (performer === "total") return;
+    if (performer === "total" || performer === "company") return;
 
     const pathParts = metricPath.split(".");
     const metric = getNestedProperty(data, pathParts);
@@ -187,7 +187,7 @@ export function extractMultiPerformerPlaylistData(
   const allEntries: Array<{ performer: string; entries: MetricEntry[] }> = [];
 
   Object.entries(fullDashboardData).forEach(([performer, data]) => {
-    if (performer === "total") return;
+    if (performer === "total" || performer === "company") return;
 
     if (data.spotify_playlists && Array.isArray(data.spotify_playlists)) {
       const consolidatedEntries: MetricEntry[] = [];

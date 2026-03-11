@@ -81,7 +81,7 @@ export function YouTubeSection({
               entries={data.followers.entries}
               period={period}
               breakdown={Object.entries(fullDashboardData)
-                .filter(([key]) => key !== "total")
+                .filter(([key]) => key !== "total" && key !== "company")
                 .map(([performer, performerData]) => ({
                   performer,
                   value: performerData.youtube?.followers?.latest || 0,
@@ -96,7 +96,7 @@ export function YouTubeSection({
                 entries={data.views.entries}
                 period={period}
                 breakdown={Object.entries(fullDashboardData)
-                  .filter(([key]) => key !== "total")
+                  .filter(([key]) => key !== "total" && key !== "company")
                   .map(([performer, performerData]) => ({
                     performer,
                     value: performerData.youtube?.views?.latest || 0,
@@ -112,7 +112,7 @@ export function YouTubeSection({
                 entries={data.video_count.entries}
                 period={period}
                 breakdown={Object.entries(fullDashboardData)
-                  .filter(([key]) => key !== "total")
+                  .filter(([key]) => key !== "total" && key !== "company")
                   .map(([performer, performerData]) => ({
                     performer,
                     value: performerData.youtube?.video_count?.latest || 0,

@@ -97,7 +97,7 @@ export function DashboardClient({
 
       // If no performers selected, use total
       if (selectedPerformers.length === 0) {
-        return initialData.total?.[platform];
+        return initialData.company?.[platform];
       }
 
       // Otherwise, aggregate selected performers
