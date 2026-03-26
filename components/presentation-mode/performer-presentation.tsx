@@ -362,7 +362,7 @@ export function PerformerPresentation({
 
                     {/* Stream count */}
                     <div className="shrink-0 text-right">
-                      <p className="text-sm font-bold text-green-400 tabular-nums">
+                      <p className="text-sm font-bold text-white/70 tabular-nums">
                         {formatCompactNumber(track.streams)}
                       </p>
                     </div>

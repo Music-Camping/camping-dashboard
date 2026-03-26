@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**.spotifycdn.com",
       },
+      {
+        protocol: "https",
+        hostname: "api.campingviral.com.br",
+      },
     ],
   },
   output: "standalone",
