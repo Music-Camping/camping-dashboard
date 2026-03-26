@@ -12,6 +12,7 @@ import { formatCompactNumber } from "@/lib/utils";
 
 interface CityEntry {
   value: number;
+  datetime: string;
   extra_data?: { city: string; country: string };
 }
 
@@ -21,6 +22,7 @@ interface CompanyDisplayProps {
   initialData?: DashboardResponse | null;
   spotifyData?: SpotifyMetrics;
   period: PeriodFilter;
+  bannerUrl?: string;
 }
 
 /* ── Platform SVG Icons ── */
@@ -242,6 +244,7 @@ export function CompanyDisplay({
   initialData,
   spotifyData,
   period,
+  bannerUrl,
 }: CompanyDisplayProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const performersPerPage = 3;
@@ -360,23 +363,32 @@ export function CompanyDisplay({
       const cityMetric = spotify?.top_city_listeners as
         | { entries: CityEntry[] }
         | undefined;
-      if (!cityMetric?.entries) return;
+      if (!cityMetric?.entries || cityMetric.entries.length === 0) return;
 
-      cityMetric.entries.forEach((entry) => {
-        const cityName = entry.extra_data?.city;
-        if (!cityName) return;
-        const key = `${cityName}-${entry.extra_data?.country}`;
-        const existing = cityMap.get(key);
-        if (existing) {
-          existing.value += entry.value;
-        } else {
-          cityMap.set(key, {
-            value: entry.value,
-            city: cityName,
-            country: entry.extra_data?.country ?? "",
-          });
-        }
-      });
+      // Find the latest timestamp for this performer
+      const latestTs = cityMetric.entries.reduce((max, e) => {
+        const t = new Date(e.datetime).getTime();
+        return t > max ? t : max;
+      }, 0);
+
+      // Only use entries from the latest timestamp
+      cityMetric.entries
+        .filter((e) => new Date(e.datetime).getTime() === latestTs)
+        .forEach((entry) => {
+          const cityName = entry.extra_data?.city;
+          if (!cityName) return;
+          const key = `${cityName}-${entry.extra_data?.country}`;
+          const existing = cityMap.get(key);
+          if (existing) {
+            existing.value += entry.value;
+          } else {
+            cityMap.set(key, {
+              value: entry.value,
+              city: cityName,
+              country: entry.extra_data?.country ?? "",
+            });
+          }
+        });
     });
 
     return [...cityMap.values()].sort((a, b) => b.value - a.value).slice(0, 5);
@@ -421,8 +433,23 @@ export function CompanyDisplay({
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-2xl">
-      {/* Dark atmospheric background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.12)_0%,_transparent_50%),_radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.08)_0%,_transparent_50%),_linear-gradient(to_bottom,_#0a0a0a,_#111111)]" />
+      {/* Background */}
+      {bannerUrl ? (
+        <>
+          <Image
+            src={bannerUrl}
+            alt="Company banner"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+        </>
+      ) : (
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.12)_0%,_transparent_50%),_radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.08)_0%,_transparent_50%),_linear-gradient(to_bottom,_#0a0a0a,_#111111)]" />
+      )}
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{

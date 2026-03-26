@@ -208,7 +208,14 @@ function processCompanyAndPerformers(
     );
 
     if (companyPerformerNames.length > 0) {
-      companies.push({ name: companyName, performers: companyPerformerNames });
+      const companyInfo: CompanyInfo = {
+        name: companyName,
+        performers: companyPerformerNames,
+      };
+      if (company.files && typeof company.files === "object") {
+        companyInfo.files = company.files as Record<string, string>;
+      }
+      companies.push(companyInfo);
     }
   });
 
