@@ -361,38 +361,32 @@ export function CompanyDisplay({
       const cityMetric = spotify?.top_city_listeners as
         | { entries: CityEntry[] }
         | undefined;
-      if (!cityMetric?.entries) return;
+      if (!cityMetric?.entries || cityMetric.entries.length === 0) return;
 
-      // Per performer: keep only the most recent entry per city
-      const performerCities = new Map<string, CityEntry>();
-      cityMetric.entries.forEach((entry) => {
-        const cityName = entry.extra_data?.city;
-        if (!cityName) return;
-        const key = `${cityName}-${entry.extra_data?.country}`;
-        const existing = performerCities.get(key);
-        if (
-          !existing ||
-          new Date(entry.datetime).getTime() >
-            new Date(existing.datetime).getTime()
-        ) {
-          performerCities.set(key, entry);
-        }
-      });
+      // Find the latest timestamp for this performer
+      const latestTs = cityMetric.entries.reduce((max, e) => {
+        const t = new Date(e.datetime).getTime();
+        return t > max ? t : max;
+      }, 0);
 
-      // Sum latest per-city values across performers
-      performerCities.forEach((entry, key) => {
-        const cityName = entry.extra_data?.city ?? "";
-        const existing = cityMap.get(key);
-        if (existing) {
-          existing.value += entry.value;
-        } else {
-          cityMap.set(key, {
-            value: entry.value,
-            city: cityName,
-            country: entry.extra_data?.country ?? "",
-          });
-        }
-      });
+      // Only use entries from the latest timestamp
+      cityMetric.entries
+        .filter((e) => new Date(e.datetime).getTime() === latestTs)
+        .forEach((entry) => {
+          const cityName = entry.extra_data?.city;
+          if (!cityName) return;
+          const key = `${cityName}-${entry.extra_data?.country}`;
+          const existing = cityMap.get(key);
+          if (existing) {
+            existing.value += entry.value;
+          } else {
+            cityMap.set(key, {
+              value: entry.value,
+              city: cityName,
+              country: entry.extra_data?.country ?? "",
+            });
+          }
+        });
     });
 
     return [...cityMap.values()].sort((a, b) => b.value - a.value).slice(0, 5);

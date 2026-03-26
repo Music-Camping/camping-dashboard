@@ -280,6 +280,7 @@ export function DashboardClient({
         | {
             entries: Array<{
               value: number;
+              datetime: string;
               extra_data?: { city: string; country: string };
             }>;
           }
