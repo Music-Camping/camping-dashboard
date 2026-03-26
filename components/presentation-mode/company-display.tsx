@@ -362,10 +362,21 @@ export function CompanyDisplay({
         | undefined;
       if (!cityMetric?.entries) return;
 
+      // Per performer: keep only the latest value per city
+      const performerCities = new Map<string, CityEntry>();
       cityMetric.entries.forEach((entry) => {
         const cityName = entry.extra_data?.city;
         if (!cityName) return;
         const key = `${cityName}-${entry.extra_data?.country}`;
+        const existing = performerCities.get(key);
+        if (!existing || entry.value > existing.value) {
+          performerCities.set(key, entry);
+        }
+      });
+
+      // Sum latest per-city values across performers
+      performerCities.forEach((entry, key) => {
+        const cityName = entry.extra_data?.city ?? "";
         const existing = cityMap.get(key);
         if (existing) {
           existing.value += entry.value;
