@@ -387,7 +387,7 @@ export function DashboardClient({
                 {/* Profile image (square) or fallback initial */}
                 {(() => {
                   const profileSrc = presentation.showingCompany
-                    ? presentation.currentCompany?.files?.profile
+                    ? presentation.currentCompany?.files?.logo
                     : tvProfileUrl;
                   const label = presentation.showingCompany
                     ? (presentation.currentCompany?.name ?? "C")
@@ -467,7 +467,7 @@ export function DashboardClient({
                     initialData={initialData}
                     spotifyData={spotifyData}
                     period={period}
-                    bannerUrl={presentation.currentCompany.files?.banner}
+                    bannerUrl={presentation.currentCompany.files?.company}
                   />
                 </motion.div>
               ) : (
