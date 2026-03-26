@@ -190,7 +190,7 @@ export function PerformerPresentation({
         {/* ── Grid: 4 cards (left) + Songs (right) ── */}
         <div className="grid flex-1 grid-cols-[2fr_3fr] gap-6 overflow-hidden">
           {/* ── Left: Metric Cards (only shown if data exists) ── */}
-          <div className="grid auto-rows-[6.5rem] grid-cols-2 content-start gap-3.5">
+          <div className="grid grid-cols-2 grid-rows-3 gap-3.5">
             {totalStreams != null && (
               <MetricCard
                 label="Streams"
