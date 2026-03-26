@@ -3,25 +3,67 @@
 import { useCallback, useEffect, useMemo } from "react";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { InstagramIcon, Music2Icon, YoutubeIcon } from "lucide-react";
 
 import { PresentationControls } from "@/components/dashboard/presentation-controls";
 import { CompanyDisplay } from "@/components/presentation-mode/company-display";
+import { PerformerPresentation } from "@/components/presentation-mode/performer-presentation";
 import { InstagramSection } from "@/components/dashboard/social-platforms/instagram-section";
 import { YouTubeSection } from "@/components/dashboard/social-platforms/youtube-section";
 import { SpotifyHub } from "@/components/dashboard/spotify/spotify-hub";
-import { TopRankingsPresentation } from "@/components/dashboard/spotify/top-rankings-presentation";
-import { TopCitiesList } from "@/components/dashboard/spotify/top-cities-list";
-import { MetricsChart } from "@/components/dashboard/metrics-chart";
 import { Separator } from "@/components/ui/separator";
 import { usePresentationContext } from "@/contexts/presentation-context";
-import { useChartData } from "@/hooks/use-chart-data";
 import { useFilters } from "@/hooks/use-filters";
 import { usePresentationMode } from "@/hooks/use-presentation-mode";
-import type { DashboardResponse, PlatformMetrics } from "@/lib/types/dashboard";
+import type {
+  DashboardResponse,
+  MetricData,
+  PlatformMetrics,
+} from "@/lib/types/dashboard";
 import type { SpotifyMetrics } from "@/lib/types/spotify";
+import type { PeriodFilter } from "@/lib/types/filters";
 import { PERIOD_OPTIONS } from "@/lib/types/filters";
-import { cn, formatCompactNumber } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+
+/**
+ * Calculates the growth (delta) of a metric within a period.
+ * Compares the current latest value against the earliest entry in the period.
+ * Falls back to the oldest available entry if no entries exist in the period.
+ */
+function getMetricDelta(
+  metric: MetricData | undefined,
+  periodFilter: PeriodFilter,
+): number | undefined {
+  if (!metric?.entries || metric.entries.length === 0) return undefined;
+
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  let thresholdMs: number;
+  switch (periodFilter) {
+    case "today":
+      thresholdMs = now.getTime() - 24 * 60 * 60 * 1000;
+      break;
+    case "7d":
+      thresholdMs = now.getTime() - 6 * 24 * 60 * 60 * 1000;
+      break;
+    case "30d":
+    default:
+      thresholdMs = now.getTime() - 29 * 24 * 60 * 60 * 1000;
+      break;
+  }
+
+  // Sort all entries by datetime
+  const sorted = [...metric.entries].sort(
+    (a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime(),
+  );
+
+  // Only use entries within the period — no fallback to avoid wrong deltas
+  const inPeriod = sorted.filter(
+    (e) => new Date(e.datetime).getTime() >= thresholdMs,
+  );
+  if (inPeriod.length === 0) return undefined;
+
+  return metric.latest - inPeriod[0].value;
+}
 
 interface DashboardClientProps {
   initialData: DashboardResponse | null;
@@ -173,7 +215,12 @@ export function DashboardClient({
     [getAggregatedPlatformData],
   );
 
-  // Top 3 tracks for the current performer (used in TV mode ranking panel)
+  // ─── TV-specific data ──────────────────────────────────────────────────────
+  // Computed directly from currentPerformer (synchronous), bypassing the
+  // selectedPerformers state that updates asynchronously via useEffect.
+  // This eliminates the "piscada" (flicker) caused by the data lag.
+
+  // Top tracks for current performer (up to 5 for the songs list)
   const currentPerformerTracks = useMemo(() => {
     if (!spotifyData?.rankingsByPerformer) return [];
     const performer = presentation.currentPerformer;
@@ -181,76 +228,114 @@ export function DashboardClient({
       return (
         spotifyData.rankingsByPerformer
           .find((p) => p.performer === performer)
-          ?.rankings.slice(0, 3) ?? []
+          ?.rankings.slice(0, 10) ?? []
       );
     }
-    return spotifyData.rankingsByPerformer[0]?.rankings.slice(0, 3) ?? [];
+    return spotifyData.rankingsByPerformer[0]?.rankings.slice(0, 10) ?? [];
   }, [spotifyData, presentation.currentPerformer]);
 
-  // ─── TV-specific data ──────────────────────────────────────────────────────
-  // Computed directly from currentPerformer (synchronous), bypassing the
-  // selectedPerformers state that updates asynchronously via useEffect.
-  // This eliminates the "piscada" (flicker) caused by the data lag.
-  const tvPerformers = useMemo(
-    () =>
-      presentation.currentPerformer ? [presentation.currentPerformer] : [],
-    [presentation.currentPerformer],
-  );
+  // Total streams (Spotify track streams + YouTube views)
+  const tvTotalStreams = useMemo(() => {
+    let total = 0;
+    let hasData = false;
 
-  const tvYoutubeData = useMemo(
-    () =>
-      presentation.currentPerformer
-        ? initialData?.[presentation.currentPerformer]?.youtube
-        : youtubeData,
-    [presentation.currentPerformer, initialData, youtubeData],
-  );
+    // Spotify streams
+    if (spotifyData?.rankingsByPerformer) {
+      const performer = presentation.currentPerformer;
+      const rankings = performer
+        ? spotifyData.rankingsByPerformer.find((p) => p.performer === performer)
+            ?.rankings
+        : spotifyData.rankingsByPerformer[0]?.rankings;
+      if (rankings && rankings.length > 0) {
+        total += rankings.reduce((sum, r) => sum + r.streams, 0);
+        hasData = true;
+      }
+    }
 
-  const tvInstagramData = useMemo(
-    () =>
-      presentation.currentPerformer
-        ? initialData?.[presentation.currentPerformer]?.instagram
-        : instagramData,
-    [presentation.currentPerformer, initialData, instagramData],
-  );
+    // YouTube views
+    const ytViews = presentation.currentPerformer
+      ? initialData?.[presentation.currentPerformer]?.youtube?.views?.latest
+      : undefined;
+    if (ytViews) {
+      total += ytViews;
+      hasData = true;
+    }
 
-  const tvSpotifyData = useMemo(
-    () =>
-      presentation.currentPerformer
-        ? initialData?.[presentation.currentPerformer]?.spotify
-        : spotifyDataFromDashboard,
-    [presentation.currentPerformer, initialData, spotifyDataFromDashboard],
-  );
+    return hasData ? total : undefined;
+  }, [spotifyData, presentation.currentPerformer, initialData]);
 
-  const tvYoutubeChartData = useChartData(
-    initialData || undefined,
-    "youtube",
-    "followers",
-    tvPerformers,
-    period,
-  );
+  // Performer-specific platform data (sync, no flicker)
+  const tvPerformerData = useMemo(() => {
+    if (!presentation.currentPerformer || !initialData) return null;
+    return initialData[presentation.currentPerformer] ?? null;
+  }, [presentation.currentPerformer, initialData]);
 
-  const tvInstagramChartData = useChartData(
-    initialData || undefined,
-    "instagram",
-    "followers",
-    tvPerformers,
-    period,
-  );
+  // City data from spotify.top_city_listeners
+  const tvCityData = useMemo(() => {
+    const spotify = tvPerformerData?.spotify as
+      | Record<string, unknown>
+      | undefined;
+    return (
+      (spotify?.top_city_listeners as
+        | {
+            entries: Array<{
+              value: number;
+              extra_data?: { city: string; country: string };
+            }>;
+          }
+        | undefined) ?? null
+    );
+  }, [tvPerformerData]);
 
-  const tvSpotifyFollowersChartData = useChartData(
-    initialData || undefined,
-    "spotify",
-    "followers",
-    tvPerformers,
-    period,
-  );
+  // Performer image URLs from files
+  const tvBannerUrl = useMemo(() => {
+    return tvPerformerData?.files?.banner ?? null;
+  }, [tvPerformerData]);
 
-  const tvSpotifyListenersChartData = useChartData(
-    initialData || undefined,
-    "spotify",
-    "monthly_listeners",
-    tvPerformers,
-    period,
+  const tvProfileUrl = useMemo(() => {
+    return tvPerformerData?.files?.profile ?? null;
+  }, [tvPerformerData]);
+
+  // Total followers (Spotify + YouTube + Instagram)
+  const tvTotalFollowers = useMemo(() => {
+    if (!tvPerformerData) return undefined;
+    let total = 0;
+    let hasData = false;
+    if (tvPerformerData.spotify?.followers.latest) {
+      total += tvPerformerData.spotify.followers.latest;
+      hasData = true;
+    }
+    if (tvPerformerData.youtube?.followers.latest) {
+      total += tvPerformerData.youtube.followers.latest;
+      hasData = true;
+    }
+    if (tvPerformerData.instagram?.followers.latest) {
+      total += tvPerformerData.instagram.followers.latest;
+      hasData = true;
+    }
+    return hasData ? total : undefined;
+  }, [tvPerformerData]);
+
+  // Metric deltas (growth within selected period)
+  const tvVideosDelta = useMemo(
+    () => getMetricDelta(tvPerformerData?.youtube?.video_count, period),
+    [tvPerformerData, period],
+  );
+  const tvViewsDelta = useMemo(
+    () => getMetricDelta(tvPerformerData?.youtube?.views, period),
+    [tvPerformerData, period],
+  );
+  const tvFollowersDelta = useMemo(() => {
+    const sp = getMetricDelta(tvPerformerData?.spotify?.followers, period) ?? 0;
+    const yt = getMetricDelta(tvPerformerData?.youtube?.followers, period) ?? 0;
+    const ig =
+      getMetricDelta(tvPerformerData?.instagram?.followers, period) ?? 0;
+    const total = sp + yt + ig;
+    return total !== 0 ? total : undefined;
+  }, [tvPerformerData, period]);
+  const tvListenersDelta = useMemo(
+    () => getMetricDelta(tvPerformerData?.spotify?.monthly_listeners, period),
+    [tvPerformerData, period],
   );
 
   if (!initialData) {
@@ -298,16 +383,27 @@ export function DashboardClient({
                 exit={{ opacity: 0, y: 6 }}
                 transition={{ duration: 0.25 }}
               >
-                <div className="flex size-9 items-center justify-center rounded-full bg-primary/20 text-lg font-bold text-primary">
-                  {presentation.showingCompany
-                    ? (presentation.currentCompany?.name.charAt(0) ?? "C")
-                    : (presentation.currentPerformer?.charAt(0) ?? "●")}
-                </div>
+                {/* Profile image (square) or fallback initial */}
+                {!presentation.showingCompany && tvProfileUrl ? (
+                  <div className="relative size-20 shrink-0 overflow-hidden rounded-xl">
+                    <img
+                      src={tvProfileUrl}
+                      alt={presentation.currentPerformer ?? ""}
+                      className="size-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex size-20 items-center justify-center rounded-xl bg-primary/20 text-2xl font-bold text-primary">
+                    {presentation.showingCompany
+                      ? (presentation.currentCompany?.name.charAt(0) ?? "C")
+                      : (presentation.currentPerformer?.charAt(0) ?? "●")}
+                  </div>
+                )}
                 <div>
                   <p className="mb-0.5 text-xs leading-none text-muted-foreground">
                     Exibindo
                   </p>
-                  <p className="text-lg leading-none font-bold">
+                  <p className="text-xl leading-none font-bold">
                     {presentation.showingCompany
                       ? (presentation.currentCompany?.name ?? "Empresa")
                       : (presentation.currentPerformer ?? "Todos")}
@@ -352,238 +448,50 @@ export function DashboardClient({
               {presentation.showingCompany && presentation.currentCompany ? (
                 <motion.div
                   key={`company-${presentation.currentCompany.name}`}
-                  className="absolute inset-0 p-4"
+                  className="absolute inset-0"
                   initial={{ x: "100%" }}
                   animate={{ x: 0 }}
                   exit={{ x: "-100%" }}
                   transition={{ duration: 0.45, ease: "easeInOut" }}
                 >
                   <CompanyDisplay
-                    companyName={presentation.currentCompany.name}
                     performers={presentation.currentCompany.performers}
                     rotationInterval={presentation.rotationInterval}
                     initialData={initialData}
+                    period={period}
                   />
                 </motion.div>
               ) : (
                 <motion.div
                   key={presentation.currentPerformer ?? "all"}
-                  className="absolute inset-0 flex flex-col gap-4 overflow-y-auto"
+                  className="absolute inset-0"
                   initial={{ x: "100%" }}
                   animate={{ x: 0 }}
                   exit={{ x: "-100%" }}
                   transition={{ duration: 0.45, ease: "easeInOut" }}
                 >
-                  {/* ── SPOTIFY ── */}
-                  {(tvSpotifyData ||
-                    (presentation.currentPerformer &&
-                      (initialData?.[presentation.currentPerformer]
-                        ?.spotify_playlists?.length ?? 0) > 0)) && (
-                    <div className="rounded-xl border bg-card p-4">
-                      {/* Header */}
-                      <div className="mb-3 flex items-center gap-2">
-                        <Music2Icon className="size-5 text-green-500" />
-                        <span className="text-xl font-bold">Spotify</span>
-                      </div>
-
-                      {/* Main content grid */}
-                      <div className="grid grid-cols-[1fr_minmax(0,40%)] gap-4">
-                        {/* Esquerda: métricas + gráficos + playlists */}
-                        <div className="flex flex-col gap-3">
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="rounded-lg bg-muted/50 p-3">
-                              <p className="text-sm text-muted-foreground">
-                                Seguidores
-                              </p>
-                              <p className="text-2xl font-bold tabular-nums">
-                                {tvSpotifyData
-                                  ? formatCompactNumber(
-                                      tvSpotifyData.followers.latest,
-                                    )
-                                  : "—"}
-                              </p>
-                            </div>
-                            <div className="rounded-lg bg-muted/50 p-3">
-                              <p className="text-sm text-muted-foreground">
-                                Ouvintes Mensais
-                              </p>
-                              <p className="text-2xl font-bold tabular-nums">
-                                {tvSpotifyData?.monthly_listeners
-                                  ? formatCompactNumber(
-                                      tvSpotifyData.monthly_listeners.latest,
-                                    )
-                                  : "—"}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex gap-3">
-                            <div className="flex-1">
-                              <MetricsChart
-                                title="Seguidores"
-                                data={tvSpotifyFollowersChartData}
-                                icon={
-                                  <Music2Icon className="size-4 text-green-500" />
-                                }
-                              />
-                            </div>
-                            {tvSpotifyData?.monthly_listeners && (
-                              <div className="flex-1">
-                                <MetricsChart
-                                  title="Ouvintes Mensais"
-                                  data={tvSpotifyListenersChartData}
-                                  icon={
-                                    <Music2Icon className="size-4 text-green-500" />
-                                  }
-                                />
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Playlists in TV mode (compact) */}
-                          {presentation.currentPerformer &&
-                            (initialData?.[presentation.currentPerformer]
-                              ?.spotify_playlists?.length ?? 0) > 0 && (
-                              <div className="space-y-2">
-                                <p className="text-sm font-medium text-muted-foreground">
-                                  Playlists
-                                </p>
-                                {initialData![
-                                  presentation.currentPerformer
-                                ].spotify_playlists!.map((playlist) => (
-                                  <div
-                                    key={playlist.name}
-                                    className="rounded-lg bg-muted/50 px-3 py-2"
-                                  >
-                                    <p className="text-sm font-medium">
-                                      {playlist.name}
-                                    </p>
-                                    <div className="flex gap-4 text-xs text-muted-foreground">
-                                      <span>
-                                        Seguidores:{" "}
-                                        {formatCompactNumber(
-                                          playlist.followers.latest,
-                                        )}
-                                      </span>
-                                      <span>
-                                        Faixas:{" "}
-                                        {formatCompactNumber(
-                                          playlist.track_count.latest,
-                                        )}
-                                      </span>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                        </div>
-
-                        {/* Direita: top 3 rankings + cities */}
-                        <div className="flex flex-col gap-3">
-                          <TopRankingsPresentation
-                            rankings={currentPerformerTracks}
-                          />
-                          <TopCitiesList
-                            data={
-                              presentation.currentPerformer
-                                ? initialData?.[presentation.currentPerformer]
-                                : null
-                            }
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ── YOUTUBE + INSTAGRAM ── */}
-                  {(tvYoutubeData || tvInstagramData) && (
-                    <div className="grid grid-cols-2 gap-3">
-                      {/* YouTube */}
-                      {tvYoutubeData && (
-                        <div className="flex flex-col gap-3 rounded-xl border bg-card p-4">
-                          <div className="flex items-center gap-2">
-                            <YoutubeIcon className="size-5 text-red-500" />
-                            <span className="text-xl font-bold">YouTube</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="rounded-lg bg-muted/50 p-4">
-                              <p className="text-sm text-muted-foreground">
-                                Inscritos
-                              </p>
-                              <p className="text-2xl font-bold tabular-nums">
-                                {tvYoutubeData
-                                  ? formatCompactNumber(
-                                      tvYoutubeData.followers.latest,
-                                    )
-                                  : "—"}
-                              </p>
-                            </div>
-                            <div className="rounded-lg bg-muted/50 p-4">
-                              <p className="text-sm text-muted-foreground">
-                                Views Totais
-                              </p>
-                              <p className="text-2xl font-bold tabular-nums">
-                                {tvYoutubeData?.views
-                                  ? formatCompactNumber(
-                                      tvYoutubeData.views.latest,
-                                    )
-                                  : "—"}
-                              </p>
-                            </div>
-                          </div>
-                          <MetricsChart
-                            title="Inscritos"
-                            data={tvYoutubeChartData}
-                            icon={
-                              <YoutubeIcon className="size-4 text-red-500" />
-                            }
-                          />
-                        </div>
-                      )}
-
-                      {/* Instagram */}
-                      {tvInstagramData && (
-                        <div className="flex flex-col gap-3 rounded-xl border bg-card p-4">
-                          <div className="flex items-center gap-2">
-                            <InstagramIcon className="size-5 text-pink-500" />
-                            <span className="text-xl font-bold">Instagram</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="rounded-lg bg-muted/50 p-4">
-                              <p className="text-sm text-muted-foreground">
-                                Seguidores
-                              </p>
-                              <p className="text-2xl font-bold tabular-nums">
-                                {tvInstagramData
-                                  ? formatCompactNumber(
-                                      tvInstagramData.followers.latest,
-                                    )
-                                  : "—"}
-                              </p>
-                            </div>
-                            <div className="rounded-lg bg-muted/50 p-4">
-                              <p className="text-sm text-muted-foreground">
-                                Posts
-                              </p>
-                              <p className="text-2xl font-bold tabular-nums">
-                                {tvInstagramData?.post_count
-                                  ? formatCompactNumber(
-                                      tvInstagramData.post_count.latest,
-                                    )
-                                  : "—"}
-                              </p>
-                            </div>
-                          </div>
-                          <MetricsChart
-                            title="Seguidores"
-                            data={tvInstagramChartData}
-                            icon={
-                              <InstagramIcon className="size-4 text-pink-500" />
-                            }
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  <PerformerPresentation
+                    performerName={presentation.currentPerformer ?? "Todos"}
+                    rankings={currentPerformerTracks}
+                    cityData={tvCityData}
+                    bannerUrl={tvBannerUrl}
+                    totalStreams={tvTotalStreams}
+                    youtubeVideos={
+                      tvPerformerData?.youtube?.video_count?.latest
+                    }
+                    youtubeViews={tvPerformerData?.youtube?.views?.latest}
+                    streamsDelta={tvViewsDelta}
+                    videosDelta={tvVideosDelta}
+                    viewsDelta={tvViewsDelta}
+                    totalFollowers={tvTotalFollowers}
+                    monthlyListeners={
+                      tvPerformerData?.spotify?.monthly_listeners?.latest
+                    }
+                    followersDelta={tvFollowersDelta}
+                    listenersDelta={tvListenersDelta}
+                    hasSpotify={!!tvPerformerData?.spotify}
+                    hasYoutube={!!tvPerformerData?.youtube}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
