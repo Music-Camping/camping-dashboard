@@ -376,51 +376,59 @@ export function CompanyDisplay({
 
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col px-5 py-4">
-        <div className="grid flex-1 grid-cols-[1fr_1fr] gap-5 overflow-hidden">
-          {/* ── Left: 3x2 Metric Cards ── */}
-          <div className="grid grid-cols-2 grid-rows-3 gap-3">
-            <MetricCard
-              label="Streams"
-              value={aggregated.streams}
-              delta={deltas.streams}
-              glowColor="bg-green-500/[0.06]"
-              icons={[spotifyIcon, youtubeIcon]}
-              delay={0}
-            />
-            <MetricCard
-              label="Vídeos"
-              value={aggregated.videos}
-              delta={deltas.videos}
-              glowColor="bg-red-500/[0.06]"
-              icons={[youtubeIcon]}
-              delay={0.06}
-            />
-            <MetricCard
-              label="Views"
-              value={aggregated.views}
-              delta={deltas.views}
-              glowColor="bg-sky-500/[0.06]"
-              icons={[youtubeIcon]}
-              delay={0.12}
-            />
-            <MetricCard
-              label="Seguidores"
-              value={aggregated.followers}
-              delta={deltas.followers}
-              glowColor="bg-pink-500/[0.06]"
-              icons={[spotifyIcon, youtubeIcon]}
-              delay={0.18}
-            />
-            <MetricCard
-              label="Ouvintes Mensais"
-              value={aggregated.listeners}
-              delta={deltas.listeners}
-              glowColor="bg-emerald-500/[0.06]"
-              icons={[spotifyIcon]}
-              delay={0.24}
-            />
-            {/* Empty 6th slot or placeholder */}
-            <div className="rounded-2xl bg-white/[0.03]" />
+        <div className="grid flex-1 grid-cols-[2fr_3fr] gap-5 overflow-hidden">
+          {/* ── Left: Metric Cards (only shown if data exists) ── */}
+          <div className="grid auto-rows-fr grid-cols-2 content-start gap-3">
+            {aggregated.streams != null && (
+              <MetricCard
+                label="Streams"
+                value={aggregated.streams}
+                delta={deltas.streams}
+                glowColor="bg-green-500/[0.06]"
+                icons={[spotifyIcon, youtubeIcon]}
+                delay={0}
+              />
+            )}
+            {aggregated.videos != null && (
+              <MetricCard
+                label="Vídeos"
+                value={aggregated.videos}
+                delta={deltas.videos}
+                glowColor="bg-red-500/[0.06]"
+                icons={[youtubeIcon]}
+                delay={0.06}
+              />
+            )}
+            {aggregated.views != null && (
+              <MetricCard
+                label="Views"
+                value={aggregated.views}
+                delta={deltas.views}
+                glowColor="bg-sky-500/[0.06]"
+                icons={[youtubeIcon]}
+                delay={0.12}
+              />
+            )}
+            {aggregated.followers != null && (
+              <MetricCard
+                label="Seguidores"
+                value={aggregated.followers}
+                delta={deltas.followers}
+                glowColor="bg-pink-500/[0.06]"
+                icons={[spotifyIcon, youtubeIcon]}
+                delay={0.18}
+              />
+            )}
+            {aggregated.listeners != null && (
+              <MetricCard
+                label="Ouvintes Mensais"
+                value={aggregated.listeners}
+                delta={deltas.listeners}
+                glowColor="bg-emerald-500/[0.06]"
+                icons={[spotifyIcon]}
+                delay={0.24}
+              />
+            )}
           </div>
 
           {/* ── Right: Artist Cards (3 at a time, rotating) ── */}
