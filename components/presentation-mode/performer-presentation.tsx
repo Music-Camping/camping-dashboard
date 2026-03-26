@@ -75,6 +75,46 @@ function DeltaBadge({ value }: { value?: number }) {
   );
 }
 
+/** Single metric card */
+function MetricCard({
+  label,
+  value,
+  delta,
+  glow,
+  icons,
+  delay,
+}: {
+  label: string;
+  value: number;
+  delta?: number;
+  glow: string;
+  icons: (React.ReactNode | false | undefined)[];
+  delay: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.92 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.35, delay }}
+      className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.06] p-5 shadow-xl backdrop-blur-xl"
+    >
+      <div
+        className={`absolute -top-6 -right-6 size-24 rounded-full ${glow} blur-2xl`}
+      />
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-white/50">{label}</span>
+        <StackedIcons platforms={icons.filter(Boolean) as React.ReactNode[]} />
+      </div>
+      <div className="mt-auto flex items-end justify-between">
+        <p className="text-3xl font-black text-white tabular-nums">
+          {formatCompactNumber(value)}
+        </p>
+        <DeltaBadge value={delta} />
+      </div>
+    </motion.div>
+  );
+}
+
 /** Stacked platform icons (overlapping, like Muso.AI) */
 function StackedIcons({ platforms }: { platforms: React.ReactNode[] }) {
   if (platforms.length === 0) return null;
@@ -148,139 +188,85 @@ export function PerformerPresentation({
       {/* ── Content ── */}
       <div className="relative z-10 flex h-full flex-col px-5 py-4">
         {/* ── Grid: 4 cards (left) + Songs (right) ── */}
-        <div className="grid flex-1 grid-cols-[1fr_1fr] gap-5 overflow-hidden">
-          {/* ── Left: 2x3 Metric Cards ── */}
-          <div className="grid grid-cols-2 grid-rows-3 gap-3">
-            {/* Card 1: Streams */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.35, delay: 0 }}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.06] p-5 shadow-xl backdrop-blur-xl transition-colors duration-300 hover:bg-white/[0.09]"
-            >
-              <div className="absolute -top-6 -right-6 size-24 rounded-full bg-green-500/[0.06] blur-2xl" />
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-white/50">
-                  Streams
-                </span>
-                <StackedIcons
-                  platforms={
-                    [
-                      hasSpotify && (
-                        <SpotifyIcon className="size-full text-green-400" />
-                      ),
-                      hasYoutube && (
-                        <YouTubeIcon className="size-full text-red-400" />
-                      ),
-                      hasTiktok && (
-                        <TikTokIcon className="size-full text-white/70" />
-                      ),
-                    ].filter(Boolean) as React.ReactNode[]
-                  }
-                />
-              </div>
-              <div className="mt-auto flex items-end justify-between">
-                <p className="text-3xl font-black text-white tabular-nums">
-                  {totalStreams != null
-                    ? formatCompactNumber(totalStreams)
-                    : "—"}
-                </p>
-                <DeltaBadge value={streamsDelta} />
-              </div>
-            </motion.div>
-
-            {/* Card 2: Videos */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.35, delay: 0.06 }}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.06] p-5 shadow-xl backdrop-blur-xl transition-colors duration-300 hover:bg-white/[0.09]"
-            >
-              <div className="absolute -top-6 -right-6 size-24 rounded-full bg-red-500/[0.06] blur-2xl" />
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-white/50">
-                  Vídeos
-                </span>
-                <StackedIcons
-                  platforms={
-                    [
-                      hasTiktok && (
-                        <TikTokIcon className="size-full text-white/70" />
-                      ),
-                      hasYoutube && (
-                        <YouTubeIcon className="size-full text-red-400" />
-                      ),
-                    ].filter(Boolean) as React.ReactNode[]
-                  }
-                />
-              </div>
-              <div className="mt-auto flex items-end justify-between">
-                <p className="text-3xl font-black text-white tabular-nums">
-                  {youtubeVideos != null
-                    ? formatCompactNumber(youtubeVideos)
-                    : "—"}
-                </p>
-                <DeltaBadge value={videosDelta} />
-              </div>
-            </motion.div>
-
-            {/* Card 3: Views */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.35, delay: 0.12 }}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.06] p-5 shadow-xl backdrop-blur-xl transition-colors duration-300 hover:bg-white/[0.09]"
-            >
-              <div className="absolute -top-6 -right-6 size-24 rounded-full bg-sky-500/[0.06] blur-2xl" />
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-white/50">Views</span>
-                <StackedIcons
-                  platforms={
-                    [
-                      hasTiktok && (
-                        <TikTokIcon className="size-full text-white/70" />
-                      ),
-                      hasYoutube && (
-                        <YouTubeIcon className="size-full text-red-400" />
-                      ),
-                    ].filter(Boolean) as React.ReactNode[]
-                  }
-                />
-              </div>
-              <div className="mt-auto flex items-end justify-between">
-                <p className="text-3xl font-black text-white tabular-nums">
-                  {youtubeViews != null
-                    ? formatCompactNumber(youtubeViews)
-                    : "—"}
-                </p>
-                <DeltaBadge value={viewsDelta} />
-              </div>
-            </motion.div>
-
-            {/* Card 4: Top Cities */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.35, delay: 0.18 }}
-              className="group relative flex flex-col overflow-hidden rounded-2xl bg-white/[0.06] p-4 shadow-xl backdrop-blur-xl transition-colors duration-300 hover:bg-white/[0.09]"
-            >
-              <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-sm font-medium text-white/50">
-                  Top Cidades
-                </span>
-                <StackedIcons
-                  platforms={
-                    [
-                      hasSpotify && (
-                        <SpotifyIcon className="size-full text-green-400" />
-                      ),
-                    ].filter(Boolean) as React.ReactNode[]
-                  }
-                />
-              </div>
-
-              {cities.length > 0 ? (
+        <div className="grid flex-1 grid-cols-[2fr_3fr] gap-5 overflow-hidden">
+          {/* ── Left: Metric Cards (only shown if data exists) ── */}
+          <div className="grid auto-rows-fr grid-cols-2 content-start gap-3">
+            {totalStreams != null && (
+              <MetricCard
+                label="Streams"
+                value={totalStreams}
+                delta={streamsDelta}
+                glow="bg-green-500/[0.06]"
+                icons={[
+                  hasSpotify && (
+                    <SpotifyIcon className="size-full text-green-400" />
+                  ),
+                  hasYoutube && (
+                    <YouTubeIcon className="size-full text-red-400" />
+                  ),
+                  hasTiktok && (
+                    <TikTokIcon className="size-full text-white/70" />
+                  ),
+                ]}
+                delay={0}
+              />
+            )}
+            {youtubeVideos != null && (
+              <MetricCard
+                label="Vídeos"
+                value={youtubeVideos}
+                delta={videosDelta}
+                glow="bg-red-500/[0.06]"
+                icons={[
+                  hasTiktok && (
+                    <TikTokIcon className="size-full text-white/70" />
+                  ),
+                  hasYoutube && (
+                    <YouTubeIcon className="size-full text-red-400" />
+                  ),
+                ]}
+                delay={0.06}
+              />
+            )}
+            {youtubeViews != null && (
+              <MetricCard
+                label="Views"
+                value={youtubeViews}
+                delta={viewsDelta}
+                glow="bg-sky-500/[0.06]"
+                icons={[
+                  hasTiktok && (
+                    <TikTokIcon className="size-full text-white/70" />
+                  ),
+                  hasYoutube && (
+                    <YouTubeIcon className="size-full text-red-400" />
+                  ),
+                ]}
+                delay={0.12}
+              />
+            )}
+            {cities.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.35, delay: 0.18 }}
+                className="group relative flex flex-col overflow-hidden rounded-2xl bg-white/[0.06] p-4 shadow-xl backdrop-blur-xl"
+              >
+                <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm font-medium text-white/50">
+                    Top Cidades
+                  </span>
+                  <StackedIcons
+                    platforms={
+                      [
+                        hasSpotify && (
+                          <SpotifyIcon className="size-full text-green-400" />
+                        ),
+                      ].filter(Boolean) as React.ReactNode[]
+                    }
+                  />
+                </div>
                 <div className="flex flex-1 flex-col justify-center gap-1.5">
                   {cities.map((city, i) => (
                     <div
@@ -301,79 +287,39 @@ export function PerformerPresentation({
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="flex flex-1 items-center justify-center">
-                  <p className="text-xs text-white/30">Indisponível</p>
-                </div>
-              )}
-            </motion.div>
-
-            {/* Card 5: Total Followers */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.35, delay: 0.24 }}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.06] p-5 shadow-xl backdrop-blur-xl transition-colors duration-300 hover:bg-white/[0.09]"
-            >
-              <div className="absolute -top-6 -right-6 size-24 rounded-full bg-pink-500/[0.06] blur-2xl" />
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-white/50">
-                  Seguidores
-                </span>
-                <StackedIcons
-                  platforms={
-                    [
-                      hasSpotify && (
-                        <SpotifyIcon className="size-full text-green-400" />
-                      ),
-                      hasYoutube && (
-                        <YouTubeIcon className="size-full text-red-400" />
-                      ),
-                    ].filter(Boolean) as React.ReactNode[]
-                  }
-                />
-              </div>
-              <div className="mt-auto flex items-end justify-between">
-                <p className="text-3xl font-black text-white tabular-nums">
-                  {totalFollowers != null
-                    ? formatCompactNumber(totalFollowers)
-                    : "—"}
-                </p>
-                <DeltaBadge value={followersDelta} />
-              </div>
-            </motion.div>
-
-            {/* Card 6: Monthly Listeners */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.35, delay: 0.3 }}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.06] p-5 shadow-xl backdrop-blur-xl transition-colors duration-300 hover:bg-white/[0.09]"
-            >
-              <div className="absolute -top-6 -right-6 size-24 rounded-full bg-emerald-500/[0.06] blur-2xl" />
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-white/50">
-                  Ouvintes Mensais
-                </span>
-                <StackedIcons
-                  platforms={
-                    [
-                      hasSpotify && (
-                        <SpotifyIcon className="size-full text-green-400" />
-                      ),
-                    ].filter(Boolean) as React.ReactNode[]
-                  }
-                />
-              </div>
-              <div className="mt-auto flex items-end justify-between">
-                <p className="text-3xl font-black text-white tabular-nums">
-                  {monthlyListeners != null
-                    ? formatCompactNumber(monthlyListeners)
-                    : "—"}
-                </p>
-                <DeltaBadge value={listenersDelta} />
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
+            {totalFollowers != null && (
+              <MetricCard
+                label="Seguidores"
+                value={totalFollowers}
+                delta={followersDelta}
+                glow="bg-pink-500/[0.06]"
+                icons={[
+                  hasSpotify && (
+                    <SpotifyIcon className="size-full text-green-400" />
+                  ),
+                  hasYoutube && (
+                    <YouTubeIcon className="size-full text-red-400" />
+                  ),
+                ]}
+                delay={0.24}
+              />
+            )}
+            {monthlyListeners != null && (
+              <MetricCard
+                label="Ouvintes Mensais"
+                value={monthlyListeners}
+                delta={listenersDelta}
+                glow="bg-emerald-500/[0.06]"
+                icons={[
+                  hasSpotify && (
+                    <SpotifyIcon className="size-full text-green-400" />
+                  ),
+                ]}
+                delay={0.3}
+              />
+            )}
           </div>
 
           {/* ── Right: Best Songs List ── */}
