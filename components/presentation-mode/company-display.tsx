@@ -22,6 +22,7 @@ interface CompanyDisplayProps {
   initialData?: DashboardResponse | null;
   spotifyData?: SpotifyMetrics;
   period: PeriodFilter;
+  bannerUrl?: string;
 }
 
 /* ── Platform SVG Icons ── */
@@ -243,6 +244,7 @@ export function CompanyDisplay({
   initialData,
   spotifyData,
   period,
+  bannerUrl,
 }: CompanyDisplayProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const performersPerPage = 3;
@@ -431,8 +433,23 @@ export function CompanyDisplay({
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-2xl">
-      {/* Dark atmospheric background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.12)_0%,_transparent_50%),_radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.08)_0%,_transparent_50%),_linear-gradient(to_bottom,_#0a0a0a,_#111111)]" />
+      {/* Background */}
+      {bannerUrl ? (
+        <>
+          <Image
+            src={bannerUrl}
+            alt="Company banner"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+        </>
+      ) : (
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.12)_0%,_transparent_50%),_radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.08)_0%,_transparent_50%),_linear-gradient(to_bottom,_#0a0a0a,_#111111)]" />
+      )}
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{

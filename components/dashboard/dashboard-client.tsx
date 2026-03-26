@@ -385,21 +385,27 @@ export function DashboardClient({
                 transition={{ duration: 0.25 }}
               >
                 {/* Profile image (square) or fallback initial */}
-                {!presentation.showingCompany && tvProfileUrl ? (
-                  <div className="relative size-20 shrink-0 overflow-hidden rounded-xl">
-                    <img
-                      src={tvProfileUrl}
-                      alt={presentation.currentPerformer ?? ""}
-                      className="size-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex size-20 items-center justify-center rounded-xl bg-primary/20 text-2xl font-bold text-primary">
-                    {presentation.showingCompany
-                      ? (presentation.currentCompany?.name.charAt(0) ?? "C")
-                      : (presentation.currentPerformer?.charAt(0) ?? "●")}
-                  </div>
-                )}
+                {(() => {
+                  const profileSrc = presentation.showingCompany
+                    ? presentation.currentCompany?.files?.profile
+                    : tvProfileUrl;
+                  const label = presentation.showingCompany
+                    ? (presentation.currentCompany?.name ?? "C")
+                    : (presentation.currentPerformer ?? "●");
+                  return profileSrc ? (
+                    <div className="relative size-20 shrink-0 overflow-hidden rounded-xl">
+                      <img
+                        src={profileSrc}
+                        alt={label}
+                        className="size-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex size-20 items-center justify-center rounded-xl bg-primary/20 text-2xl font-bold text-primary">
+                      {label.charAt(0)}
+                    </div>
+                  );
+                })()}
                 <div>
                   <p className="mb-0.5 text-xs leading-none text-muted-foreground">
                     Exibindo
@@ -461,6 +467,7 @@ export function DashboardClient({
                     initialData={initialData}
                     spotifyData={spotifyData}
                     period={period}
+                    bannerUrl={presentation.currentCompany.files?.banner}
                   />
                 </motion.div>
               ) : (

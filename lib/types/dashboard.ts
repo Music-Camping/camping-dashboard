@@ -47,6 +47,7 @@ export interface PerformerData {
 export interface CompanyInfo {
   name: string;
   performers: string[];
+  files?: PerformerFiles;
 }
 
 export interface CompanyData extends PerformerData {
