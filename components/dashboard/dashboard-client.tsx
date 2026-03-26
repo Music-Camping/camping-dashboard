@@ -458,6 +458,7 @@ export function DashboardClient({
                     performers={presentation.currentCompany.performers}
                     rotationInterval={presentation.rotationInterval}
                     initialData={initialData}
+                    spotifyData={spotifyData}
                     period={period}
                   />
                 </motion.div>
