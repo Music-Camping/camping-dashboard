@@ -96,7 +96,7 @@ function MetricCard({
       initial={{ opacity: 0, scale: 0.92 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.35, delay }}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.06] p-5 shadow-xl backdrop-blur-xl"
+      className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-5 shadow-lg backdrop-blur-md"
     >
       <div
         className={`absolute -top-6 -right-6 size-24 rounded-full ${glow} blur-2xl`}
@@ -188,9 +188,9 @@ export function PerformerPresentation({
       {/* ── Content ── */}
       <div className="relative z-10 flex h-full flex-col px-5 py-4">
         {/* ── Grid: 4 cards (left) + Songs (right) ── */}
-        <div className="grid flex-1 grid-cols-[2fr_3fr] gap-5 overflow-hidden">
+        <div className="grid flex-1 grid-cols-[2fr_3fr] gap-6 overflow-hidden">
           {/* ── Left: Metric Cards (only shown if data exists) ── */}
-          <div className="grid auto-rows-fr grid-cols-2 content-start gap-3">
+          <div className="grid auto-rows-auto grid-cols-2 content-start gap-3.5">
             {totalStreams != null && (
               <MetricCard
                 label="Streams"
@@ -250,7 +250,7 @@ export function PerformerPresentation({
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.35, delay: 0.18 }}
-                className="group relative flex flex-col overflow-hidden rounded-2xl bg-white/[0.06] p-4 shadow-xl backdrop-blur-xl"
+                className="group relative flex flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-4 shadow-lg backdrop-blur-md"
               >
                 <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
                 <div className="mb-2 flex items-center justify-between">
@@ -325,14 +325,14 @@ export function PerformerPresentation({
           {/* ── Right: Best Songs List ── */}
           <div className="flex flex-col overflow-hidden">
             {songs.length > 0 ? (
-              <div className="flex flex-1 flex-col gap-1 overflow-hidden rounded-2xl bg-white/[0.06] p-2 backdrop-blur-xl">
+              <div className="flex flex-1 flex-col gap-1.5 overflow-hidden rounded-2xl bg-white/[0.03] p-2.5 backdrop-blur-md">
                 {songs.map((track, idx) => (
                   <motion.div
                     key={track.trackId}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: idx * 0.04 }}
-                    className="flex items-center gap-3 rounded-lg bg-white/[0.04] px-2.5 py-1.5 transition-colors duration-200 hover:bg-white/[0.08]"
+                    className="flex items-center gap-3 rounded-lg bg-white/[0.02] px-2.5 py-1.5 transition-colors duration-200 hover:bg-white/[0.06]"
                   >
                     {/* Thumbnail */}
                     <div className="relative size-9 shrink-0 overflow-hidden rounded-md">
@@ -370,7 +370,7 @@ export function PerformerPresentation({
                 ))}
               </div>
             ) : (
-              <div className="flex flex-1 items-center justify-center rounded-2xl bg-white/[0.06] backdrop-blur-xl">
+              <div className="flex flex-1 items-center justify-center rounded-2xl bg-white/[0.03] backdrop-blur-md">
                 <p className="text-sm text-white/40">Dados indisponíveis</p>
               </div>
             )}

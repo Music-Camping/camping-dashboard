@@ -121,7 +121,7 @@ function MetricCard({
       initial={{ opacity: 0, scale: 0.92 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.35, delay }}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.06] p-4 shadow-xl backdrop-blur-xl transition-colors duration-300 hover:bg-white/[0.09]"
+      className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-4 shadow-lg backdrop-blur-md"
     >
       <div
         className={`absolute -top-6 -right-6 size-24 rounded-full ${glowColor} blur-2xl`}
@@ -165,7 +165,7 @@ function ArtistCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.4, delay }}
-      className="relative flex-1 overflow-hidden rounded-2xl bg-white/[0.06] shadow-xl backdrop-blur-xl"
+      className="relative flex-1 overflow-hidden rounded-2xl bg-white/[0.03] shadow-lg backdrop-blur-md"
     >
       {/* Banner BG */}
       {bannerUrl ? (
@@ -376,9 +376,9 @@ export function CompanyDisplay({
 
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col px-5 py-4">
-        <div className="grid flex-1 grid-cols-[2fr_3fr] gap-5 overflow-hidden">
+        <div className="grid flex-1 grid-cols-[2fr_3fr] gap-6 overflow-hidden">
           {/* ── Left: Metric Cards (only shown if data exists) ── */}
-          <div className="grid auto-rows-fr grid-cols-2 content-start gap-3">
+          <div className="grid auto-rows-auto grid-cols-2 content-start gap-3.5">
             {aggregated.streams != null && (
               <MetricCard
                 label="Streams"
@@ -432,7 +432,7 @@ export function CompanyDisplay({
           </div>
 
           {/* ── Right: Artist Cards (3 at a time, rotating) ── */}
-          <div className="relative flex flex-col gap-3 overflow-hidden">
+          <div className="relative flex flex-col gap-3.5 overflow-hidden">
             {/* Page indicator overlay */}
             {totalPages > 1 && (
               <div className="absolute top-2 right-2 z-20 rounded-md bg-black/40 px-2 py-0.5 text-xs font-medium text-white/60 backdrop-blur-sm">
@@ -443,7 +443,7 @@ export function CompanyDisplay({
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentPage}
-                className="flex flex-1 flex-col gap-3"
+                className="flex flex-1 flex-col gap-3.5"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
