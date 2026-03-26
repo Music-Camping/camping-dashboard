@@ -6,13 +6,20 @@ import { MusicIcon } from "lucide-react";
 import Image from "next/image";
 
 import type { DashboardResponse, MetricData } from "@/lib/types/dashboard";
+import type { SpotifyMetrics } from "@/lib/types/spotify";
 import type { PeriodFilter } from "@/lib/types/filters";
 import { formatCompactNumber } from "@/lib/utils";
+
+interface CityEntry {
+  value: number;
+  extra_data?: { city: string; country: string };
+}
 
 interface CompanyDisplayProps {
   performers: string[];
   rotationInterval: number;
   initialData?: DashboardResponse | null;
+  spotifyData?: SpotifyMetrics;
   period: PeriodFilter;
 }
 
@@ -233,6 +240,7 @@ export function CompanyDisplay({
   performers,
   rotationInterval,
   initialData,
+  spotifyData,
   period,
 }: CompanyDisplayProps) {
   const [currentPage, setCurrentPage] = useState(0);
@@ -274,6 +282,20 @@ export function CompanyDisplay({
     let hasListeners = false;
     let hasSpotify = false;
     let hasYoutube = false;
+
+    // Spotify track streams from rankings
+    if (spotifyData?.rankingsByPerformer) {
+      performers.forEach((name) => {
+        const perf = spotifyData.rankingsByPerformer.find(
+          (p) => p.performer === name,
+        );
+        if (perf?.rankings && perf.rankings.length > 0) {
+          totalStreams += perf.rankings.reduce((sum, r) => sum + r.streams, 0);
+          hasStreams = true;
+          hasSpotify = true;
+        }
+      });
+    }
 
     performers.forEach((name) => {
       const data = initialData?.[name];
@@ -322,6 +344,42 @@ export function CompanyDisplay({
       hasSpotify,
       hasYoutube,
     };
+  }, [performers, initialData, spotifyData]);
+
+  // Aggregate top cities across all performers (sum by city name)
+  const topCities = useMemo(() => {
+    const cityMap = new Map<
+      string,
+      { value: number; city: string; country: string }
+    >();
+
+    performers.forEach((name) => {
+      const data = initialData?.[name];
+      if (!data) return;
+      const spotify = data.spotify as Record<string, unknown> | undefined;
+      const cityMetric = spotify?.top_city_listeners as
+        | { entries: CityEntry[] }
+        | undefined;
+      if (!cityMetric?.entries) return;
+
+      cityMetric.entries.forEach((entry) => {
+        const cityName = entry.extra_data?.city;
+        if (!cityName) return;
+        const key = `${cityName}-${entry.extra_data?.country}`;
+        const existing = cityMap.get(key);
+        if (existing) {
+          existing.value += entry.value;
+        } else {
+          cityMap.set(key, {
+            value: entry.value,
+            city: cityName,
+            country: entry.extra_data?.country ?? "",
+          });
+        }
+      });
+    });
+
+    return [...cityMap.values()].sort((a, b) => b.value - a.value).slice(0, 5);
   }, [performers, initialData]);
 
   // Aggregate deltas
@@ -378,7 +436,7 @@ export function CompanyDisplay({
       <div className="relative z-10 flex h-full flex-col px-5 py-4">
         <div className="grid flex-1 grid-cols-[2fr_3fr] gap-6 overflow-hidden">
           {/* ── Left: Metric Cards (only shown if data exists) ── */}
-          <div className="grid auto-rows-auto grid-cols-2 content-start gap-3.5">
+          <div className="grid auto-rows-[minmax(5.5rem,auto)] grid-cols-2 content-start gap-3.5">
             {aggregated.streams != null && (
               <MetricCard
                 label="Streams"
@@ -428,6 +486,50 @@ export function CompanyDisplay({
                 icons={[spotifyIcon]}
                 delay={0.24}
               />
+            )}
+            {topCities.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.35, delay: 0.3 }}
+                className="group relative flex flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-4 shadow-lg backdrop-blur-md"
+              >
+                <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm font-medium text-white/50">
+                    Top Cidades
+                  </span>
+                  <StackedIcons
+                    platforms={
+                      [
+                        aggregated.hasSpotify && (
+                          <SpotifyIcon className="size-full text-green-400" />
+                        ),
+                      ].filter(Boolean) as React.ReactNode[]
+                    }
+                  />
+                </div>
+                <div className="flex flex-1 flex-col justify-center gap-1.5">
+                  {topCities.map((city, i) => (
+                    <div
+                      key={`${city.city}-${city.country}`}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span className="w-4 shrink-0 text-center text-xs font-bold text-white/30">
+                          {i + 1}
+                        </span>
+                        <span className="truncate text-sm font-medium text-white/80">
+                          {city.city}
+                        </span>
+                      </div>
+                      <span className="ml-2 shrink-0 text-sm font-bold text-amber-400 tabular-nums">
+                        {formatCompactNumber(city.value)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
             )}
           </div>
 
