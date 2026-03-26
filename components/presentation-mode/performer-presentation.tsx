@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { MusicIcon } from "lucide-react";
 import Image from "next/image";
@@ -25,6 +26,7 @@ function YouTubeIcon({ className }: { className?: string }) {
 
 interface CityEntry {
   value: number;
+  datetime: string;
   extra_data?: {
     city: string;
     country: string;
@@ -152,7 +154,19 @@ export function PerformerPresentation({
   hasYoutube,
   hasTiktok,
 }: PerformerPresentationProps) {
-  const cities = cityData?.entries?.slice(0, 5) ?? [];
+  const cities = useMemo(() => {
+    const entries = cityData?.entries;
+    if (!entries || entries.length === 0) return [];
+    // Find the latest timestamp and only use those entries
+    const latestTs = entries.reduce((max, e) => {
+      const t = new Date(e.datetime).getTime();
+      return t > max ? t : max;
+    }, 0);
+    return entries
+      .filter((e) => new Date(e.datetime).getTime() === latestTs)
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+  }, [cityData]);
   const songs = rankings.slice(0, 10);
 
   return (
