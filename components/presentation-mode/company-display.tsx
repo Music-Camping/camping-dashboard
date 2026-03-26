@@ -12,6 +12,7 @@ import { formatCompactNumber } from "@/lib/utils";
 
 interface CityEntry {
   value: number;
+  datetime: string;
   extra_data?: { city: string; country: string };
 }
 
@@ -362,14 +363,18 @@ export function CompanyDisplay({
         | undefined;
       if (!cityMetric?.entries) return;
 
-      // Per performer: keep only the latest value per city
+      // Per performer: keep only the most recent entry per city
       const performerCities = new Map<string, CityEntry>();
       cityMetric.entries.forEach((entry) => {
         const cityName = entry.extra_data?.city;
         if (!cityName) return;
         const key = `${cityName}-${entry.extra_data?.country}`;
         const existing = performerCities.get(key);
-        if (!existing || entry.value > existing.value) {
+        if (
+          !existing ||
+          new Date(entry.datetime).getTime() >
+            new Date(existing.datetime).getTime()
+        ) {
           performerCities.set(key, entry);
         }
       });
