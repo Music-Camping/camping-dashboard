@@ -17,7 +17,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { MusicTrack } from "@/lib/types/music-catalog";
-import { STATUS_LABELS, TYPE_LABELS } from "@/lib/types/music-catalog";
+import {
+  STATUS_LABELS,
+  AUTHORSHIP_LABELS,
+  PHONOGRAM_CONTRACT_LABELS,
+} from "@/lib/types/music-catalog";
 import { cn } from "@/lib/utils";
 
 import { DeleteConfirmation } from "./delete-confirmation";
@@ -103,12 +107,32 @@ export function createColumns({
       },
     },
     {
-      accessorKey: "type",
-      header: "Tipo",
+      accessorKey: "authorship",
+      header: "Autoral",
       cell: ({ getValue }) => {
-        const type = getValue<MusicTrack["type"]>();
+        const authorship = getValue<MusicTrack["authorship"]>();
+        if (!authorship)
+          return <span className="text-muted-foreground">-</span>;
         return (
-          <span className="text-muted-foreground">{TYPE_LABELS[type]}</span>
+          <span className="text-muted-foreground">
+            {AUTHORSHIP_LABELS[authorship]}
+          </span>
+        );
+      },
+      filterFn: (row, id, value) => {
+        return value.includes(row.getValue(id));
+      },
+    },
+    {
+      accessorKey: "phonogram_contract",
+      header: "Contrato Fonograma",
+      cell: ({ getValue }) => {
+        const contract = getValue<MusicTrack["phonogram_contract"]>();
+        if (!contract) return <span className="text-muted-foreground">-</span>;
+        return (
+          <span className="text-muted-foreground">
+            {PHONOGRAM_CONTRACT_LABELS[contract]}
+          </span>
         );
       },
       filterFn: (row, id, value) => {

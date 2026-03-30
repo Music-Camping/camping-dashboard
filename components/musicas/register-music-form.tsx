@@ -17,8 +17,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { SongStatus, SongType } from "@/lib/types/music-catalog";
-import { STATUS_LABELS, TYPE_LABELS } from "@/lib/types/music-catalog";
+import type {
+  SongStatus,
+  SongAuthorship,
+  SongPhonogramContract,
+} from "@/lib/types/music-catalog";
+import {
+  STATUS_LABELS,
+  AUTHORSHIP_LABELS,
+  PHONOGRAM_CONTRACT_LABELS,
+} from "@/lib/types/music-catalog";
 
 const SONG_STATUSES: SongStatus[] = [
   "pending",
@@ -28,12 +36,30 @@ const SONG_STATUSES: SongStatus[] = [
   "released",
 ];
 
-const SONG_TYPES: SongType[] = ["single", "album_track", "feat"];
+const SONG_AUTHORSHIPS: SongAuthorship[] = [
+  "Não Solicitado",
+  "Solicitado",
+  "Recebida",
+];
+const SONG_PHONOGRAM_CONTRACTS: SongPhonogramContract[] = [
+  "Não solicitado",
+  "Solicitado",
+  "Contrato enviado",
+  "Contrato Assinado",
+];
 
 const schema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   status: z.enum(["pending", "recording", "mixing", "mastering", "released"]),
-  type: z.enum(["single", "album_track", "feat"]).optional(),
+  authorship: z.enum(["Não Solicitado", "Solicitado", "Recebida"]).optional(),
+  phonogram_contract: z
+    .enum([
+      "Não solicitado",
+      "Solicitado",
+      "Contrato enviado",
+      "Contrato Assinado",
+    ])
+    .optional(),
   deadline: z.string().optional(),
 });
 
@@ -65,7 +91,10 @@ export function RegisterMusicForm({ onSuccess }: RegisterMusicFormProps) {
         body: JSON.stringify({
           name: data.name,
           status: data.status,
-          ...(data.type && { type: data.type }),
+          ...(data.authorship && { authorship: data.authorship }),
+          ...(data.phonogram_contract && {
+            phonogram_contract: data.phonogram_contract,
+          }),
           ...(data.deadline && {
             deadline: new Date(data.deadline).toISOString(),
           }),
@@ -133,19 +162,42 @@ export function RegisterMusicForm({ onSuccess }: RegisterMusicFormProps) {
             )}
           </div>
 
-          {/* Tipo */}
+          {/* Autoral */}
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="type">Tipo</Label>
+            <Label htmlFor="authorship">Autoral</Label>
             <Select
-              onValueChange={(value) => setValue("type", value as SongType)}
+              onValueChange={(value) =>
+                setValue("authorship", value as SongAuthorship)
+              }
             >
-              <SelectTrigger id="type">
-                <SelectValue placeholder="Selecione o tipo" />
+              <SelectTrigger id="authorship">
+                <SelectValue placeholder="Selecione o status autoral" />
               </SelectTrigger>
               <SelectContent>
-                {SONG_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {TYPE_LABELS[type]}
+                {SONG_AUTHORSHIPS.map((authorship) => (
+                  <SelectItem key={authorship} value={authorship}>
+                    {AUTHORSHIP_LABELS[authorship]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Contrato Fonograma */}
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="phonogram_contract">Contrato Fonograma</Label>
+            <Select
+              onValueChange={(value) =>
+                setValue("phonogram_contract", value as SongPhonogramContract)
+              }
+            >
+              <SelectTrigger id="phonogram_contract">
+                <SelectValue placeholder="Selecione o contrato" />
+              </SelectTrigger>
+              <SelectContent>
+                {SONG_PHONOGRAM_CONTRACTS.map((contract) => (
+                  <SelectItem key={contract} value={contract}>
+                    {PHONOGRAM_CONTRACT_LABELS[contract]}
                   </SelectItem>
                 ))}
               </SelectContent>
