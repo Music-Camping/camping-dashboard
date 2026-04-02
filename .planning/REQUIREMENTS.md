@@ -47,21 +47,21 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase   | Status  |
 | ----------- | ------- | ------- |
-| GRID-01     | Pending | Pending |
-| GRID-02     | Pending | Pending |
-| GRID-03     | Pending | Pending |
-| GRID-04     | Pending | Pending |
-| GRID-05     | Pending | Pending |
-| STRM-01     | Pending | Pending |
-| STRM-02     | Pending | Pending |
+| GRID-01     | Phase 2 | Pending |
+| GRID-02     | Phase 2 | Pending |
+| GRID-03     | Phase 2 | Pending |
+| GRID-04     | Phase 2 | Pending |
+| GRID-05     | Phase 2 | Pending |
+| STRM-01     | Phase 1 | Pending |
+| STRM-02     | Phase 1 | Pending |
 
 **Coverage:**
 
 - v1 requirements: 7 total
-- Mapped to phases: 0
-- Unmapped: 7
+- Mapped to phases: 7
+- Unmapped: 0
 
 ---
 
 _Requirements defined: 2026-04-02_
-_Last updated: 2026-04-02 after initial definition_
+_Last updated: 2026-04-02 after roadmap creation_
