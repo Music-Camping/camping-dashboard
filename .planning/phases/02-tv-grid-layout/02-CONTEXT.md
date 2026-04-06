@@ -26,7 +26,7 @@ All sizing must be responsive across TV resolutions (1080p to 4K) using CSS-only
 
 ### Performer Page Layout
 
-- **D-04:** Left half: 2×3 grid of metric cards (same metrics as today — Spotify Streams, Views, Followers, Listeners, Videos). Each card 1/3 height × 1/2 width of the left panel.
+- **D-04:** Left half: 2×3 grid of metric cards in this exact order (left-to-right, top-to-bottom): 1) Streams, 2) Ouvintes Mensais (Monthly Listeners), 3) Vídeos, 4) Views, 5) Seguidores (Followers), 6) Top Cidades (Top Cities). Each card 1/3 height × 1/2 width of the left panel.
 - **D-05:** Right half: Top 10 Spotify tracks list, filling 100% of the container height.
 - **D-06:** Both halves use `h-full` to fill their parent container.
 
