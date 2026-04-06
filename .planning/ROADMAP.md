@@ -16,7 +16,7 @@ for proper 100vh containment with proportional text scaling across all TV resolu
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Streams Fix** - Remove YouTube views from the total streams count, Spotify-only metric
-- [ ] **Phase 2: TV Grid Layout** - 2x3 CSS Grid filling 100vh with proportional text scaling across TV sizes
+- [x] **Phase 2: TV Grid Layout** - 2x3 CSS Grid filling 100vh with proportional text scaling across TV sizes (completed 2026-04-06)
 
 ## Phase Details
 
@@ -45,13 +45,13 @@ Decimal phases appear between their surrounding integers in numeric order.
 4. Text on all cards remains readable at TV viewing distance — metric labels are at minimum 24px equivalent size on a 1080p display
 5. Text scales proportionally on 4K without fixed-size classes that produce illegible small text
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 
 - [x] 02-01-PLAN.md — Restructure outer container (h-dvh grid shell) + clean globals.css
 - [x] 02-02-PLAN.md — Adapt performer-presentation.tsx (two-column layout + clamp typography)
-- [ ] 02-03-PLAN.md — Adapt company-display.tsx (two-column layout + h-1/3 artist cards + clamp typography)
+- [x] 02-03-PLAN.md — Adapt company-display.tsx (two-column layout + h-1/3 artist cards + clamp typography)
 
 **UI hint**: yes
 
@@ -63,4 +63,4 @@ Phases execute in numeric order: 1 → 2
 | Phase             | Plans Complete | Status      | Completed |
 | ----------------- | -------------- | ----------- | --------- |
 | 1. Streams Fix    | 0/TBD          | Not started | -         |
-| 2. TV Grid Layout | 2/3 | In Progress|  |
+| 2. TV Grid Layout | 3/3 | Complete   | 2026-04-06 |
