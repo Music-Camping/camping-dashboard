@@ -351,8 +351,7 @@ export function DashboardClient({
     <div
       className={cn(
         "flex flex-col gap-8 p-4",
-        presentation.isActive &&
-          "presentation-mode h-dvh overflow-hidden p-0",
+        presentation.isActive && "presentation-mode h-dvh overflow-hidden p-0",
       )}
     >
       {/* Presentation Controls - Hidden, only shows when active */}
