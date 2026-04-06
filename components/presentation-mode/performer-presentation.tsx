@@ -207,7 +207,7 @@ export function PerformerPresentation({
           <div className="grid grid-cols-2 grid-rows-3 gap-3.5">
             {totalStreams != null && (
               <MetricCard
-                label="Streams"
+                label="Spotify Streams"
                 value={totalStreams}
                 delta={streamsDelta}
                 glow="bg-green-500/[0.06]"

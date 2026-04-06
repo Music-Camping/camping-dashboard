@@ -463,11 +463,11 @@ export function CompanyDisplay({
           <div className="grid grid-cols-2 grid-rows-3 gap-3.5">
             {aggregated.streams != null && (
               <MetricCard
-                label="Streams"
+                label="Spotify Streams"
                 value={aggregated.streams}
                 delta={deltas.streams}
                 glowColor="bg-green-500/[0.06]"
-                icons={[spotifyIcon, youtubeIcon]}
+                icons={[spotifyIcon]}
                 delay={0}
               />
             )}
