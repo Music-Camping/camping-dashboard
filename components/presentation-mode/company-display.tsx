@@ -323,9 +323,7 @@ export function CompanyDisplay({
         }
         if (data.youtube.views?.latest) {
           totalViews += data.youtube.views.latest;
-          totalStreams += data.youtube.views.latest;
           hasViews = true;
-          hasStreams = true;
         }
         if (data.youtube.video_count?.latest) {
           totalVideos += data.youtube.video_count.latest;
@@ -396,7 +394,7 @@ export function CompanyDisplay({
 
   // Aggregate deltas
   const deltas = useMemo(() => {
-    let streamsDelta = 0;
+    const streamsDelta = 0;
     let videosDelta = 0;
     let viewsDelta = 0;
     let followersDelta = 0;
@@ -406,7 +404,6 @@ export function CompanyDisplay({
       const data = initialData?.[name];
       if (!data) return;
       viewsDelta += getMetricDelta(data.youtube?.views, period) ?? 0;
-      streamsDelta += getMetricDelta(data.youtube?.views, period) ?? 0;
       videosDelta += getMetricDelta(data.youtube?.video_count, period) ?? 0;
       followersDelta += getMetricDelta(data.spotify?.followers, period) ?? 0;
       followersDelta += getMetricDelta(data.youtube?.followers, period) ?? 0;

@@ -234,7 +234,7 @@ export function DashboardClient({
     return spotifyData.rankingsByPerformer[0]?.rankings.slice(0, 10) ?? [];
   }, [spotifyData, presentation.currentPerformer]);
 
-  // Total streams (Spotify track streams + YouTube views)
+  // Total streams (Spotify track streams only)
   const tvTotalStreams = useMemo(() => {
     let total = 0;
     let hasData = false;
@@ -252,17 +252,8 @@ export function DashboardClient({
       }
     }
 
-    // YouTube views
-    const ytViews = presentation.currentPerformer
-      ? initialData?.[presentation.currentPerformer]?.youtube?.views?.latest
-      : undefined;
-    if (ytViews) {
-      total += ytViews;
-      hasData = true;
-    }
-
     return hasData ? total : undefined;
-  }, [spotifyData, presentation.currentPerformer, initialData]);
+  }, [spotifyData, presentation.currentPerformer]);
 
   // Performer-specific platform data (sync, no flicker)
   const tvPerformerData = useMemo(() => {
@@ -489,7 +480,7 @@ export function DashboardClient({
                       tvPerformerData?.youtube?.video_count?.latest
                     }
                     youtubeViews={tvPerformerData?.youtube?.views?.latest}
-                    streamsDelta={tvViewsDelta}
+                    streamsDelta={undefined}
                     videosDelta={tvVideosDelta}
                     viewsDelta={tvViewsDelta}
                     totalFollowers={tvTotalFollowers}
