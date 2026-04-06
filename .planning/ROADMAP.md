@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ### Phase 2: TV Grid Layout
 
-**Goal**: Presentation mode displays all 6 performer cards simultaneously in a 2x3 grid that fills 100vh on any TV without overflow or scroll
+**Goal**: Presentation mode displays all content in a two-column viewport-filling layout with proportional text scaling across 1080p to 4K TVs
 **Depends on**: Phase 1
 **Requirements**: GRID-01, GRID-02, GRID-03, GRID-04, GRID-05
 **Success Criteria** (what must be TRUE):
@@ -44,8 +44,16 @@ Decimal phases appear between their surrounding integers in numeric order.
 3. No content is clipped or hidden — overflow-hidden contains everything within the viewport
 4. Text on all cards remains readable at TV viewing distance — metric labels are at minimum 24px equivalent size on a 1080p display
 5. Text scales proportionally on 4K without fixed-size classes that produce illegible small text
-   **Plans**: TBD
-   **UI hint**: yes
+
+**Plans:** 3 plans
+
+Plans:
+
+- [ ] 02-01-PLAN.md — Restructure outer container (h-dvh grid shell) + clean globals.css
+- [ ] 02-02-PLAN.md — Adapt performer-presentation.tsx (two-column layout + clamp typography)
+- [ ] 02-03-PLAN.md — Adapt company-display.tsx (two-column layout + h-1/3 artist cards + clamp typography)
+
+**UI hint**: yes
 
 ## Progress
 
@@ -55,4 +63,4 @@ Phases execute in numeric order: 1 → 2
 | Phase             | Plans Complete | Status      | Completed |
 | ----------------- | -------------- | ----------- | --------- |
 | 1. Streams Fix    | 0/TBD          | Not started | -         |
-| 2. TV Grid Layout | 0/TBD          | Not started | -         |
+| 2. TV Grid Layout | 0/3            | Planned     | -         |
