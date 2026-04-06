@@ -98,13 +98,13 @@ If `performers.length > 3`: carousel auto-rotates pages of 3. Time per page =
 TV presentation mode. Outer gaps and padding use viewport-relative units to scale
 correctly from 1080p to 4K. Card-internal spacing uses the 8-point scale.
 
-| Token | Value   | Tailwind                | Usage                                                         |
-| ----- | ------- | ----------------------- | ------------------------------------------------------------- |
-| xs    | 4px     | `gap-1` / `p-1`         | Icon internal gaps, rank number gutter                        |
-| sm    | 8px     | `gap-2` / `px-2 py-0.5` | Badge padding (carousel indicator)                            |
-| md    | `1vh`   | `gap-[1vh]`             | Grid gaps between cards, column gaps, outer container padding |
-| lg    | `1.5vh` | `p-[1.5vh]`             | Card internal padding (primary)                               |
-| xl    | `2vh`   | `p-[2vh]`               | Reserved — not used in Phase 2                                |
+| Token | Value   | Tailwind              | Usage                                                         |
+| ----- | ------- | --------------------- | ------------------------------------------------------------- |
+| xs    | 4px     | `gap-1` / `p-1`       | Icon internal gaps, rank number gutter                        |
+| sm    | 8px     | `gap-2` / `px-2 py-1` | Badge padding (carousel indicator)                            |
+| md    | `1vh`   | `gap-[1vh]`           | Grid gaps between cards, column gaps, outer container padding |
+| lg    | `1.5vh` | `p-[1.5vh]`           | Card internal padding (primary)                               |
+| xl    | `2vh`   | `p-[2vh]`             | Reserved — not used in Phase 2                                |
 
 Exceptions:
 
@@ -112,8 +112,8 @@ Exceptions:
   relative). These are intentionally off the 8-point scale — they scale with viewport
   height so proportions hold at both 1080p and 4K without breakpoints.
 - Header padding: unchanged from current implementation (D-02).
-- Carousel page indicator badge: `px-2 py-0.5` (8px / 2px fixed — small decorative
-  element, viewport-relative would be disproportionate).
+- Carousel page indicator badge: `px-2 py-1` (8px / 4px fixed — on the 4px grid,
+  viewport-relative would be disproportionate for a small decorative element).
 - Track thumbnail: `size-9` (36px) fixed — image asset, not a spacing token.
 - Platform icon size in cards: `size-6` (24px) fixed — decorative.
 
@@ -129,24 +129,37 @@ readability at TV viewing distance on a 1080p display. All sizes use `clamp()` f
 proportional 4K scaling — no fixed `text-sm` / `text-xs` Tailwind classes inside
 presentation mode containers.
 
-| Role           | Size (clamp)                     | Weight         | Line Height | Usage                                              |
-| -------------- | -------------------------------- | -------------- | ----------- | -------------------------------------------------- |
-| Metric value   | `clamp(1.5rem, 3vw, 4rem)`       | 900 (black)    | 1.0         | Primary metric numbers (streams, followers)        |
-| Delta badge    | `clamp(1.125rem, 2vw, 2.5rem)`   | 900 (black)    | 1.0         | Growth delta (+/-) beside metric value             |
-| Card label     | `clamp(1.5rem, 1.3vw, 2rem)`     | 500 (medium)   | 1.3         | Metric names ("Spotify Streams", "Seguidores")     |
-| Track name     | `clamp(0.875rem, 1vw, 1.125rem)` | 600 (semibold) | 1.4         | Song titles in Top 10 list                         |
-| Track sub-text | `clamp(0.75rem, 0.9vw, 1rem)`    | 400 (regular)  | 1.3         | Artist name below track title                      |
-| Performer name | `clamp(1.25rem, 2.5vw, 3rem)`    | 900 (black)    | 1.1         | Performer name on artist card (company right half) |
-| City / rank    | `clamp(0.75rem, 0.9vw, 1rem)`    | 500 (medium)   | 1.3         | Top cities list entries                            |
+### Type Scale — 4 Tiers
+
+| Tier    | Size (clamp)                     | Weight       | Line Height | Roles                                                                           |
+| ------- | -------------------------------- | ------------ | ----------- | ------------------------------------------------------------------------------- |
+| display | `clamp(1.5rem, 3vw, 4rem)`       | 900 (black)  | 1.0         | Primary metric numbers, delta badge (+/-), performer name on artist card        |
+| heading | `clamp(1.5rem, 1.3vw, 2rem)`     | 500 (medium) | 1.3         | Metric card labels ("Spotify Streams", "Seguidores")                            |
+| body    | `clamp(0.875rem, 1vw, 1.125rem)` | 500 (medium) | 1.4         | Track names in Top 10 list                                                      |
+| caption | `clamp(0.75rem, 0.9vw, 1rem)`    | 500 (medium) | 1.3         | Artist name below track title, Top cities list entries, carousel page indicator |
+
+### Weights
+
+Exactly 2 weights used across this phase:
+
+- **500 (medium)** — heading, body, caption tiers
+- **900 (black)** — display tier only
+
+### Differentiation Within Display Tier
+
+Display tier is used for three distinct roles differentiated by position and context,
+not by size or weight:
+
+- **Metric value**: top-left area of metric card, `tabular-nums`
+- **Delta badge**: immediately below or beside the metric value, colored
+  `text-green-400` (positive) or `text-red-400` (negative)
+- **Performer name**: large label at top of artist card in company right half
 
 Notes:
 
 - Card label minimum floor is `1.5rem` (24px at default 1rem=16px). This guarantees
   GRID-05 compliance: at 1920px wide, `1.3vw` = 24.96px — and the clamp floor of
   24px catches narrower viewports.
-- Only 2 primary font weights: **500 (medium)** for labels and **900 (black)** for
-  values. Semibold (600) is used for track names only (third exception, already
-  present in codebase).
 - `tabular-nums` applied to all metric value and delta text for stable number alignment.
 - The `presentation-mode` class in `globals.css` currently overrides `text-sm` /
   `text-xs` Tailwind classes at the cascade level. This phase replaces those class-
@@ -170,6 +183,16 @@ near-black background. Light mode tokens do not apply inside `presentation-mode`
 | Secondary (30%) | `rgba(255,255,255,0.03)` = `bg-white/[0.03]` | All metric cards, track list container, artist card backgrounds |
 | Accent (10%)    | Platform colors (table below)                | Reserved: platform icons and delta badge text only              |
 | Destructive     | Not applicable                               | No destructive actions exist in this phase                      |
+
+### Primary Visual Anchors Per Page Type
+
+| Page           | Primary Focal Point                                                                           |
+| -------------- | --------------------------------------------------------------------------------------------- |
+| Performer page | Metric value in top-left metric card — display tier, weight 900, `tabular-nums`, `text-white` |
+| Company page   | Performer name on the first (top) artist card in right half — display tier, weight 900        |
+
+The focal point is the first element the eye lands on when entering the view. All
+other elements are subordinate in visual weight.
 
 ### Accent — Reserved Elements Only
 
@@ -322,6 +345,7 @@ No registry vetting gate required.
 
 _Phase: 02-tv-grid-layout_
 _UI-SPEC created: 2026-04-06_
+_UI-SPEC revised: 2026-04-06 — fixed typography (4 tiers, 2 weights), added visual anchors, corrected carousel badge padding to 4px grid_
 _Sources: CONTEXT.md (14 decisions pre-populated), REQUIREMENTS.md (GRID-01 through
 GRID-05), components.json, app/globals.css, performer-presentation.tsx,
 company-display.tsx, performer-card.tsx, .planning/research/STACK.md_
