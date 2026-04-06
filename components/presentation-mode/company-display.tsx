@@ -70,7 +70,7 @@ function DeltaBadge({ value }: { value?: number }) {
   const isPositive = value > 0;
   return (
     <span
-      className={`text-xl font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
+      className={`text-[clamp(1.5rem,3vw,4rem)] font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
     >
       {isPositive ? "+" : ""}
       {formatCompactNumber(value)}
@@ -130,17 +130,19 @@ function MetricCard({
       initial={{ opacity: 0, scale: 0.92 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.35, delay }}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-4 shadow-lg backdrop-blur-md"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg backdrop-blur-md"
     >
       <div
         className={`absolute -top-6 -right-6 size-24 rounded-full ${glowColor} blur-2xl`}
       />
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-white/50">{label}</span>
+        <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+          {label}
+        </span>
         <StackedIcons platforms={icons.filter(Boolean) as React.ReactNode[]} />
       </div>
       <div className="mt-auto flex items-end justify-between">
-        <p className="text-2xl font-black text-white tabular-nums">
+        <p className="text-[clamp(1.5rem,3vw,4rem)] font-black text-white tabular-nums">
           {value != null ? formatCompactNumber(value) : "—"}
         </p>
         <DeltaBadge value={delta} />
@@ -174,7 +176,7 @@ function ArtistCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.4, delay }}
-      className="relative flex-1 overflow-hidden rounded-2xl bg-white/[0.03] shadow-lg backdrop-blur-md"
+      className="relative h-full overflow-hidden rounded-2xl bg-white/[0.03] shadow-lg backdrop-blur-md"
     >
       {/* Banner BG */}
       {bannerUrl ? (
@@ -188,9 +190,9 @@ function ArtistCard({
       )}
 
       {/* Content */}
-      <div className="relative z-10 flex h-full flex-col justify-end p-5">
+      <div className="relative z-10 flex h-full flex-col justify-end p-[1.5vh]">
         {/* Profile + Name */}
-        <div className="mb-3 flex items-center gap-3">
+        <div className="mb-[0.5vh] flex items-center gap-3">
           <div className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-white/10">
             {profileUrl ? (
               <Image
@@ -200,18 +202,18 @@ function ArtistCard({
                 className="object-cover"
               />
             ) : (
-              <div className="flex size-full items-center justify-center text-xl font-black text-white/50">
+              <div className="flex size-full items-center justify-center text-[clamp(1.5rem,3vw,4rem)] font-black text-white/50">
                 {name.charAt(0)}
               </div>
             )}
           </div>
-          <h3 className="text-2xl font-black tracking-tight text-white">
+          <h3 className="text-[clamp(1.5rem,3vw,4rem)] font-black tracking-tight text-white">
             {name}
           </h3>
         </div>
 
         {/* Quick stats */}
-        <div className="flex items-center gap-4 text-sm text-white/60">
+        <div className="flex items-center gap-4 text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/60">
           {spotifyFollowers != null && (
             <div className="flex items-center gap-1.5">
               <SpotifyIcon className="size-3.5 text-green-400" />
@@ -233,6 +235,40 @@ function ArtistCard({
         </div>
       </div>
     </motion.div>
+  );
+}
+
+/* ── Banner Background ── */
+
+function BannerBackground({ bannerUrl }: { bannerUrl?: string }) {
+  if (bannerUrl) {
+    return (
+      <>
+        <Image
+          src={bannerUrl}
+          alt="Company banner"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+      </>
+    );
+  }
+  return (
+    <>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.12)_0%,_transparent_50%),_radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.08)_0%,_transparent_50%),_linear-gradient(to_bottom,_#0a0a0a,_#111111)]" />
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+          backgroundRepeat: "repeat",
+        }}
+      />
+    </>
   );
 }
 
@@ -429,157 +465,136 @@ export function CompanyDisplay({
   );
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-2xl">
-      {/* Background */}
-      {bannerUrl ? (
-        <>
-          <Image
-            src={bannerUrl}
-            alt="Company banner"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-black/60" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
-        </>
-      ) : (
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.12)_0%,_transparent_50%),_radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.08)_0%,_transparent_50%),_linear-gradient(to_bottom,_#0a0a0a,_#111111)]" />
-      )}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          backgroundRepeat: "repeat",
-        }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 flex h-full flex-col px-5 py-4">
-        <div className="grid flex-1 grid-cols-[2fr_3fr] gap-6 overflow-hidden">
-          {/* ── Left: Metric Cards (only shown if data exists) ── */}
-          <div className="grid grid-cols-2 grid-rows-3 gap-3.5">
-            {aggregated.streams != null && (
-              <MetricCard
-                label="Spotify Streams"
-                value={aggregated.streams}
-                delta={deltas.streams}
-                glowColor="bg-green-500/[0.06]"
-                icons={[spotifyIcon]}
-                delay={0}
-              />
-            )}
-            {aggregated.videos != null && (
-              <MetricCard
-                label="Vídeos"
-                value={aggregated.videos}
-                delta={deltas.videos}
-                glowColor="bg-red-500/[0.06]"
-                icons={[youtubeIcon]}
-                delay={0.06}
-              />
-            )}
-            {aggregated.views != null && (
-              <MetricCard
-                label="Views"
-                value={aggregated.views}
-                delta={deltas.views}
-                glowColor="bg-sky-500/[0.06]"
-                icons={[youtubeIcon]}
-                delay={0.12}
-              />
-            )}
-            {aggregated.followers != null && (
-              <MetricCard
-                label="Seguidores"
-                value={aggregated.followers}
-                delta={deltas.followers}
-                glowColor="bg-pink-500/[0.06]"
-                icons={[spotifyIcon, youtubeIcon]}
-                delay={0.18}
-              />
-            )}
-            {aggregated.listeners != null && (
-              <MetricCard
-                label="Ouvintes Mensais"
-                value={aggregated.listeners}
-                delta={deltas.listeners}
-                glowColor="bg-emerald-500/[0.06]"
-                icons={[spotifyIcon]}
-                delay={0.24}
-              />
-            )}
-            {topCities.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.35, delay: 0.3 }}
-                className="group relative flex flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-4 shadow-lg backdrop-blur-md"
-              >
-                <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-medium text-white/50">
-                    Top Cidades
-                  </span>
-                  <StackedIcons
-                    platforms={
-                      [
-                        aggregated.hasSpotify && (
-                          <SpotifyIcon className="size-full text-green-400" />
-                        ),
-                      ].filter(Boolean) as React.ReactNode[]
-                    }
-                  />
-                </div>
-                <div className="flex flex-1 flex-col justify-center gap-1.5">
-                  {topCities.map((city, i) => (
-                    <div
-                      key={`${city.city}-${city.country}`}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex min-w-0 items-center gap-2">
-                        <span className="w-4 shrink-0 text-center text-xs font-bold text-white/30">
-                          {i + 1}
-                        </span>
-                        <span className="truncate text-sm font-medium text-white/80">
-                          {city.city}
-                        </span>
-                      </div>
-                      <span className="ml-2 shrink-0 text-sm font-bold text-amber-400 tabular-nums">
-                        {formatCompactNumber(city.value)}
+    <>
+      {/* LEFT HALF: 2x3 aggregate metric cards grid */}
+      <div className="relative h-full overflow-hidden rounded-2xl">
+        <BannerBackground bannerUrl={bannerUrl} />
+        <div className="relative z-10 grid h-full grid-cols-2 grid-rows-3 gap-[1vh] overflow-hidden p-[1.5vh]">
+          {aggregated.streams != null && (
+            <MetricCard
+              label="Spotify Streams"
+              value={aggregated.streams}
+              delta={deltas.streams}
+              glowColor="bg-green-500/[0.06]"
+              icons={[spotifyIcon]}
+              delay={0}
+            />
+          )}
+          {aggregated.videos != null && (
+            <MetricCard
+              label="Vídeos"
+              value={aggregated.videos}
+              delta={deltas.videos}
+              glowColor="bg-red-500/[0.06]"
+              icons={[youtubeIcon]}
+              delay={0.06}
+            />
+          )}
+          {aggregated.views != null && (
+            <MetricCard
+              label="Views"
+              value={aggregated.views}
+              delta={deltas.views}
+              glowColor="bg-sky-500/[0.06]"
+              icons={[youtubeIcon]}
+              delay={0.12}
+            />
+          )}
+          {aggregated.followers != null && (
+            <MetricCard
+              label="Seguidores"
+              value={aggregated.followers}
+              delta={deltas.followers}
+              glowColor="bg-pink-500/[0.06]"
+              icons={[spotifyIcon, youtubeIcon]}
+              delay={0.18}
+            />
+          )}
+          {aggregated.listeners != null && (
+            <MetricCard
+              label="Ouvintes Mensais"
+              value={aggregated.listeners}
+              delta={deltas.listeners}
+              glowColor="bg-emerald-500/[0.06]"
+              icons={[spotifyIcon]}
+              delay={0.24}
+            />
+          )}
+          {topCities.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.35, delay: 0.3 }}
+              className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg backdrop-blur-md"
+            >
+              <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+                  Top Cidades
+                </span>
+                <StackedIcons
+                  platforms={
+                    [
+                      aggregated.hasSpotify && (
+                        <SpotifyIcon className="size-full text-green-400" />
+                      ),
+                    ].filter(Boolean) as React.ReactNode[]
+                  }
+                />
+              </div>
+              <div className="flex flex-1 flex-col justify-center gap-[0.5vh]">
+                {topCities.map((city, i) => (
+                  <div
+                    key={`${city.city}-${city.country}`}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span className="w-4 shrink-0 text-center text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-white/30">
+                        {i + 1}
+                      </span>
+                      <span className="truncate text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/80">
+                        {city.city}
                       </span>
                     </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </div>
-
-          {/* ── Right: Artist Cards (3 at a time, rotating) ── */}
-          <div className="relative flex flex-col gap-3.5 overflow-hidden">
-            {/* Page indicator overlay */}
-            {totalPages > 1 && (
-              <div className="absolute top-2 right-2 z-20 rounded-md bg-black/40 px-2 py-0.5 text-xs font-medium text-white/60 backdrop-blur-sm">
-                {currentPage + 1}/{totalPages}
+                    <span className="ml-2 shrink-0 text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-amber-400 tabular-nums">
+                      {formatCompactNumber(city.value)}
+                    </span>
+                  </div>
+                ))}
               </div>
-            )}
+            </motion.div>
+          )}
+        </div>
+      </div>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentPage}
-                className="flex flex-1 flex-col gap-3.5"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {currentPerformers.map((performer, idx) => {
-                  const data = initialData?.[performer];
-                  return (
+      {/* RIGHT HALF: Performer cards (carousel if >3) */}
+      <div className="relative h-full overflow-hidden rounded-2xl">
+        <BannerBackground bannerUrl={bannerUrl} />
+        <div className="relative z-10 flex h-full flex-col gap-[1vh] overflow-hidden p-[1.5vh]">
+          {/* Carousel page indicator */}
+          {totalPages > 1 && (
+            <div className="absolute top-2 right-2 z-20 rounded-md bg-black/40 px-2 py-1 text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/60 backdrop-blur-sm">
+              {currentPage + 1}/{totalPages}
+            </div>
+          )}
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPage}
+              className="flex h-full flex-col gap-[1vh]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {currentPerformers.map((performer, idx) => {
+                const data = initialData?.[performer];
+                return (
+                  <div
+                    key={performer}
+                    className="h-1/3 min-h-0 shrink-0 overflow-hidden rounded-2xl"
+                  >
                     <ArtistCard
-                      key={performer}
                       name={performer}
                       bannerUrl={data?.files?.banner ?? null}
                       profileUrl={data?.files?.profile ?? null}
@@ -590,13 +605,13 @@ export function CompanyDisplay({
                       }
                       delay={idx * 0.08}
                     />
-                  );
-                })}
-              </motion.div>
-            </AnimatePresence>
-          </div>
+                  </div>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
-    </div>
+    </>
   );
 }
