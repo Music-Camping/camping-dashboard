@@ -26,7 +26,7 @@ Company stakeholders can view aggregated performer metrics on TV screens at a gl
 ### Active
 
 - [ ] TV-responsive presentation mode: 2x3 grid filling 100vh, each card 1/3 height, proportional scaling across all TV sizes
-- [ ] Streams metric fix: Remove YouTube views from total streams count, use Spotify streams only
+- ✓ Streams metric fix: Spotify-only streams, YouTube views excluded — Phase 1
 
 ### Out of Scope
 
@@ -79,4 +79,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-_Last updated: 2026-04-02 after initialization_
+_Last updated: 2026-04-06 after Phase 1 completion_
