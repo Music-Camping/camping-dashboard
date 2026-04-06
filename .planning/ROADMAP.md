@@ -45,11 +45,11 @@ Decimal phases appear between their surrounding integers in numeric order.
 4. Text on all cards remains readable at TV viewing distance — metric labels are at minimum 24px equivalent size on a 1080p display
 5. Text scales proportionally on 4K without fixed-size classes that produce illegible small text
 
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 
-- [ ] 02-01-PLAN.md — Restructure outer container (h-dvh grid shell) + clean globals.css
+- [x] 02-01-PLAN.md — Restructure outer container (h-dvh grid shell) + clean globals.css
 - [ ] 02-02-PLAN.md — Adapt performer-presentation.tsx (two-column layout + clamp typography)
 - [ ] 02-03-PLAN.md — Adapt company-display.tsx (two-column layout + h-1/3 artist cards + clamp typography)
 
@@ -63,4 +63,4 @@ Phases execute in numeric order: 1 → 2
 | Phase             | Plans Complete | Status      | Completed |
 | ----------------- | -------------- | ----------- | --------- |
 | 1. Streams Fix    | 0/TBD          | Not started | -         |
-| 2. TV Grid Layout | 0/3            | Planned     | -         |
+| 2. TV Grid Layout | 1/3 | In Progress|  |
