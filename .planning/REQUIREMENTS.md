@@ -10,10 +10,10 @@ Requirements for this milestone. Each maps to roadmap phases.
 ### TV Grid Layout
 
 - [x] **GRID-01**: Presentation mode uses a 2×3 CSS Grid filling 100vh (h-dvh), each card exactly 1/3 viewport height
-- [ ] **GRID-02**: Grid layout works consistently across 1080p and 4K TV resolutions without JS resize listeners
+- [x] **GRID-02**: Grid layout works consistently across 1080p and 4K TV resolutions without JS resize listeners
 - [x] **GRID-03**: No content overflow or scroll on any TV resolution — grid container has overflow-hidden
-- [ ] **GRID-04**: Text scales proportionally across TV sizes using clamp() with vw-based preferred values
-- [ ] **GRID-05**: Metric labels meet minimum 24px equivalent readability at TV viewing distance
+- [x] **GRID-04**: Text scales proportionally across TV sizes using clamp() with vw-based preferred values
+- [x] **GRID-05**: Metric labels meet minimum 24px equivalent readability at TV viewing distance
 
 ### Streams Metric
 
@@ -48,10 +48,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase   | Status   |
 | ----------- | ------- | -------- |
 | GRID-01     | Phase 2 | Complete |
-| GRID-02     | Phase 2 | Pending  |
+| GRID-02     | Phase 2 | Complete |
 | GRID-03     | Phase 2 | Complete |
-| GRID-04     | Phase 2 | Pending  |
-| GRID-05     | Phase 2 | Pending  |
+| GRID-04     | Phase 2 | Complete |
+| GRID-05     | Phase 2 | Complete |
 | STRM-01     | Phase 1 | Complete |
 | STRM-02     | Phase 1 | Complete |
 
