@@ -17,8 +17,8 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Streams Metric
 
-- [ ] **STRM-01**: Total streams count includes only Spotify streams, not YouTube views
-- [ ] **STRM-02**: Streams metric label clarifies it represents Spotify streams only
+- [x] **STRM-01**: Total streams count includes only Spotify streams, not YouTube views
+- [x] **STRM-02**: Streams metric label clarifies it represents Spotify streams only
 
 ## v2 Requirements
 
@@ -45,15 +45,15 @@ Deferred to future release. Tracked but not in current roadmap.
 
 Which phases cover which requirements. Updated during roadmap creation.
 
-| Requirement | Phase   | Status  |
-| ----------- | ------- | ------- |
-| GRID-01     | Phase 2 | Pending |
-| GRID-02     | Phase 2 | Pending |
-| GRID-03     | Phase 2 | Pending |
-| GRID-04     | Phase 2 | Pending |
-| GRID-05     | Phase 2 | Pending |
-| STRM-01     | Phase 1 | Pending |
-| STRM-02     | Phase 1 | Pending |
+| Requirement | Phase   | Status   |
+| ----------- | ------- | -------- |
+| GRID-01     | Phase 2 | Pending  |
+| GRID-02     | Phase 2 | Pending  |
+| GRID-03     | Phase 2 | Pending  |
+| GRID-04     | Phase 2 | Pending  |
+| GRID-05     | Phase 2 | Pending  |
+| STRM-01     | Phase 1 | Complete |
+| STRM-02     | Phase 1 | Complete |
 
 **Coverage:**
 
