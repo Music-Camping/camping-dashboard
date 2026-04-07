@@ -63,13 +63,13 @@ function TikTokIcon({ className }: { className?: string }) {
   );
 }
 
-/** Delta badge — shows growth like "+1.3M" in green or "-500" in red (Muso.AI style) */
+/** Delta badge — shows growth like "+1.3M" in green or "-500" in red */
 function DeltaBadge({ value }: { value?: number }) {
   if (value == null || value === 0) return null;
   const isPositive = value > 0;
   return (
     <span
-      className={`text-xl font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
+      className={`text-[clamp(1.5rem,3vw,4rem)] font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
     >
       {isPositive ? "+" : ""}
       {formatCompactNumber(value)}
@@ -77,7 +77,7 @@ function DeltaBadge({ value }: { value?: number }) {
   );
 }
 
-/** Single metric card */
+/** Single metric card — fills its grid cell via h-full */
 function MetricCard({
   label,
   value,
@@ -98,17 +98,19 @@ function MetricCard({
       initial={{ opacity: 0, scale: 0.92 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.35, delay }}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-5 shadow-lg backdrop-blur-md"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg backdrop-blur-md"
     >
       <div
         className={`absolute -top-6 -right-6 size-24 rounded-full ${glow} blur-2xl`}
       />
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-white/50">{label}</span>
+        <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+          {label}
+        </span>
         <StackedIcons platforms={icons.filter(Boolean) as React.ReactNode[]} />
       </div>
       <div className="mt-auto flex items-end justify-between">
-        <p className="text-3xl font-black text-white tabular-nums">
+        <p className="text-[clamp(1.5rem,3vw,4rem)] font-black text-white tabular-nums">
           {formatCompactNumber(value)}
         </p>
         <DeltaBadge value={delta} />
@@ -132,6 +134,35 @@ function StackedIcons({ platforms }: { platforms: React.ReactNode[] }) {
         </div>
       ))}
     </div>
+  );
+}
+
+/** Shared banner background layers for both halves */
+function BannerBackground({
+  bannerUrl,
+  performerName,
+}: {
+  bannerUrl?: string | null;
+  performerName: string;
+}) {
+  if (bannerUrl) {
+    return (
+      <>
+        <Image
+          src={bannerUrl}
+          alt={performerName}
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+      </>
+    );
+  }
+  return (
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.15)_0%,_transparent_50%),_radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.1)_0%,_transparent_50%),_linear-gradient(to_bottom,_#0a0a0a,_#111111)]" />
   );
 }
 
@@ -170,227 +201,225 @@ export function PerformerPresentation({
   const songs = rankings.slice(0, 10);
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-2xl">
-      {/* ── Banner Background ── */}
-      {bannerUrl ? (
-        <>
-          <Image
-            src={bannerUrl}
-            alt={performerName}
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-black/60" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
-        </>
-      ) : (
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.15)_0%,_transparent_50%),_radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.1)_0%,_transparent_50%),_linear-gradient(to_bottom,_#0a0a0a,_#111111)]" />
-      )}
+    <>
+      {/* LEFT HALF: 2x3 metric cards grid */}
+      <div className="relative h-full overflow-hidden rounded-2xl">
+        {/* Noise texture */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            backgroundRepeat: "repeat",
+          }}
+        />
+        <BannerBackground bannerUrl={bannerUrl} performerName={performerName} />
+        {/* 2x3 metric cards grid — exact D-04 order */}
+        <div className="relative z-10 grid h-full grid-cols-2 grid-rows-3 gap-[1vh] overflow-hidden p-[1.5vh]">
+          {/* Card 1: Streams */}
+          {totalStreams != null && (
+            <MetricCard
+              label="Spotify Streams"
+              value={totalStreams}
+              delta={streamsDelta}
+              glow="bg-green-500/[0.06]"
+              icons={[
+                hasSpotify && (
+                  <SpotifyIcon className="size-full text-green-400" />
+                ),
+                hasYoutube && (
+                  <YouTubeIcon className="size-full text-red-400" />
+                ),
+                hasTiktok && <TikTokIcon className="size-full text-white/70" />,
+              ]}
+              delay={0}
+            />
+          )}
 
-      {/* Noise texture */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          backgroundRepeat: "repeat",
-        }}
-      />
+          {/* Card 2: Ouvintes Mensais */}
+          {monthlyListeners != null && (
+            <MetricCard
+              label="Ouvintes Mensais"
+              value={monthlyListeners}
+              delta={listenersDelta}
+              glow="bg-emerald-500/[0.06]"
+              icons={[
+                hasSpotify && (
+                  <SpotifyIcon className="size-full text-green-400" />
+                ),
+              ]}
+              delay={0.06}
+            />
+          )}
 
-      {/* ── Content ── */}
-      <div className="relative z-10 flex h-full flex-col px-5 py-4">
-        {/* ── Grid: 4 cards (left) + Songs (right) ── */}
-        <div className="grid flex-1 grid-cols-[2fr_3fr] gap-6 overflow-hidden">
-          {/* ── Left: Metric Cards (only shown if data exists) ── */}
-          <div className="grid grid-cols-2 grid-rows-3 gap-3.5">
-            {totalStreams != null && (
-              <MetricCard
-                label="Streams"
-                value={totalStreams}
-                delta={streamsDelta}
-                glow="bg-green-500/[0.06]"
-                icons={[
-                  hasSpotify && (
-                    <SpotifyIcon className="size-full text-green-400" />
-                  ),
-                  hasYoutube && (
-                    <YouTubeIcon className="size-full text-red-400" />
-                  ),
-                  hasTiktok && (
-                    <TikTokIcon className="size-full text-white/70" />
-                  ),
-                ]}
-                delay={0}
-              />
-            )}
-            {youtubeVideos != null && (
-              <MetricCard
-                label="Vídeos"
-                value={youtubeVideos}
-                delta={videosDelta}
-                glow="bg-red-500/[0.06]"
-                icons={[
-                  hasTiktok && (
-                    <TikTokIcon className="size-full text-white/70" />
-                  ),
-                  hasYoutube && (
-                    <YouTubeIcon className="size-full text-red-400" />
-                  ),
-                ]}
-                delay={0.06}
-              />
-            )}
-            {youtubeViews != null && (
-              <MetricCard
-                label="Views"
-                value={youtubeViews}
-                delta={viewsDelta}
-                glow="bg-sky-500/[0.06]"
-                icons={[
-                  hasTiktok && (
-                    <TikTokIcon className="size-full text-white/70" />
-                  ),
-                  hasYoutube && (
-                    <YouTubeIcon className="size-full text-red-400" />
-                  ),
-                ]}
-                delay={0.12}
-              />
-            )}
-            {cities.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.35, delay: 0.18 }}
-                className="group relative flex flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-4 shadow-lg backdrop-blur-md"
-              >
-                <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-medium text-white/50">
-                    Top Cidades
-                  </span>
-                  <StackedIcons
-                    platforms={
-                      [
-                        hasSpotify && (
-                          <SpotifyIcon className="size-full text-green-400" />
-                        ),
-                      ].filter(Boolean) as React.ReactNode[]
-                    }
-                  />
-                </div>
-                <div className="flex flex-1 flex-col justify-center gap-1.5">
-                  {cities.map((city, i) => (
-                    <div
-                      key={`${city.extra_data?.city}-${city.extra_data?.country}`}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex min-w-0 items-center gap-2">
-                        <span className="w-4 shrink-0 text-center text-xs font-bold text-white/30">
-                          {i + 1}
-                        </span>
-                        <span className="truncate text-sm font-medium text-white/80">
-                          {city.extra_data?.city ?? "—"}
-                        </span>
-                      </div>
-                      <span className="ml-2 shrink-0 text-sm font-bold text-amber-400 tabular-nums">
-                        {formatCompactNumber(city.value)}
+          {/* Card 3: Videos */}
+          {youtubeVideos != null && (
+            <MetricCard
+              label="Vídeos"
+              value={youtubeVideos}
+              delta={videosDelta}
+              glow="bg-red-500/[0.06]"
+              icons={[
+                hasTiktok && <TikTokIcon className="size-full text-white/70" />,
+                hasYoutube && (
+                  <YouTubeIcon className="size-full text-red-400" />
+                ),
+              ]}
+              delay={0.12}
+            />
+          )}
+
+          {/* Card 4: Views */}
+          {youtubeViews != null && (
+            <MetricCard
+              label="Views"
+              value={youtubeViews}
+              delta={viewsDelta}
+              glow="bg-sky-500/[0.06]"
+              icons={[
+                hasTiktok && <TikTokIcon className="size-full text-white/70" />,
+                hasYoutube && (
+                  <YouTubeIcon className="size-full text-red-400" />
+                ),
+              ]}
+              delay={0.18}
+            />
+          )}
+
+          {/* Card 5: Seguidores */}
+          {totalFollowers != null && (
+            <MetricCard
+              label="Seguidores"
+              value={totalFollowers}
+              delta={followersDelta}
+              glow="bg-pink-500/[0.06]"
+              icons={[
+                hasSpotify && (
+                  <SpotifyIcon className="size-full text-green-400" />
+                ),
+                hasYoutube && (
+                  <YouTubeIcon className="size-full text-red-400" />
+                ),
+              ]}
+              delay={0.24}
+            />
+          )}
+
+          {/* Card 6: Top Cidades */}
+          {cities.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.35, delay: 0.3 }}
+              className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg backdrop-blur-md"
+            >
+              <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+                  Top Cidades
+                </span>
+                <StackedIcons
+                  platforms={
+                    [
+                      hasSpotify && (
+                        <SpotifyIcon className="size-full text-green-400" />
+                      ),
+                    ].filter(Boolean) as React.ReactNode[]
+                  }
+                />
+              </div>
+              <div className="flex flex-1 flex-col justify-center gap-[0.5vh]">
+                {cities.map((city, i) => (
+                  <div
+                    key={`${city.extra_data?.city}-${city.extra_data?.country}`}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span className="w-4 shrink-0 text-center text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-white/30">
+                        {i + 1}
+                      </span>
+                      <span className="truncate text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/80">
+                        {city.extra_data?.city ?? "—"}
                       </span>
                     </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-            {totalFollowers != null && (
-              <MetricCard
-                label="Seguidores"
-                value={totalFollowers}
-                delta={followersDelta}
-                glow="bg-pink-500/[0.06]"
-                icons={[
-                  hasSpotify && (
-                    <SpotifyIcon className="size-full text-green-400" />
-                  ),
-                  hasYoutube && (
-                    <YouTubeIcon className="size-full text-red-400" />
-                  ),
-                ]}
-                delay={0.24}
-              />
-            )}
-            {monthlyListeners != null && (
-              <MetricCard
-                label="Ouvintes Mensais"
-                value={monthlyListeners}
-                delta={listenersDelta}
-                glow="bg-emerald-500/[0.06]"
-                icons={[
-                  hasSpotify && (
-                    <SpotifyIcon className="size-full text-green-400" />
-                  ),
-                ]}
-                delay={0.3}
-              />
-            )}
-          </div>
-
-          {/* ── Right: Best Songs List ── */}
-          <div className="flex flex-col overflow-hidden">
-            {songs.length > 0 ? (
-              <div className="flex flex-1 flex-col gap-1.5 overflow-hidden rounded-2xl bg-white/[0.03] p-2.5 backdrop-blur-md">
-                {songs.map((track, idx) => (
-                  <motion.div
-                    key={track.trackId}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: idx * 0.04 }}
-                    className="flex items-center gap-3 rounded-lg bg-white/[0.02] px-2.5 py-1.5 transition-colors duration-200 hover:bg-white/[0.06]"
-                  >
-                    {/* Thumbnail */}
-                    <div className="relative size-9 shrink-0 overflow-hidden rounded-md">
-                      {track.thumbnail ? (
-                        <Image
-                          src={track.thumbnail}
-                          alt={track.trackName}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="flex size-full items-center justify-center bg-white/10">
-                          <MusicIcon className="size-3 text-white/40" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Track info */}
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-white/90">
-                        {track.trackName}
-                      </p>
-                      <p className="truncate text-xs text-white/45">
-                        {track.artistName}
-                      </p>
-                    </div>
-
-                    {/* Stream count */}
-                    <div className="shrink-0 text-right">
-                      <p className="text-sm font-bold text-white/70 tabular-nums">
-                        {formatCompactNumber(track.streams)}
-                      </p>
-                    </div>
-                  </motion.div>
+                    <span className="ml-2 shrink-0 text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-amber-400 tabular-nums">
+                      {formatCompactNumber(city.value)}
+                    </span>
+                  </div>
                 ))}
               </div>
-            ) : (
-              <div className="flex flex-1 items-center justify-center rounded-2xl bg-white/[0.03] backdrop-blur-md">
-                <p className="text-sm text-white/40">Dados indisponíveis</p>
-              </div>
-            )}
-          </div>
+            </motion.div>
+          )}
         </div>
       </div>
-    </div>
+
+      {/* RIGHT HALF: Top 10 tracks */}
+      <div className="relative h-full overflow-hidden rounded-2xl">
+        {/* Noise texture */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            backgroundRepeat: "repeat",
+          }}
+        />
+        <BannerBackground bannerUrl={bannerUrl} performerName={performerName} />
+        <div className="relative z-10 flex h-full flex-col overflow-hidden p-[1.5vh]">
+          {songs.length > 0 ? (
+            <div className="flex h-full flex-col gap-[0.5vh] overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] backdrop-blur-md">
+              {songs.map((track, idx) => (
+                <motion.div
+                  key={track.trackId}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: idx * 0.04 }}
+                  className="flex min-h-0 flex-1 items-center gap-3 rounded-lg bg-white/[0.02] px-[1vh] py-[0.5vh] transition-colors duration-200 hover:bg-white/[0.06]"
+                >
+                  {/* Thumbnail */}
+                  <div className="relative size-9 shrink-0 overflow-hidden rounded-md">
+                    {track.thumbnail ? (
+                      <Image
+                        src={track.thumbnail}
+                        alt={track.trackName}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex size-full items-center justify-center bg-white/10">
+                        <MusicIcon className="size-3 text-white/40" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Track info */}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[clamp(0.875rem,1vw,1.125rem)] font-medium text-white/90">
+                      {track.trackName}
+                    </p>
+                    <p className="truncate text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/45">
+                      {track.artistName}
+                    </p>
+                  </div>
+
+                  {/* Stream count */}
+                  <div className="shrink-0 text-right">
+                    <p className="text-[clamp(0.875rem,1vw,1.125rem)] font-medium text-white/70 tabular-nums">
+                      {formatCompactNumber(track.streams)}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex h-full items-center justify-center rounded-2xl bg-white/[0.03] backdrop-blur-md">
+              <p className="text-[clamp(0.875rem,1vw,1.125rem)] font-medium text-white/40">
+                Dados indisponíveis
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 }

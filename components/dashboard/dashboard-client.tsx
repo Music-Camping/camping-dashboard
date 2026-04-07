@@ -234,7 +234,7 @@ export function DashboardClient({
     return spotifyData.rankingsByPerformer[0]?.rankings.slice(0, 10) ?? [];
   }, [spotifyData, presentation.currentPerformer]);
 
-  // Total streams (Spotify track streams + YouTube views)
+  // Total streams (Spotify track streams only)
   const tvTotalStreams = useMemo(() => {
     let total = 0;
     let hasData = false;
@@ -252,17 +252,8 @@ export function DashboardClient({
       }
     }
 
-    // YouTube views
-    const ytViews = presentation.currentPerformer
-      ? initialData?.[presentation.currentPerformer]?.youtube?.views?.latest
-      : undefined;
-    if (ytViews) {
-      total += ytViews;
-      hasData = true;
-    }
-
     return hasData ? total : undefined;
-  }, [spotifyData, presentation.currentPerformer, initialData]);
+  }, [spotifyData, presentation.currentPerformer]);
 
   // Performer-specific platform data (sync, no flicker)
   const tvPerformerData = useMemo(() => {
@@ -360,15 +351,14 @@ export function DashboardClient({
     <div
       className={cn(
         "flex flex-col gap-8 p-4",
-        presentation.isActive &&
-          "presentation-mode h-screen overflow-hidden p-6",
+        presentation.isActive && "presentation-mode h-dvh overflow-hidden p-0",
       )}
     >
       {/* Presentation Controls - Hidden, only shows when active */}
 
       {presentation.isActive ? (
         /* TV Layout — sem scroll, tudo visível em tela cheia */
-        <div className="grid h-full grid-rows-[auto_1fr] gap-3 overflow-hidden">
+        <div className="grid h-full grid-rows-[auto_1fr] gap-[1vh] overflow-hidden">
           {/* ROW 1: Header compacto — performer + filtro de período + indicador */}
           <div className="flex items-center gap-4 rounded-xl border bg-card/80 px-5 py-2.5 shadow-sm backdrop-blur">
             <AnimatePresence mode="wait">
@@ -449,13 +439,13 @@ export function DashboardClient({
             )}
           </div>
 
-          {/* ROW 2: Conteúdo animado — crossfade sem piscada */}
+          {/* ROW 2: Two-column content area */}
           <div className="relative min-h-0 overflow-hidden">
             <AnimatePresence mode="sync">
               {presentation.showingCompany && presentation.currentCompany ? (
                 <motion.div
                   key={`company-${presentation.currentCompany.name}`}
-                  className="absolute inset-0"
+                  className="absolute inset-0 grid grid-cols-2 gap-[1vh] p-[1vh]"
                   initial={{ x: "100%" }}
                   animate={{ x: 0 }}
                   exit={{ x: "-100%" }}
@@ -473,7 +463,7 @@ export function DashboardClient({
               ) : (
                 <motion.div
                   key={presentation.currentPerformer ?? "all"}
-                  className="absolute inset-0"
+                  className="absolute inset-0 grid grid-cols-2 gap-[1vh] p-[1vh]"
                   initial={{ x: "100%" }}
                   animate={{ x: 0 }}
                   exit={{ x: "-100%" }}
@@ -489,7 +479,7 @@ export function DashboardClient({
                       tvPerformerData?.youtube?.video_count?.latest
                     }
                     youtubeViews={tvPerformerData?.youtube?.views?.latest}
-                    streamsDelta={tvViewsDelta}
+                    streamsDelta={undefined}
                     videosDelta={tvVideosDelta}
                     viewsDelta={tvViewsDelta}
                     totalFollowers={tvTotalFollowers}
