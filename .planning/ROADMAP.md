@@ -17,6 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Streams Fix** - Remove YouTube views from the total streams count, Spotify-only metric
 - [x] **Phase 2: TV Grid Layout** - 2x3 CSS Grid filling 100vh with proportional text scaling across TV sizes (completed 2026-04-06)
+- [ ] **Phase 3: Presentation Polish** - Font scaling, streams aggregation fix, card order, background unification, auto-hide menu, dynamic icons, TV box transition smoothness
 
 ## Phase Details
 
@@ -58,30 +59,36 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2
+Phases execute in numeric order: 1 → 2 → 3
 
-| Phase             | Plans Complete | Status      | Completed  |
-| ----------------- | -------------- | ----------- | ---------- |
-| 1. Streams Fix    | 0/TBD          | Not started | -          |
-| 2. TV Grid Layout | 3/3            | Complete    | 2026-04-06 |
+| Phase                  | Plans Complete | Status      | Completed  |
+| ---------------------- | -------------- | ----------- | ---------- |
+| 1. Streams Fix         | 0/TBD          | Not started | -          |
+| 2. TV Grid Layout      | 3/3            | Complete    | 2026-04-06 |
+| 3. Presentation Polish | 0/6            | Planned     | -          |
 
 ### Phase 3: Presentation Polish
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal**: Presentation mode (TV fullscreen) is polished and bug-free — text sized correctly via container queries, company streams aggregation excludes playlist tracks, company card order matches performer order, a single edge-to-edge background unifies both halves, the menu auto-hides after 5s of inactivity, per-metric platform icons reflect actual data contribution, and entity transitions are smooth on low-end Android TV hardware.
+**Requirements**: [none — no new v1 requirement IDs; this phase closes client-reported polish gaps against the existing Phase 1+2 implementation]
 **Depends on:** Phase 2
-**Plans:** 0 plans
+**Success Criteria** (what must be TRUE):
 
-Scope (to detail during discuss):
+1. Company view "Spotify Streams" total reflects only real-performer track play counts, with playlist tracks fully excluded (D-19, D-20, D-21)
+2. Company metric cards render in the exact D-22 order: Streams → Ouvintes Mensais → Vídeos → Views → Seguidores → Top Cidades
+3. A single BannerBackground instance renders behind both halves of the company view — no visible seam, no rounded outer corners (D-23)
+4. All typography in presentation mode uses CSS container queries (`@container` + `cqi` in clamp preferred values) and is visibly smaller than the Phase 2 baseline (D-18)
+5. In presentation mode, the floating menu fades out after 5s of no mousemove/click/keydown and reappears on any of those events (D-24, D-25)
+6. Every MetricCard in both views shows icons that match the platforms actually contributing to that metric's value — Streams is Spotify-only in both views, Vídeos/Views are YouTube-only, Seguidores dynamically shows contributing platforms (D-26)
+7. Entity transitions use opacity fade (not slide), backdrop-blur-md is removed from presentation-mode cards, and transitions no longer stutter on Android TV box (D-27)
 
-- Container-query based font scaling for presentation mode (fonts too big on client TV)
-- Company streams aggregation: sum per-performer track latest only, exclude playlist tracks, dedupe
-- Company card order must match performer order (Streams → Ouvintes → Vídeos → Views → Seguidores → Cidades)
-- Single edge-to-edge background behind both halves in company-display (currently two separate BannerBackground instances)
-- Auto-hide navigation menu after 5s of mouse inactivity
-- Dynamic per-metric platform icons (based on which platforms actually contributed to each card's value, not hardcoded)
-- Smoother entity transitions on TV box (investigate Framer Motion vs CSS, backdrop-blur cost, banner preload)
+**Plans:** 6 plans
 
 Plans:
 
-- [ ] TBD (run /gsd:plan-phase 3 to break down)
+- [ ] 03-01-PLAN.md — Streams playlist exclusion (page.tsx whitelist filter)
+- [ ] 03-02-PLAN.md — Company card order + background unification (company-display.tsx)
+- [ ] 03-03-PLAN.md — Dynamic per-metric platform icons (both presentation components)
+- [ ] 03-04-PLAN.md — Container-query font scaling (both presentation components)
+- [ ] 03-05-PLAN.md — Auto-hide menu hook + PresentationControls wiring
+- [ ] 03-06-PLAN.md — TV box transition smoothness (fade + backdrop-blur removal)
