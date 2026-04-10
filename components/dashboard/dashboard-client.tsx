@@ -13,6 +13,7 @@ import { SpotifyHub } from "@/components/dashboard/spotify/spotify-hub";
 import { Separator } from "@/components/ui/separator";
 import { usePresentationContext } from "@/contexts/presentation-context";
 import { useFilters } from "@/hooks/use-filters";
+import { useIdleTimer } from "@/hooks/use-idle-timer";
 import { usePresentationMode } from "@/hooks/use-presentation-mode";
 import type {
   DashboardResponse,
@@ -100,6 +101,11 @@ export function DashboardClient({
 
   // Presentation Mode
   const presentation = usePresentationMode(allPerformers, companies);
+
+  // Auto-hide the floating controls after 5s of inactivity — only in
+  // presentation mode (D-24). In normal dashboard mode enabled=false keeps
+  // the hook fully inert and the menu always visible.
+  const isMenuIdle = useIdleTimer(5000, presentation.isActive);
 
   // Sync presentation mode with context
   useEffect(() => {
@@ -513,6 +519,7 @@ export function DashboardClient({
             onSetInterval={presentation.setRotationInterval}
             onGoToNext={presentation.goToNext}
             onToggleItem={presentation.toggleItemEnabled}
+            visible={!isMenuIdle}
           />
         </div>
       ) : (
