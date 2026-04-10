@@ -60,7 +60,7 @@ function DeltaBadge({ value }: { value?: number }) {
   const isPositive = value > 0;
   return (
     <span
-      className={`text-[clamp(1.5rem,3vw,4rem)] font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
+      className={`text-[clamp(1.2rem,2.8cqi,3rem)] font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
     >
       {isPositive ? "+" : ""}
       {formatCompactNumber(value)}
@@ -68,6 +68,7 @@ function DeltaBadge({ value }: { value?: number }) {
   );
 }
 
+// cqi (container inline) scales text relative to each card, not the viewport — D-18 proportional reduction
 /** Single metric card — fills its grid cell via h-full */
 function MetricCard({
   label,
@@ -95,13 +96,13 @@ function MetricCard({
         className={`absolute -top-6 -right-6 size-24 rounded-full ${glow} blur-2xl`}
       />
       <div className="flex items-center justify-between">
-        <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+        <span className="text-[clamp(0.9rem,1.4cqi,1.4rem)] font-medium text-white/50">
           {label}
         </span>
         <StackedIcons platforms={icons.filter(Boolean) as React.ReactNode[]} />
       </div>
       <div className="mt-auto flex items-end justify-between">
-        <p className="text-[clamp(1.5rem,3vw,4rem)] font-black text-white tabular-nums">
+        <p className="text-[clamp(1.2rem,2.8cqi,3rem)] font-black text-white tabular-nums">
           {formatCompactNumber(value)}
         </p>
         <DeltaBadge value={delta} />
@@ -193,7 +194,7 @@ export function PerformerPresentation({
   return (
     <>
       {/* LEFT HALF: 2x3 metric cards grid */}
-      <div className="relative h-full overflow-hidden rounded-2xl">
+      <div className="@container relative h-full overflow-hidden rounded-2xl">
         {/* Noise texture */}
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -299,7 +300,7 @@ export function PerformerPresentation({
             >
               <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+                <span className="text-[clamp(0.9rem,1.4cqi,1.4rem)] font-medium text-white/50">
                   Top Cidades
                 </span>
                 <StackedIcons
@@ -319,14 +320,14 @@ export function PerformerPresentation({
                     className="flex items-center justify-between"
                   >
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="w-4 shrink-0 text-center text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-white/30">
+                      <span className="w-4 shrink-0 text-center text-[clamp(0.65rem,0.9cqi,0.9rem)] font-bold text-white/30">
                         {i + 1}
                       </span>
-                      <span className="truncate text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/80">
+                      <span className="truncate text-[clamp(0.65rem,0.9cqi,0.9rem)] font-medium text-white/80">
                         {city.extra_data?.city ?? "—"}
                       </span>
                     </div>
-                    <span className="ml-2 shrink-0 text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-amber-400 tabular-nums">
+                    <span className="ml-2 shrink-0 text-[clamp(0.65rem,0.9cqi,0.9rem)] font-bold text-amber-400 tabular-nums">
                       {formatCompactNumber(city.value)}
                     </span>
                   </div>
@@ -338,7 +339,7 @@ export function PerformerPresentation({
       </div>
 
       {/* RIGHT HALF: Top 10 tracks */}
-      <div className="relative h-full overflow-hidden rounded-2xl">
+      <div className="@container relative h-full overflow-hidden rounded-2xl">
         {/* Noise texture */}
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -378,17 +379,17 @@ export function PerformerPresentation({
 
                   {/* Track info */}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[clamp(0.875rem,1vw,1.125rem)] font-medium text-white/90">
+                    <p className="truncate text-[clamp(0.875rem,1cqi,1.125rem)] font-medium text-white/90">
                       {track.trackName}
                     </p>
-                    <p className="truncate text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/45">
+                    <p className="truncate text-[clamp(0.65rem,0.9cqi,0.9rem)] font-medium text-white/45">
                       {track.artistName}
                     </p>
                   </div>
 
                   {/* Stream count */}
                   <div className="shrink-0 text-right">
-                    <p className="text-[clamp(0.875rem,1vw,1.125rem)] font-medium text-white/70 tabular-nums">
+                    <p className="text-[clamp(0.875rem,1cqi,1.125rem)] font-medium text-white/70 tabular-nums">
                       {formatCompactNumber(track.streams)}
                     </p>
                   </div>
@@ -397,7 +398,7 @@ export function PerformerPresentation({
             </div>
           ) : (
             <div className="flex h-full items-center justify-center rounded-2xl bg-white/[0.03]">
-              <p className="text-[clamp(0.875rem,1vw,1.125rem)] font-medium text-white/40">
+              <p className="text-[clamp(0.875rem,1cqi,1.125rem)] font-medium text-white/40">
                 Dados indisponíveis
               </p>
             </div>
