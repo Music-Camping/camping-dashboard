@@ -76,6 +76,10 @@ Recent decisions affecting current work:
 - [Phase 02-tv-grid-layout]: Fragment return pattern: CompanyDisplay returns two children to fill parent grid-cols-2 without a wrapper div
 - [Phase 02-tv-grid-layout]: h-1/3 over flex-1 for artist card wrappers: enforces fixed 1/3 height per D-15 even with fewer than 3 performers
 
+### Roadmap Evolution
+
+- Phase 3 added: Presentation Polish — font scaling, streams aggregation fix (exclude playlists), company card order match, edge-to-edge background, auto-hide menu 5s, dynamic per-metric platform icons, smoother entity transitions on TV box
+
 ### Pending Todos
 
 None yet.

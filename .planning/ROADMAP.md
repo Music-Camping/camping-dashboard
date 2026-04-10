@@ -60,7 +60,28 @@ Plans:
 **Execution Order:**
 Phases execute in numeric order: 1 → 2
 
-| Phase             | Plans Complete | Status      | Completed |
-| ----------------- | -------------- | ----------- | --------- |
-| 1. Streams Fix    | 0/TBD          | Not started | -         |
-| 2. TV Grid Layout | 3/3 | Complete   | 2026-04-06 |
+| Phase             | Plans Complete | Status      | Completed  |
+| ----------------- | -------------- | ----------- | ---------- |
+| 1. Streams Fix    | 0/TBD          | Not started | -          |
+| 2. TV Grid Layout | 3/3            | Complete    | 2026-04-06 |
+
+### Phase 3: Presentation Polish
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 2
+**Plans:** 0 plans
+
+Scope (to detail during discuss):
+
+- Container-query based font scaling for presentation mode (fonts too big on client TV)
+- Company streams aggregation: sum per-performer track latest only, exclude playlist tracks, dedupe
+- Company card order must match performer order (Streams → Ouvintes → Vídeos → Views → Seguidores → Cidades)
+- Single edge-to-edge background behind both halves in company-display (currently two separate BannerBackground instances)
+- Auto-hide navigation menu after 5s of mouse inactivity
+- Dynamic per-metric platform icons (based on which platforms actually contributed to each card's value, not hardcoded)
+- Smoother entity transitions on TV box (investigate Framer Motion vs CSS, backdrop-blur cost, banner preload)
+
+Plans:
+
+- [ ] TBD (run /gsd:plan-phase 3 to break down)
