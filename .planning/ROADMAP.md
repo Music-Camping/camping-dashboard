@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Streams Fix** - Remove YouTube views from the total streams count, Spotify-only metric
 - [x] **Phase 2: TV Grid Layout** - 2x3 CSS Grid filling 100vh with proportional text scaling across TV sizes (completed 2026-04-06)
-- [ ] **Phase 3: Presentation Polish** - Font scaling, streams aggregation fix, card order, background unification, auto-hide menu, dynamic icons, TV box transition smoothness
+- [x] **Phase 3: Presentation Polish** - Font scaling, streams aggregation fix, card order, background unification, auto-hide menu, dynamic icons, TV box transition smoothness (completed 2026-04-10)
 
 ## Phase Details
 
@@ -65,7 +65,7 @@ Phases execute in numeric order: 1 → 2 → 3
 | ---------------------- | -------------- | ----------- | ---------- |
 | 1. Streams Fix         | 0/TBD          | Not started | -          |
 | 2. TV Grid Layout      | 3/3            | Complete    | 2026-04-06 |
-| 3. Presentation Polish | 4/6            | In Progress |            |
+| 3. Presentation Polish | 6/6            | Complete    | 2026-04-10 |
 
 ### Phase 3: Presentation Polish
 
@@ -82,13 +82,13 @@ Phases execute in numeric order: 1 → 2 → 3
 6. Every MetricCard in both views shows icons that match the platforms actually contributing to that metric's value — Streams is Spotify-only in both views, Vídeos/Views are YouTube-only, Seguidores dynamically shows contributing platforms (D-26)
 7. Entity transitions use opacity fade (not slide), backdrop-blur-md is removed from presentation-mode cards, and transitions no longer stutter on Android TV box (D-27)
 
-**Plans:** 4/6 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 
 - [x] 03-01-PLAN.md — Streams playlist exclusion (page.tsx whitelist filter)
 - [x] 03-02-PLAN.md — Company card order + background unification (company-display.tsx)
 - [x] 03-03-PLAN.md — Dynamic per-metric platform icons (both presentation components)
-- [ ] 03-04-PLAN.md — Container-query font scaling (both presentation components)
+- [x] 03-04-PLAN.md — Container-query font scaling (both presentation components)
 - [x] 03-05-PLAN.md — Auto-hide menu hook + PresentationControls wiring
 - [x] 03-06-PLAN.md — TV box transition smoothness (fade + backdrop-blur removal)
