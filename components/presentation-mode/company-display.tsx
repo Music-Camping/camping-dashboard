@@ -321,6 +321,10 @@ export function CompanyDisplay({
     let hasListeners = false;
     let hasSpotify = false;
     let hasYoutube = false;
+    // Per-metric follower platform flags (Spotify, YouTube, Instagram independently)
+    let hasSpotifyFollowers = false;
+    let hasYoutubeFollowers = false;
+    let hasInstagramFollowers = false;
 
     // Spotify track streams from rankings
     if (spotifyData?.rankingsByPerformer) {
@@ -345,6 +349,7 @@ export function CompanyDisplay({
         if (data.spotify.followers?.latest) {
           totalFollowers += data.spotify.followers.latest;
           hasFollowers = true;
+          hasSpotifyFollowers = true;
         }
         if (data.spotify.monthly_listeners?.latest) {
           totalListeners += data.spotify.monthly_listeners.latest;
@@ -356,6 +361,7 @@ export function CompanyDisplay({
         if (data.youtube.followers?.latest) {
           totalFollowers += data.youtube.followers.latest;
           hasFollowers = true;
+          hasYoutubeFollowers = true;
         }
         if (data.youtube.views?.latest) {
           totalViews += data.youtube.views.latest;
@@ -369,6 +375,7 @@ export function CompanyDisplay({
       if (data.instagram?.followers?.latest) {
         totalFollowers += data.instagram.followers.latest;
         hasFollowers = true;
+        hasInstagramFollowers = true;
       }
     });
 
@@ -378,6 +385,32 @@ export function CompanyDisplay({
       views: hasViews ? totalViews : undefined,
       followers: hasFollowers ? totalFollowers : undefined,
       listeners: hasListeners ? totalListeners : undefined,
+      // Per-metric platform contribution flags (D-26)
+      streamsPlatforms: {
+        spotify: hasStreams,
+        youtube: false,
+        instagram: false,
+      },
+      videosPlatforms: {
+        spotify: false,
+        youtube: hasVideos,
+        instagram: false,
+      },
+      viewsPlatforms: {
+        spotify: false,
+        youtube: hasViews,
+        instagram: false,
+      },
+      listenersPlatforms: {
+        spotify: hasListeners,
+        youtube: false,
+        instagram: false,
+      },
+      followersPlatforms: {
+        spotify: hasSpotifyFollowers,
+        youtube: hasYoutubeFollowers,
+        instagram: hasInstagramFollowers,
+      },
       hasSpotify,
       hasYoutube,
     };
