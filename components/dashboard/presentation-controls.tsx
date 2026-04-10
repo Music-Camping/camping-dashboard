@@ -11,6 +11,8 @@ import {
   ToggleRightIcon,
 } from "lucide-react";
 
+import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -39,6 +41,7 @@ interface PresentationControlsProps {
   onSetInterval: (seconds: number) => void;
   onGoToNext: () => void;
   onToggleItem: (name: string) => void;
+  visible?: boolean;
 }
 
 export function PresentationControls({
@@ -57,12 +60,19 @@ export function PresentationControls({
   onSetInterval,
   onGoToNext,
   onToggleItem,
+  visible = true,
 }: PresentationControlsProps) {
   const intervals = [10, 20, 30, 60, 120];
 
   if (isActive) {
     return (
-      <div className="fixed right-4 bottom-4 z-50 flex gap-2 rounded-lg bg-background/95 p-2 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div
+        className={cn(
+          "fixed right-4 bottom-4 z-50 flex gap-2 rounded-lg bg-background/95 p-2 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/60",
+          "transition-opacity duration-500",
+          visible ? "opacity-100" : "pointer-events-none opacity-0",
+        )}
+      >
         {/* Current Performer Indicator */}
         {currentPerformer && (
           <div className="flex items-center gap-2 rounded-md bg-muted px-3 py-2">

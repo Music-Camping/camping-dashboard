@@ -13,6 +13,7 @@ import { SpotifyHub } from "@/components/dashboard/spotify/spotify-hub";
 import { Separator } from "@/components/ui/separator";
 import { usePresentationContext } from "@/contexts/presentation-context";
 import { useFilters } from "@/hooks/use-filters";
+import { useIdleTimer } from "@/hooks/use-idle-timer";
 import { usePresentationMode } from "@/hooks/use-presentation-mode";
 import type {
   DashboardResponse,
@@ -100,6 +101,11 @@ export function DashboardClient({
 
   // Presentation Mode
   const presentation = usePresentationMode(allPerformers, companies);
+
+  // Auto-hide the floating controls after 5s of inactivity — only in
+  // presentation mode (D-24). In normal dashboard mode enabled=false keeps
+  // the hook fully inert and the menu always visible.
+  const isMenuIdle = useIdleTimer(5000, presentation.isActive);
 
   // Sync presentation mode with context
   useEffect(() => {
@@ -446,10 +452,10 @@ export function DashboardClient({
                 <motion.div
                   key={`company-${presentation.currentCompany.name}`}
                   className="absolute inset-0 grid grid-cols-2 gap-[1vh] p-[1vh]"
-                  initial={{ x: "100%" }}
-                  animate={{ x: 0 }}
-                  exit={{ x: "-100%" }}
-                  transition={{ duration: 0.45, ease: "easeInOut" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.35 }}
                 >
                   <CompanyDisplay
                     performers={presentation.currentCompany.performers}
@@ -464,10 +470,10 @@ export function DashboardClient({
                 <motion.div
                   key={presentation.currentPerformer ?? "all"}
                   className="absolute inset-0 grid grid-cols-2 gap-[1vh] p-[1vh]"
-                  initial={{ x: "100%" }}
-                  animate={{ x: 0 }}
-                  exit={{ x: "-100%" }}
-                  transition={{ duration: 0.45, ease: "easeInOut" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.35 }}
                 >
                   <PerformerPresentation
                     performerName={presentation.currentPerformer ?? "Todos"}
@@ -513,6 +519,7 @@ export function DashboardClient({
             onSetInterval={presentation.setRotationInterval}
             onGoToNext={presentation.goToNext}
             onToggleItem={presentation.toggleItemEnabled}
+            visible={!isMenuIdle}
           />
         </div>
       ) : (

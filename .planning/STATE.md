@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 02-03-PLAN.md
-last_updated: "2026-04-06T23:10:04.717Z"
-last_activity: 2026-04-06
+stopped_at: Completed 03-presentation-polish 03-04-PLAN.md (last plan — phase complete)
+last_updated: "2026-04-10T16:49:03.616Z"
+last_activity: 2026-04-10
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
+  total_phases: 3
+  completed_phases: 3
+  total_plans: 10
+  completed_plans: 10
   percent: 0
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Company stakeholders can view aggregated performer metrics on TV screens at a glance
-**Current focus:** Phase 02 — tv-grid-layout
+**Current focus:** Phase 03 — presentation-polish
 
 ## Current Position
 
-Phase: 02
-Plan: Not started
+Phase: 03 (presentation-polish) — EXECUTING
+Plan: 6 of 6
 Status: Phase complete — ready for verification
-Last activity: 2026-04-06
+Last activity: 2026-04-10
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -56,6 +56,12 @@ _Updated after each plan completion_
 | Phase 02-tv-grid-layout P01 | 15min | 2 tasks | 2 files |
 | Phase 02-tv-grid-layout P02 | 4min | 1 tasks | 1 files |
 | Phase 02-tv-grid-layout P03 | 5min | 1 tasks | 1 files |
+| Phase 03-presentation-polish P01 | 5min | 1 tasks | 1 files |
+| Phase 03-presentation-polish P02 | 135s | 2 tasks | 1 files |
+| Phase 03-presentation-polish P05 | 2min | 3 tasks | 3 files |
+| Phase 03-presentation-polish P03 | 5min | 3 tasks | 2 files |
+| Phase 03-presentation-polish P06 | 4min | 3 tasks | 3 files |
+| Phase 03-presentation-polish P04 | 4min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -75,6 +81,21 @@ Recent decisions affecting current work:
 - [Phase 02-tv-grid-layout]: clamp() applied directly to each text element (not via CSS cascade) for explicit maintainability
 - [Phase 02-tv-grid-layout]: Fragment return pattern: CompanyDisplay returns two children to fill parent grid-cols-2 without a wrapper div
 - [Phase 02-tv-grid-layout]: h-1/3 over flex-1 for artist card wrappers: enforces fixed 1/3 height per D-15 even with fewer than 3 performers
+- [Phase 03-presentation-polish]: Filter playlist keys at SSR boundary (page.tsx) — keeps processSpotifyTracks pure, fixes bug at data contract boundary (D-19)
+- [Phase 03-presentation-polish]: hasWhitelist guard: empty companies short-circuits to keep all keys — zero regression when API returns no company data
+- [Phase 03-presentation-polish]: Fragment pattern replaced with col-span-2 wrapper for CompanyDisplay: single BannerBackground behind both halves, gap-[1vh] replicated inside wrapper to preserve visual gap
+- [Phase 03-presentation-polish]: Custom useIdleTimer hook over react-idle-timer: avoids dependency for a 55-line problem
+- [Phase 03-presentation-polish]: CSS transition-opacity over Framer Motion for auto-hide fade: pure compositor performance on TV hardware
+- [Phase 03-presentation-polish]: Per-metric platform flags replace company-wide hasSpotify/hasYoutube for per-card icon decisions in company-display.tsx
+- [Phase 03-presentation-polish]: TikTokIcon and hasTiktok prop removed from performer-presentation.tsx — no TikTok data model exists, was speculative scaffolding
+- [Phase 03-presentation-polish]: Opacity fade over horizontal slide for entity transitions: Chromium compositor S-tier, eliminates paint on Android TV
+- [Phase 03-presentation-polish]: Permanent backdrop-blur-md removal over conditional isTransitioning: eliminates 12+ compositing layers during cross-dissolve, simpler implementation
+- [Phase 03-presentation-polish]: @container on half-panel wrappers: cqi resolves against ~50% viewport width, halving effective scale of all clamp() preferred values without JS
+- [Phase 03-presentation-polish]: GRID-05 24px floor intentionally relaxed per D-18 client acceptance: smaller overall takes precedence, client tuning expected on real TV
+
+### Roadmap Evolution
+
+- Phase 3 added: Presentation Polish — font scaling, streams aggregation fix (exclude playlists), company card order match, edge-to-edge background, auto-hide menu 5s, dynamic per-metric platform icons, smoother entity transitions on TV box
 
 ### Pending Todos
 
@@ -86,6 +107,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-06T23:05:01.436Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-04-10T16:49:03.613Z
+Stopped at: Completed 03-presentation-polish 03-04-PLAN.md (last plan — phase complete)
 Resume file: None
