@@ -91,4 +91,4 @@ Plans:
 - [x] 03-03-PLAN.md — Dynamic per-metric platform icons (both presentation components)
 - [ ] 03-04-PLAN.md — Container-query font scaling (both presentation components)
 - [x] 03-05-PLAN.md — Auto-hide menu hook + PresentationControls wiring
-- [ ] 03-06-PLAN.md — TV box transition smoothness (fade + backdrop-blur removal)
+- [x] 03-06-PLAN.md — TV box transition smoothness (fade + backdrop-blur removal)
