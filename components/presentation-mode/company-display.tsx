@@ -480,6 +480,16 @@ export function CompanyDisplay({
               delay={0}
             />
           )}
+          {aggregated.listeners != null && (
+            <MetricCard
+              label="Ouvintes Mensais"
+              value={aggregated.listeners}
+              delta={deltas.listeners}
+              glowColor="bg-emerald-500/[0.06]"
+              icons={[spotifyIcon]}
+              delay={0.06}
+            />
+          )}
           {aggregated.videos != null && (
             <MetricCard
               label="Vídeos"
@@ -487,7 +497,7 @@ export function CompanyDisplay({
               delta={deltas.videos}
               glowColor="bg-red-500/[0.06]"
               icons={[youtubeIcon]}
-              delay={0.06}
+              delay={0.12}
             />
           )}
           {aggregated.views != null && (
@@ -497,7 +507,7 @@ export function CompanyDisplay({
               delta={deltas.views}
               glowColor="bg-sky-500/[0.06]"
               icons={[youtubeIcon]}
-              delay={0.12}
+              delay={0.18}
             />
           )}
           {aggregated.followers != null && (
@@ -507,16 +517,6 @@ export function CompanyDisplay({
               delta={deltas.followers}
               glowColor="bg-pink-500/[0.06]"
               icons={[spotifyIcon, youtubeIcon]}
-              delay={0.18}
-            />
-          )}
-          {aggregated.listeners != null && (
-            <MetricCard
-              label="Ouvintes Mensais"
-              value={aggregated.listeners}
-              delta={deltas.listeners}
-              glowColor="bg-emerald-500/[0.06]"
-              icons={[spotifyIcon]}
               delay={0.24}
             />
           )}
