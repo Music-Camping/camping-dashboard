@@ -7,6 +7,7 @@ import {
   getSpotifyTracksData,
   type SpotifyTrackRaw,
 } from "@/lib/api/dashboard-server";
+import type { CompanyInfo } from "@/lib/types/dashboard";
 import type { SpotifyMetrics } from "@/lib/types/spotify";
 
 // ✅ Revalidar a cada 3 horas (10800 segundos)
@@ -19,13 +20,21 @@ export default async function DashboardPage() {
     getSpotifyTracksData(),
   ]);
 
+  // Playlist keys appear alongside real performers in spotifyTracksRaw —
+  // exclude them so stream totals reflect only real performer contribution.
+  const realPerformers = new Set<string>(
+    data?.company?.companies?.flatMap((c: CompanyInfo) => c.performers) ?? [],
+  );
+  const hasWhitelist = realPerformers.size > 0;
+
   // Transform Spotify tracks to SpotifyMetrics format
   const spotifyData: SpotifyMetrics | undefined = spotifyTracksRaw
     ? {
         monthlyListeners: { latest: 0, entries: [] },
         rankings: [],
-        rankingsByPerformer: Object.entries(spotifyTracksRaw).map(
-          ([performer, { tracks }]) => ({
+        rankingsByPerformer: Object.entries(spotifyTracksRaw)
+          .filter(([name]) => !hasWhitelist || realPerformers.has(name))
+          .map(([performer, { tracks }]) => ({
             performer,
             rankings: [...tracks]
               .sort((a, b) => b.plays.latest - a.plays.latest)
@@ -39,10 +48,10 @@ export default async function DashboardPage() {
                 streams: track.plays.latest,
                 change: "same" as const,
               })),
-          }),
-        ),
-        allTracks: Object.entries(spotifyTracksRaw).flatMap(
-          ([performer, { tracks }]) =>
+          })),
+        allTracks: Object.entries(spotifyTracksRaw)
+          .filter(([name]) => !hasWhitelist || realPerformers.has(name))
+          .flatMap(([performer, { tracks }]) =>
             tracks.map((track: SpotifyTrackRaw) => ({
               id: track.external_id,
               name: track.name,
@@ -50,7 +59,7 @@ export default async function DashboardPage() {
               thumbnail: track.thumbnail ?? "",
               plays: track.plays.latest,
             })),
-        ),
+          ),
       }
     : undefined;
 
