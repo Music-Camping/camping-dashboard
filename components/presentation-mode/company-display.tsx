@@ -43,6 +43,14 @@ function YouTubeIcon({ className }: { className?: string }) {
   );
 }
 
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
+    </svg>
+  );
+}
+
 /* ── Helpers ── */
 
 function StackedIcons({ platforms }: { platforms: React.ReactNode[] }) {
@@ -319,8 +327,6 @@ export function CompanyDisplay({
     let hasViews = false;
     let hasFollowers = false;
     let hasListeners = false;
-    let hasSpotify = false;
-    let hasYoutube = false;
     // Per-metric follower platform flags (Spotify, YouTube, Instagram independently)
     let hasSpotifyFollowers = false;
     let hasYoutubeFollowers = false;
@@ -335,7 +341,6 @@ export function CompanyDisplay({
         if (perf?.rankings && perf.rankings.length > 0) {
           totalStreams += perf.rankings.reduce((sum, r) => sum + r.streams, 0);
           hasStreams = true;
-          hasSpotify = true;
         }
       });
     }
@@ -345,7 +350,6 @@ export function CompanyDisplay({
       if (!data) return;
 
       if (data.spotify) {
-        hasSpotify = true;
         if (data.spotify.followers?.latest) {
           totalFollowers += data.spotify.followers.latest;
           hasFollowers = true;
@@ -357,7 +361,6 @@ export function CompanyDisplay({
         }
       }
       if (data.youtube) {
-        hasYoutube = true;
         if (data.youtube.followers?.latest) {
           totalFollowers += data.youtube.followers.latest;
           hasFollowers = true;
@@ -411,8 +414,6 @@ export function CompanyDisplay({
         youtube: hasYoutubeFollowers,
         instagram: hasInstagramFollowers,
       },
-      hasSpotify,
-      hasYoutube,
     };
   }, [performers, initialData, spotifyData]);
 
@@ -490,13 +491,6 @@ export function CompanyDisplay({
     };
   }, [performers, initialData, period]);
 
-  const spotifyIcon = aggregated.hasSpotify && (
-    <SpotifyIcon className="size-full text-green-400" />
-  );
-  const youtubeIcon = aggregated.hasYoutube && (
-    <YouTubeIcon className="size-full text-red-400" />
-  );
-
   return (
     <div className="relative col-span-2 grid h-full grid-cols-2 gap-[1vh]">
       {/* Single unified background behind BOTH halves */}
@@ -511,7 +505,11 @@ export function CompanyDisplay({
               value={aggregated.streams}
               delta={deltas.streams}
               glowColor="bg-green-500/[0.06]"
-              icons={[spotifyIcon]}
+              icons={[
+                aggregated.streamsPlatforms.spotify && (
+                  <SpotifyIcon className="size-full text-green-400" />
+                ),
+              ]}
               delay={0}
             />
           )}
@@ -521,7 +519,11 @@ export function CompanyDisplay({
               value={aggregated.listeners}
               delta={deltas.listeners}
               glowColor="bg-emerald-500/[0.06]"
-              icons={[spotifyIcon]}
+              icons={[
+                aggregated.listenersPlatforms.spotify && (
+                  <SpotifyIcon className="size-full text-green-400" />
+                ),
+              ]}
               delay={0.06}
             />
           )}
@@ -531,7 +533,11 @@ export function CompanyDisplay({
               value={aggregated.videos}
               delta={deltas.videos}
               glowColor="bg-red-500/[0.06]"
-              icons={[youtubeIcon]}
+              icons={[
+                aggregated.videosPlatforms.youtube && (
+                  <YouTubeIcon className="size-full text-red-400" />
+                ),
+              ]}
               delay={0.12}
             />
           )}
@@ -541,7 +547,11 @@ export function CompanyDisplay({
               value={aggregated.views}
               delta={deltas.views}
               glowColor="bg-sky-500/[0.06]"
-              icons={[youtubeIcon]}
+              icons={[
+                aggregated.viewsPlatforms.youtube && (
+                  <YouTubeIcon className="size-full text-red-400" />
+                ),
+              ]}
               delay={0.18}
             />
           )}
@@ -551,7 +561,17 @@ export function CompanyDisplay({
               value={aggregated.followers}
               delta={deltas.followers}
               glowColor="bg-pink-500/[0.06]"
-              icons={[spotifyIcon, youtubeIcon]}
+              icons={[
+                aggregated.followersPlatforms.spotify && (
+                  <SpotifyIcon className="size-full text-green-400" />
+                ),
+                aggregated.followersPlatforms.youtube && (
+                  <YouTubeIcon className="size-full text-red-400" />
+                ),
+                aggregated.followersPlatforms.instagram && (
+                  <InstagramIcon className="size-full text-pink-400" />
+                ),
+              ]}
               delay={0.24}
             />
           )}
@@ -570,7 +590,7 @@ export function CompanyDisplay({
                 <StackedIcons
                   platforms={
                     [
-                      aggregated.hasSpotify && (
+                      aggregated.listenersPlatforms.spotify && (
                         <SpotifyIcon className="size-full text-green-400" />
                       ),
                     ].filter(Boolean) as React.ReactNode[]
