@@ -78,7 +78,7 @@ function DeltaBadge({ value }: { value?: number }) {
   const isPositive = value > 0;
   return (
     <span
-      className={`text-[clamp(1.5rem,3vw,4rem)] font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
+      className={`text-[clamp(1.2rem,2.8cqi,3rem)] font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
     >
       {isPositive ? "+" : ""}
       {formatCompactNumber(value)}
@@ -118,6 +118,7 @@ function getMetricDelta(
 
 /* ── Metric Card ── */
 
+// cqi (container inline) scales text relative to each card, not the viewport — D-18 proportional reduction
 function MetricCard({
   label,
   value,
@@ -144,13 +145,13 @@ function MetricCard({
         className={`absolute -top-6 -right-6 size-24 rounded-full ${glowColor} blur-2xl`}
       />
       <div className="flex items-center justify-between">
-        <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+        <span className="text-[clamp(0.9rem,1.4cqi,1.4rem)] font-medium text-white/50">
           {label}
         </span>
         <StackedIcons platforms={icons.filter(Boolean) as React.ReactNode[]} />
       </div>
       <div className="mt-auto flex items-end justify-between">
-        <p className="text-[clamp(1.5rem,3vw,4rem)] font-black text-white tabular-nums">
+        <p className="text-[clamp(1.2rem,2.8cqi,3rem)] font-black text-white tabular-nums">
           {value != null ? formatCompactNumber(value) : "—"}
         </p>
         <DeltaBadge value={delta} />
@@ -210,18 +211,18 @@ function ArtistCard({
                 className="object-cover"
               />
             ) : (
-              <div className="flex size-full items-center justify-center text-[clamp(1.5rem,3vw,4rem)] font-black text-white/50">
+              <div className="flex size-full items-center justify-center text-[clamp(1rem,2.5cqi,2.5rem)] font-black text-white/50">
                 {name.charAt(0)}
               </div>
             )}
           </div>
-          <h3 className="text-[clamp(1.5rem,3vw,4rem)] font-black tracking-tight text-white">
+          <h3 className="text-[clamp(1rem,2.5cqi,2.5rem)] font-black tracking-tight text-white">
             {name}
           </h3>
         </div>
 
         {/* Quick stats */}
-        <div className="flex items-center gap-4 text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/60">
+        <div className="flex items-center gap-4 text-[clamp(0.65rem,0.9cqi,0.9rem)] font-medium text-white/60">
           {spotifyFollowers != null && (
             <div className="flex items-center gap-1.5">
               <SpotifyIcon className="size-3.5 text-green-400" />
@@ -497,7 +498,7 @@ export function CompanyDisplay({
       <BannerBackground bannerUrl={bannerUrl} />
 
       {/* LEFT HALF: 2x3 aggregate metric cards grid — no rounded, no own background */}
-      <div className="relative z-10 h-full overflow-hidden">
+      <div className="@container relative z-10 h-full overflow-hidden">
         <div className="relative z-10 grid h-full grid-cols-2 grid-rows-3 gap-[1vh] overflow-hidden p-[1.5vh]">
           {aggregated.streams != null && (
             <MetricCard
@@ -584,7 +585,7 @@ export function CompanyDisplay({
             >
               <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+                <span className="text-[clamp(0.9rem,1.4cqi,1.4rem)] font-medium text-white/50">
                   Top Cidades
                 </span>
                 <StackedIcons
@@ -604,14 +605,14 @@ export function CompanyDisplay({
                     className="flex items-center justify-between"
                   >
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="w-4 shrink-0 text-center text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-white/30">
+                      <span className="w-4 shrink-0 text-center text-[clamp(0.65rem,0.9cqi,0.9rem)] font-bold text-white/30">
                         {i + 1}
                       </span>
-                      <span className="truncate text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/80">
+                      <span className="truncate text-[clamp(0.65rem,0.9cqi,0.9rem)] font-medium text-white/80">
                         {city.city}
                       </span>
                     </div>
-                    <span className="ml-2 shrink-0 text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-amber-400 tabular-nums">
+                    <span className="ml-2 shrink-0 text-[clamp(0.65rem,0.9cqi,0.9rem)] font-bold text-amber-400 tabular-nums">
                       {formatCompactNumber(city.value)}
                     </span>
                   </div>
@@ -623,11 +624,11 @@ export function CompanyDisplay({
       </div>
 
       {/* RIGHT HALF: Performer cards (carousel if >3) — no rounded, no own background */}
-      <div className="relative z-10 h-full overflow-hidden">
+      <div className="@container relative z-10 h-full overflow-hidden">
         <div className="relative z-10 flex h-full flex-col gap-[1vh] overflow-hidden p-[1.5vh]">
           {/* Carousel page indicator */}
           {totalPages > 1 && (
-            <div className="absolute top-2 right-2 z-20 rounded-md bg-black/40 px-2 py-1 text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/60 backdrop-blur-sm">
+            <div className="absolute top-2 right-2 z-20 rounded-md bg-black/40 px-2 py-1 text-[clamp(0.65rem,0.9cqi,0.9rem)] font-medium text-white/60 backdrop-blur-sm">
               {currentPage + 1}/{totalPages}
             </div>
           )}
