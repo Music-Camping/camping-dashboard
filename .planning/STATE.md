@@ -107,9 +107,9 @@ None yet.
 
 ### Quick Tasks Completed
 
-| #          | Description                                                     | Date       | Commit | Directory                                                                                                           |
-| ---------- | --------------------------------------------------------------- | ---------- | ------ | ------------------------------------------------------------------------------------------------------------------- |
-| 260410-mp9 | Unify BannerBackground in performer-presentation (D-23 gap fix) | 2026-04-10 | TBD    | [260410-mp9-unify-bannerbackground-in-performer-pres](./quick/260410-mp9-unify-bannerbackground-in-performer-pres/) |
+| #          | Description                                                     | Date       | Commit  | Directory                                                                                                           |
+| ---------- | --------------------------------------------------------------- | ---------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| 260410-mp9 | Unify BannerBackground in performer-presentation (D-23 gap fix) | 2026-04-10 | 0cd3f66 | [260410-mp9-unify-bannerbackground-in-performer-pres](./quick/260410-mp9-unify-bannerbackground-in-performer-pres/) |
 
 ## Session Continuity
 
