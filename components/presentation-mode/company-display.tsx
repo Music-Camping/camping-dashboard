@@ -465,10 +465,12 @@ export function CompanyDisplay({
   );
 
   return (
-    <>
-      {/* LEFT HALF: 2x3 aggregate metric cards grid */}
-      <div className="relative h-full overflow-hidden rounded-2xl">
-        <BannerBackground bannerUrl={bannerUrl} />
+    <div className="relative col-span-2 grid h-full grid-cols-2 gap-[1vh]">
+      {/* Single unified background behind BOTH halves */}
+      <BannerBackground bannerUrl={bannerUrl} />
+
+      {/* LEFT HALF: 2x3 aggregate metric cards grid — no rounded, no own background */}
+      <div className="relative z-10 h-full overflow-hidden">
         <div className="relative z-10 grid h-full grid-cols-2 grid-rows-3 gap-[1vh] overflow-hidden p-[1.5vh]">
           {aggregated.streams != null && (
             <MetricCard
@@ -567,9 +569,8 @@ export function CompanyDisplay({
         </div>
       </div>
 
-      {/* RIGHT HALF: Performer cards (carousel if >3) */}
-      <div className="relative h-full overflow-hidden rounded-2xl">
-        <BannerBackground bannerUrl={bannerUrl} />
+      {/* RIGHT HALF: Performer cards (carousel if >3) — no rounded, no own background */}
+      <div className="relative z-10 h-full overflow-hidden">
         <div className="relative z-10 flex h-full flex-col gap-[1vh] overflow-hidden p-[1.5vh]">
           {/* Carousel page indicator */}
           {totalPages > 1 && (
@@ -612,6 +613,6 @@ export function CompanyDisplay({
           </AnimatePresence>
         </div>
       </div>
-    </>
+    </div>
   );
 }
