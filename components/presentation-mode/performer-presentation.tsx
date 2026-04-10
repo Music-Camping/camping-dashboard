@@ -52,15 +52,6 @@ interface PerformerPresentationProps {
   /** Which platforms this performer has data for */
   hasSpotify?: boolean;
   hasYoutube?: boolean;
-  hasTiktok?: boolean;
-}
-
-function TikTokIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
-    </svg>
-  );
 }
 
 /** Delta badge — shows growth like "+1.3M" in green or "-500" in red */
@@ -183,7 +174,6 @@ export function PerformerPresentation({
   listenersDelta,
   hasSpotify,
   hasYoutube,
-  hasTiktok,
 }: PerformerPresentationProps) {
   const cities = useMemo(() => {
     const entries = cityData?.entries;
@@ -216,7 +206,7 @@ export function PerformerPresentation({
         <BannerBackground bannerUrl={bannerUrl} performerName={performerName} />
         {/* 2x3 metric cards grid — exact D-04 order */}
         <div className="relative z-10 grid h-full grid-cols-2 grid-rows-3 gap-[1vh] overflow-hidden p-[1.5vh]">
-          {/* Card 1: Streams */}
+          {/* Card 1: Streams — Spotify-only per D-01 (streams are Spotify track plays) */}
           {totalStreams != null && (
             <MetricCard
               label="Spotify Streams"
@@ -227,10 +217,6 @@ export function PerformerPresentation({
                 hasSpotify && (
                   <SpotifyIcon className="size-full text-green-400" />
                 ),
-                hasYoutube && (
-                  <YouTubeIcon className="size-full text-red-400" />
-                ),
-                hasTiktok && <TikTokIcon className="size-full text-white/70" />,
               ]}
               delay={0}
             />
@@ -252,7 +238,7 @@ export function PerformerPresentation({
             />
           )}
 
-          {/* Card 3: Videos */}
+          {/* Card 3: Videos — YouTube-only per data model */}
           {youtubeVideos != null && (
             <MetricCard
               label="Vídeos"
@@ -260,7 +246,6 @@ export function PerformerPresentation({
               delta={videosDelta}
               glow="bg-red-500/[0.06]"
               icons={[
-                hasTiktok && <TikTokIcon className="size-full text-white/70" />,
                 hasYoutube && (
                   <YouTubeIcon className="size-full text-red-400" />
                 ),
@@ -269,7 +254,7 @@ export function PerformerPresentation({
             />
           )}
 
-          {/* Card 4: Views */}
+          {/* Card 4: Views — YouTube-only per data model */}
           {youtubeViews != null && (
             <MetricCard
               label="Views"
@@ -277,7 +262,6 @@ export function PerformerPresentation({
               delta={viewsDelta}
               glow="bg-sky-500/[0.06]"
               icons={[
-                hasTiktok && <TikTokIcon className="size-full text-white/70" />,
                 hasYoutube && (
                   <YouTubeIcon className="size-full text-red-400" />
                 ),
