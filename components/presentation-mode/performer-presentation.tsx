@@ -192,19 +192,21 @@ export function PerformerPresentation({
   const songs = rankings.slice(0, 10);
 
   return (
-    <>
-      {/* LEFT HALF: 2x3 metric cards grid */}
-      <div className="@container relative h-full overflow-hidden rounded-2xl">
-        {/* Noise texture */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-            backgroundRepeat: "repeat",
-          }}
-        />
-        <BannerBackground bannerUrl={bannerUrl} performerName={performerName} />
+    <div className="relative col-span-2 grid h-full grid-cols-2 gap-[1vh]">
+      {/* Single unified background behind BOTH halves */}
+      <BannerBackground bannerUrl={bannerUrl} performerName={performerName} />
+      {/* Single noise texture overlay */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+          backgroundRepeat: "repeat",
+        }}
+      />
+
+      {/* LEFT HALF: 2x3 metric cards grid — no rounded, no own background */}
+      <div className="@container relative z-10 h-full overflow-hidden">
         {/* 2x3 metric cards grid — exact D-04 order */}
         <div className="relative z-10 grid h-full grid-cols-2 grid-rows-3 gap-[1vh] overflow-hidden p-[1.5vh]">
           {/* Card 1: Streams — Spotify-only per D-01 (streams are Spotify track plays) */}
@@ -338,18 +340,8 @@ export function PerformerPresentation({
         </div>
       </div>
 
-      {/* RIGHT HALF: Top 10 tracks */}
-      <div className="@container relative h-full overflow-hidden rounded-2xl">
-        {/* Noise texture */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-            backgroundRepeat: "repeat",
-          }}
-        />
-        <BannerBackground bannerUrl={bannerUrl} performerName={performerName} />
+      {/* RIGHT HALF: Top 10 tracks — no rounded, no own background */}
+      <div className="@container relative z-10 h-full overflow-hidden">
         <div className="relative z-10 flex h-full flex-col overflow-hidden p-[1.5vh]">
           {songs.length > 0 ? (
             <div className="flex h-full flex-col gap-[0.5vh] overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh]">
@@ -405,6 +397,6 @@ export function PerformerPresentation({
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
