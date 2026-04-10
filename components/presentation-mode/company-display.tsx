@@ -43,6 +43,14 @@ function YouTubeIcon({ className }: { className?: string }) {
   );
 }
 
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
+    </svg>
+  );
+}
+
 /* ── Helpers ── */
 
 function StackedIcons({ platforms }: { platforms: React.ReactNode[] }) {
@@ -70,7 +78,7 @@ function DeltaBadge({ value }: { value?: number }) {
   const isPositive = value > 0;
   return (
     <span
-      className={`text-[clamp(1.5rem,3vw,4rem)] font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
+      className={`text-[clamp(1.2rem,2.8cqi,3rem)] font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
     >
       {isPositive ? "+" : ""}
       {formatCompactNumber(value)}
@@ -110,6 +118,7 @@ function getMetricDelta(
 
 /* ── Metric Card ── */
 
+// cqi (container inline) scales text relative to each card, not the viewport — D-18 proportional reduction
 function MetricCard({
   label,
   value,
@@ -130,19 +139,19 @@ function MetricCard({
       initial={{ opacity: 0, scale: 0.92 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.35, delay }}
-      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg backdrop-blur-md"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg"
     >
       <div
         className={`absolute -top-6 -right-6 size-24 rounded-full ${glowColor} blur-2xl`}
       />
       <div className="flex items-center justify-between">
-        <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+        <span className="text-[clamp(0.9rem,1.4cqi,1.4rem)] font-medium text-white/50">
           {label}
         </span>
         <StackedIcons platforms={icons.filter(Boolean) as React.ReactNode[]} />
       </div>
       <div className="mt-auto flex items-end justify-between">
-        <p className="text-[clamp(1.5rem,3vw,4rem)] font-black text-white tabular-nums">
+        <p className="text-[clamp(1.2rem,2.8cqi,3rem)] font-black text-white tabular-nums">
           {value != null ? formatCompactNumber(value) : "—"}
         </p>
         <DeltaBadge value={delta} />
@@ -176,7 +185,7 @@ function ArtistCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.4, delay }}
-      className="relative h-full overflow-hidden rounded-2xl bg-white/[0.03] shadow-lg backdrop-blur-md"
+      className="relative h-full overflow-hidden rounded-2xl bg-white/[0.03] shadow-lg"
     >
       {/* Banner BG */}
       {bannerUrl ? (
@@ -202,18 +211,18 @@ function ArtistCard({
                 className="object-cover"
               />
             ) : (
-              <div className="flex size-full items-center justify-center text-[clamp(1.5rem,3vw,4rem)] font-black text-white/50">
+              <div className="flex size-full items-center justify-center text-[clamp(1rem,2.5cqi,2.5rem)] font-black text-white/50">
                 {name.charAt(0)}
               </div>
             )}
           </div>
-          <h3 className="text-[clamp(1.5rem,3vw,4rem)] font-black tracking-tight text-white">
+          <h3 className="text-[clamp(1rem,2.5cqi,2.5rem)] font-black tracking-tight text-white">
             {name}
           </h3>
         </div>
 
         {/* Quick stats */}
-        <div className="flex items-center gap-4 text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/60">
+        <div className="flex items-center gap-4 text-[clamp(0.65rem,0.9cqi,0.9rem)] font-medium text-white/60">
           {spotifyFollowers != null && (
             <div className="flex items-center gap-1.5">
               <SpotifyIcon className="size-3.5 text-green-400" />
@@ -319,8 +328,10 @@ export function CompanyDisplay({
     let hasViews = false;
     let hasFollowers = false;
     let hasListeners = false;
-    let hasSpotify = false;
-    let hasYoutube = false;
+    // Per-metric follower platform flags (Spotify, YouTube, Instagram independently)
+    let hasSpotifyFollowers = false;
+    let hasYoutubeFollowers = false;
+    let hasInstagramFollowers = false;
 
     // Spotify track streams from rankings
     if (spotifyData?.rankingsByPerformer) {
@@ -331,7 +342,6 @@ export function CompanyDisplay({
         if (perf?.rankings && perf.rankings.length > 0) {
           totalStreams += perf.rankings.reduce((sum, r) => sum + r.streams, 0);
           hasStreams = true;
-          hasSpotify = true;
         }
       });
     }
@@ -341,10 +351,10 @@ export function CompanyDisplay({
       if (!data) return;
 
       if (data.spotify) {
-        hasSpotify = true;
         if (data.spotify.followers?.latest) {
           totalFollowers += data.spotify.followers.latest;
           hasFollowers = true;
+          hasSpotifyFollowers = true;
         }
         if (data.spotify.monthly_listeners?.latest) {
           totalListeners += data.spotify.monthly_listeners.latest;
@@ -352,10 +362,10 @@ export function CompanyDisplay({
         }
       }
       if (data.youtube) {
-        hasYoutube = true;
         if (data.youtube.followers?.latest) {
           totalFollowers += data.youtube.followers.latest;
           hasFollowers = true;
+          hasYoutubeFollowers = true;
         }
         if (data.youtube.views?.latest) {
           totalViews += data.youtube.views.latest;
@@ -369,6 +379,7 @@ export function CompanyDisplay({
       if (data.instagram?.followers?.latest) {
         totalFollowers += data.instagram.followers.latest;
         hasFollowers = true;
+        hasInstagramFollowers = true;
       }
     });
 
@@ -378,8 +389,32 @@ export function CompanyDisplay({
       views: hasViews ? totalViews : undefined,
       followers: hasFollowers ? totalFollowers : undefined,
       listeners: hasListeners ? totalListeners : undefined,
-      hasSpotify,
-      hasYoutube,
+      // Per-metric platform contribution flags (D-26)
+      streamsPlatforms: {
+        spotify: hasStreams,
+        youtube: false,
+        instagram: false,
+      },
+      videosPlatforms: {
+        spotify: false,
+        youtube: hasVideos,
+        instagram: false,
+      },
+      viewsPlatforms: {
+        spotify: false,
+        youtube: hasViews,
+        instagram: false,
+      },
+      listenersPlatforms: {
+        spotify: hasListeners,
+        youtube: false,
+        instagram: false,
+      },
+      followersPlatforms: {
+        spotify: hasSpotifyFollowers,
+        youtube: hasYoutubeFollowers,
+        instagram: hasInstagramFollowers,
+      },
     };
   }, [performers, initialData, spotifyData]);
 
@@ -457,18 +492,13 @@ export function CompanyDisplay({
     };
   }, [performers, initialData, period]);
 
-  const spotifyIcon = aggregated.hasSpotify && (
-    <SpotifyIcon className="size-full text-green-400" />
-  );
-  const youtubeIcon = aggregated.hasYoutube && (
-    <YouTubeIcon className="size-full text-red-400" />
-  );
-
   return (
-    <>
-      {/* LEFT HALF: 2x3 aggregate metric cards grid */}
-      <div className="relative h-full overflow-hidden rounded-2xl">
-        <BannerBackground bannerUrl={bannerUrl} />
+    <div className="relative col-span-2 grid h-full grid-cols-2 gap-[1vh]">
+      {/* Single unified background behind BOTH halves */}
+      <BannerBackground bannerUrl={bannerUrl} />
+
+      {/* LEFT HALF: 2x3 aggregate metric cards grid — no rounded, no own background */}
+      <div className="@container relative z-10 h-full overflow-hidden">
         <div className="relative z-10 grid h-full grid-cols-2 grid-rows-3 gap-[1vh] overflow-hidden p-[1.5vh]">
           {aggregated.streams != null && (
             <MetricCard
@@ -476,38 +506,12 @@ export function CompanyDisplay({
               value={aggregated.streams}
               delta={deltas.streams}
               glowColor="bg-green-500/[0.06]"
-              icons={[spotifyIcon]}
+              icons={[
+                aggregated.streamsPlatforms.spotify && (
+                  <SpotifyIcon className="size-full text-green-400" />
+                ),
+              ]}
               delay={0}
-            />
-          )}
-          {aggregated.videos != null && (
-            <MetricCard
-              label="Vídeos"
-              value={aggregated.videos}
-              delta={deltas.videos}
-              glowColor="bg-red-500/[0.06]"
-              icons={[youtubeIcon]}
-              delay={0.06}
-            />
-          )}
-          {aggregated.views != null && (
-            <MetricCard
-              label="Views"
-              value={aggregated.views}
-              delta={deltas.views}
-              glowColor="bg-sky-500/[0.06]"
-              icons={[youtubeIcon]}
-              delay={0.12}
-            />
-          )}
-          {aggregated.followers != null && (
-            <MetricCard
-              label="Seguidores"
-              value={aggregated.followers}
-              delta={deltas.followers}
-              glowColor="bg-pink-500/[0.06]"
-              icons={[spotifyIcon, youtubeIcon]}
-              delay={0.18}
             />
           )}
           {aggregated.listeners != null && (
@@ -516,7 +520,59 @@ export function CompanyDisplay({
               value={aggregated.listeners}
               delta={deltas.listeners}
               glowColor="bg-emerald-500/[0.06]"
-              icons={[spotifyIcon]}
+              icons={[
+                aggregated.listenersPlatforms.spotify && (
+                  <SpotifyIcon className="size-full text-green-400" />
+                ),
+              ]}
+              delay={0.06}
+            />
+          )}
+          {aggregated.videos != null && (
+            <MetricCard
+              label="Vídeos"
+              value={aggregated.videos}
+              delta={deltas.videos}
+              glowColor="bg-red-500/[0.06]"
+              icons={[
+                aggregated.videosPlatforms.youtube && (
+                  <YouTubeIcon className="size-full text-red-400" />
+                ),
+              ]}
+              delay={0.12}
+            />
+          )}
+          {aggregated.views != null && (
+            <MetricCard
+              label="Views"
+              value={aggregated.views}
+              delta={deltas.views}
+              glowColor="bg-sky-500/[0.06]"
+              icons={[
+                aggregated.viewsPlatforms.youtube && (
+                  <YouTubeIcon className="size-full text-red-400" />
+                ),
+              ]}
+              delay={0.18}
+            />
+          )}
+          {aggregated.followers != null && (
+            <MetricCard
+              label="Seguidores"
+              value={aggregated.followers}
+              delta={deltas.followers}
+              glowColor="bg-pink-500/[0.06]"
+              icons={[
+                aggregated.followersPlatforms.spotify && (
+                  <SpotifyIcon className="size-full text-green-400" />
+                ),
+                aggregated.followersPlatforms.youtube && (
+                  <YouTubeIcon className="size-full text-red-400" />
+                ),
+                aggregated.followersPlatforms.instagram && (
+                  <InstagramIcon className="size-full text-pink-400" />
+                ),
+              ]}
               delay={0.24}
             />
           )}
@@ -525,17 +581,17 @@ export function CompanyDisplay({
               initial={{ opacity: 0, scale: 0.92 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.35, delay: 0.3 }}
-              className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg backdrop-blur-md"
+              className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg"
             >
               <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+                <span className="text-[clamp(0.9rem,1.4cqi,1.4rem)] font-medium text-white/50">
                   Top Cidades
                 </span>
                 <StackedIcons
                   platforms={
                     [
-                      aggregated.hasSpotify && (
+                      aggregated.listenersPlatforms.spotify && (
                         <SpotifyIcon className="size-full text-green-400" />
                       ),
                     ].filter(Boolean) as React.ReactNode[]
@@ -549,14 +605,14 @@ export function CompanyDisplay({
                     className="flex items-center justify-between"
                   >
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="w-4 shrink-0 text-center text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-white/30">
+                      <span className="w-4 shrink-0 text-center text-[clamp(0.65rem,0.9cqi,0.9rem)] font-bold text-white/30">
                         {i + 1}
                       </span>
-                      <span className="truncate text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/80">
+                      <span className="truncate text-[clamp(0.65rem,0.9cqi,0.9rem)] font-medium text-white/80">
                         {city.city}
                       </span>
                     </div>
-                    <span className="ml-2 shrink-0 text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-amber-400 tabular-nums">
+                    <span className="ml-2 shrink-0 text-[clamp(0.65rem,0.9cqi,0.9rem)] font-bold text-amber-400 tabular-nums">
                       {formatCompactNumber(city.value)}
                     </span>
                   </div>
@@ -567,13 +623,12 @@ export function CompanyDisplay({
         </div>
       </div>
 
-      {/* RIGHT HALF: Performer cards (carousel if >3) */}
-      <div className="relative h-full overflow-hidden rounded-2xl">
-        <BannerBackground bannerUrl={bannerUrl} />
+      {/* RIGHT HALF: Performer cards (carousel if >3) — no rounded, no own background */}
+      <div className="@container relative z-10 h-full overflow-hidden">
         <div className="relative z-10 flex h-full flex-col gap-[1vh] overflow-hidden p-[1.5vh]">
           {/* Carousel page indicator */}
           {totalPages > 1 && (
-            <div className="absolute top-2 right-2 z-20 rounded-md bg-black/40 px-2 py-1 text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/60 backdrop-blur-sm">
+            <div className="absolute top-2 right-2 z-20 rounded-md bg-black/40 px-2 py-1 text-[clamp(0.65rem,0.9cqi,0.9rem)] font-medium text-white/60 backdrop-blur-sm">
               {currentPage + 1}/{totalPages}
             </div>
           )}
@@ -612,6 +667,6 @@ export function CompanyDisplay({
           </AnimatePresence>
         </div>
       </div>
-    </>
+    </div>
   );
 }

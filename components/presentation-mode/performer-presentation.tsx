@@ -52,15 +52,6 @@ interface PerformerPresentationProps {
   /** Which platforms this performer has data for */
   hasSpotify?: boolean;
   hasYoutube?: boolean;
-  hasTiktok?: boolean;
-}
-
-function TikTokIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
-    </svg>
-  );
 }
 
 /** Delta badge — shows growth like "+1.3M" in green or "-500" in red */
@@ -69,7 +60,7 @@ function DeltaBadge({ value }: { value?: number }) {
   const isPositive = value > 0;
   return (
     <span
-      className={`text-[clamp(1.5rem,3vw,4rem)] font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
+      className={`text-[clamp(1.2rem,2.8cqi,3rem)] font-black tabular-nums ${isPositive ? "text-green-400" : "text-red-400"}`}
     >
       {isPositive ? "+" : ""}
       {formatCompactNumber(value)}
@@ -77,6 +68,7 @@ function DeltaBadge({ value }: { value?: number }) {
   );
 }
 
+// cqi (container inline) scales text relative to each card, not the viewport — D-18 proportional reduction
 /** Single metric card — fills its grid cell via h-full */
 function MetricCard({
   label,
@@ -98,19 +90,19 @@ function MetricCard({
       initial={{ opacity: 0, scale: 0.92 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.35, delay }}
-      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg backdrop-blur-md"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg"
     >
       <div
         className={`absolute -top-6 -right-6 size-24 rounded-full ${glow} blur-2xl`}
       />
       <div className="flex items-center justify-between">
-        <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+        <span className="text-[clamp(0.9rem,1.4cqi,1.4rem)] font-medium text-white/50">
           {label}
         </span>
         <StackedIcons platforms={icons.filter(Boolean) as React.ReactNode[]} />
       </div>
       <div className="mt-auto flex items-end justify-between">
-        <p className="text-[clamp(1.5rem,3vw,4rem)] font-black text-white tabular-nums">
+        <p className="text-[clamp(1.2rem,2.8cqi,3rem)] font-black text-white tabular-nums">
           {formatCompactNumber(value)}
         </p>
         <DeltaBadge value={delta} />
@@ -183,7 +175,6 @@ export function PerformerPresentation({
   listenersDelta,
   hasSpotify,
   hasYoutube,
-  hasTiktok,
 }: PerformerPresentationProps) {
   const cities = useMemo(() => {
     const entries = cityData?.entries;
@@ -203,7 +194,7 @@ export function PerformerPresentation({
   return (
     <>
       {/* LEFT HALF: 2x3 metric cards grid */}
-      <div className="relative h-full overflow-hidden rounded-2xl">
+      <div className="@container relative h-full overflow-hidden rounded-2xl">
         {/* Noise texture */}
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -216,7 +207,7 @@ export function PerformerPresentation({
         <BannerBackground bannerUrl={bannerUrl} performerName={performerName} />
         {/* 2x3 metric cards grid — exact D-04 order */}
         <div className="relative z-10 grid h-full grid-cols-2 grid-rows-3 gap-[1vh] overflow-hidden p-[1.5vh]">
-          {/* Card 1: Streams */}
+          {/* Card 1: Streams — Spotify-only per D-01 (streams are Spotify track plays) */}
           {totalStreams != null && (
             <MetricCard
               label="Spotify Streams"
@@ -227,10 +218,6 @@ export function PerformerPresentation({
                 hasSpotify && (
                   <SpotifyIcon className="size-full text-green-400" />
                 ),
-                hasYoutube && (
-                  <YouTubeIcon className="size-full text-red-400" />
-                ),
-                hasTiktok && <TikTokIcon className="size-full text-white/70" />,
               ]}
               delay={0}
             />
@@ -252,7 +239,7 @@ export function PerformerPresentation({
             />
           )}
 
-          {/* Card 3: Videos */}
+          {/* Card 3: Videos — YouTube-only per data model */}
           {youtubeVideos != null && (
             <MetricCard
               label="Vídeos"
@@ -260,7 +247,6 @@ export function PerformerPresentation({
               delta={videosDelta}
               glow="bg-red-500/[0.06]"
               icons={[
-                hasTiktok && <TikTokIcon className="size-full text-white/70" />,
                 hasYoutube && (
                   <YouTubeIcon className="size-full text-red-400" />
                 ),
@@ -269,7 +255,7 @@ export function PerformerPresentation({
             />
           )}
 
-          {/* Card 4: Views */}
+          {/* Card 4: Views — YouTube-only per data model */}
           {youtubeViews != null && (
             <MetricCard
               label="Views"
@@ -277,7 +263,6 @@ export function PerformerPresentation({
               delta={viewsDelta}
               glow="bg-sky-500/[0.06]"
               icons={[
-                hasTiktok && <TikTokIcon className="size-full text-white/70" />,
                 hasYoutube && (
                   <YouTubeIcon className="size-full text-red-400" />
                 ),
@@ -311,11 +296,11 @@ export function PerformerPresentation({
               initial={{ opacity: 0, scale: 0.92 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.35, delay: 0.3 }}
-              className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg backdrop-blur-md"
+              className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg"
             >
               <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-[clamp(1.5rem,1.3vw,2rem)] font-medium text-white/50">
+                <span className="text-[clamp(0.9rem,1.4cqi,1.4rem)] font-medium text-white/50">
                   Top Cidades
                 </span>
                 <StackedIcons
@@ -335,14 +320,14 @@ export function PerformerPresentation({
                     className="flex items-center justify-between"
                   >
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="w-4 shrink-0 text-center text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-white/30">
+                      <span className="w-4 shrink-0 text-center text-[clamp(0.65rem,0.9cqi,0.9rem)] font-bold text-white/30">
                         {i + 1}
                       </span>
-                      <span className="truncate text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/80">
+                      <span className="truncate text-[clamp(0.65rem,0.9cqi,0.9rem)] font-medium text-white/80">
                         {city.extra_data?.city ?? "—"}
                       </span>
                     </div>
-                    <span className="ml-2 shrink-0 text-[clamp(0.75rem,0.9vw,1rem)] font-bold text-amber-400 tabular-nums">
+                    <span className="ml-2 shrink-0 text-[clamp(0.65rem,0.9cqi,0.9rem)] font-bold text-amber-400 tabular-nums">
                       {formatCompactNumber(city.value)}
                     </span>
                   </div>
@@ -354,7 +339,7 @@ export function PerformerPresentation({
       </div>
 
       {/* RIGHT HALF: Top 10 tracks */}
-      <div className="relative h-full overflow-hidden rounded-2xl">
+      <div className="@container relative h-full overflow-hidden rounded-2xl">
         {/* Noise texture */}
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -367,7 +352,7 @@ export function PerformerPresentation({
         <BannerBackground bannerUrl={bannerUrl} performerName={performerName} />
         <div className="relative z-10 flex h-full flex-col overflow-hidden p-[1.5vh]">
           {songs.length > 0 ? (
-            <div className="flex h-full flex-col gap-[0.5vh] overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] backdrop-blur-md">
+            <div className="flex h-full flex-col gap-[0.5vh] overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh]">
               {songs.map((track, idx) => (
                 <motion.div
                   key={track.trackId}
@@ -394,17 +379,17 @@ export function PerformerPresentation({
 
                   {/* Track info */}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[clamp(0.875rem,1vw,1.125rem)] font-medium text-white/90">
+                    <p className="truncate text-[clamp(0.875rem,1cqi,1.125rem)] font-medium text-white/90">
                       {track.trackName}
                     </p>
-                    <p className="truncate text-[clamp(0.75rem,0.9vw,1rem)] font-medium text-white/45">
+                    <p className="truncate text-[clamp(0.65rem,0.9cqi,0.9rem)] font-medium text-white/45">
                       {track.artistName}
                     </p>
                   </div>
 
                   {/* Stream count */}
                   <div className="shrink-0 text-right">
-                    <p className="text-[clamp(0.875rem,1vw,1.125rem)] font-medium text-white/70 tabular-nums">
+                    <p className="text-[clamp(0.875rem,1cqi,1.125rem)] font-medium text-white/70 tabular-nums">
                       {formatCompactNumber(track.streams)}
                     </p>
                   </div>
@@ -412,8 +397,8 @@ export function PerformerPresentation({
               ))}
             </div>
           ) : (
-            <div className="flex h-full items-center justify-center rounded-2xl bg-white/[0.03] backdrop-blur-md">
-              <p className="text-[clamp(0.875rem,1vw,1.125rem)] font-medium text-white/40">
+            <div className="flex h-full items-center justify-center rounded-2xl bg-white/[0.03]">
+              <p className="text-[clamp(0.875rem,1cqi,1.125rem)] font-medium text-white/40">
                 Dados indisponíveis
               </p>
             </div>
