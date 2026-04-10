@@ -65,7 +65,7 @@ Phases execute in numeric order: 1 → 2 → 3
 | ---------------------- | -------------- | ----------- | ---------- |
 | 1. Streams Fix         | 0/TBD          | Not started | -          |
 | 2. TV Grid Layout      | 3/3            | Complete    | 2026-04-06 |
-| 3. Presentation Polish | 1/6 | In Progress|  |
+| 3. Presentation Polish | 3/6 | In Progress|  |
 
 ### Phase 3: Presentation Polish
 
@@ -82,7 +82,7 @@ Phases execute in numeric order: 1 → 2 → 3
 6. Every MetricCard in both views shows icons that match the platforms actually contributing to that metric's value — Streams is Spotify-only in both views, Vídeos/Views are YouTube-only, Seguidores dynamically shows contributing platforms (D-26)
 7. Entity transitions use opacity fade (not slide), backdrop-blur-md is removed from presentation-mode cards, and transitions no longer stutter on Android TV box (D-27)
 
-**Plans:** 1/6 plans executed
+**Plans:** 3/6 plans executed
 
 Plans:
 
@@ -90,5 +90,5 @@ Plans:
 - [x] 03-02-PLAN.md — Company card order + background unification (company-display.tsx)
 - [ ] 03-03-PLAN.md — Dynamic per-metric platform icons (both presentation components)
 - [ ] 03-04-PLAN.md — Container-query font scaling (both presentation components)
-- [ ] 03-05-PLAN.md — Auto-hide menu hook + PresentationControls wiring
+- [x] 03-05-PLAN.md — Auto-hide menu hook + PresentationControls wiring
 - [ ] 03-06-PLAN.md — TV box transition smoothness (fade + backdrop-blur removal)
