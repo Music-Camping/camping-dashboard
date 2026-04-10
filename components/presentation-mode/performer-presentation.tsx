@@ -89,7 +89,7 @@ function MetricCard({
       initial={{ opacity: 0, scale: 0.92 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.35, delay }}
-      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg backdrop-blur-md"
+      className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg"
     >
       <div
         className={`absolute -top-6 -right-6 size-24 rounded-full ${glow} blur-2xl`}
@@ -295,7 +295,7 @@ export function PerformerPresentation({
               initial={{ opacity: 0, scale: 0.92 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.35, delay: 0.3 }}
-              className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg backdrop-blur-md"
+              className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] shadow-lg"
             >
               <div className="absolute -top-6 -right-6 size-24 rounded-full bg-amber-500/[0.06] blur-2xl" />
               <div className="mb-2 flex items-center justify-between">
@@ -351,7 +351,7 @@ export function PerformerPresentation({
         <BannerBackground bannerUrl={bannerUrl} performerName={performerName} />
         <div className="relative z-10 flex h-full flex-col overflow-hidden p-[1.5vh]">
           {songs.length > 0 ? (
-            <div className="flex h-full flex-col gap-[0.5vh] overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh] backdrop-blur-md">
+            <div className="flex h-full flex-col gap-[0.5vh] overflow-hidden rounded-2xl bg-white/[0.03] p-[1.5vh]">
               {songs.map((track, idx) => (
                 <motion.div
                   key={track.trackId}
@@ -396,7 +396,7 @@ export function PerformerPresentation({
               ))}
             </div>
           ) : (
-            <div className="flex h-full items-center justify-center rounded-2xl bg-white/[0.03] backdrop-blur-md">
+            <div className="flex h-full items-center justify-center rounded-2xl bg-white/[0.03]">
               <p className="text-[clamp(0.875rem,1vw,1.125rem)] font-medium text-white/40">
                 Dados indisponíveis
               </p>
