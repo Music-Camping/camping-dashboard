@@ -87,7 +87,7 @@ Phases execute in numeric order: 1 → 2 → 3
 Plans:
 
 - [x] 03-01-PLAN.md — Streams playlist exclusion (page.tsx whitelist filter)
-- [ ] 03-02-PLAN.md — Company card order + background unification (company-display.tsx)
+- [x] 03-02-PLAN.md — Company card order + background unification (company-display.tsx)
 - [ ] 03-03-PLAN.md — Dynamic per-metric platform icons (both presentation components)
 - [ ] 03-04-PLAN.md — Container-query font scaling (both presentation components)
 - [ ] 03-05-PLAN.md — Auto-hide menu hook + PresentationControls wiring
