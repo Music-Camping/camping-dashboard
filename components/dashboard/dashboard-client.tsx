@@ -410,7 +410,7 @@ export function DashboardClient({
                     ? (presentation.currentCompany?.name ?? "C")
                     : (presentation.currentPerformer ?? "●");
                   return profileSrc ? (
-                    <div className="relative size-20 shrink-0 overflow-hidden rounded-xl">
+                    <div className="relative size-14 shrink-0 overflow-hidden rounded-xl">
                       <img
                         src={profileSrc}
                         alt={label}
@@ -418,7 +418,7 @@ export function DashboardClient({
                       />
                     </div>
                   ) : (
-                    <div className="flex size-20 items-center justify-center rounded-xl bg-primary/20 text-2xl font-bold text-primary">
+                    <div className="flex size-14 items-center justify-center rounded-xl bg-primary/20 text-2xl font-bold text-primary">
                       {label.charAt(0)}
                     </div>
                   );
