@@ -187,16 +187,14 @@ function ArtistCard({
       transition={{ duration: 0.4, delay }}
       className="relative h-full overflow-hidden rounded-2xl bg-white/[0.03] shadow-lg"
     >
-      {/* Banner BG */}
+      {/* Banner BG — no placeholder when image is missing (card stays transparent) */}
       {bannerUrl ? (
         <>
           <Image src={bannerUrl} alt={name} fill className="object-cover" />
           <div className="absolute inset-0 bg-black/50" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
         </>
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] to-transparent" />
-      )}
+      ) : null}
 
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col justify-end p-[1.5vh]">
@@ -266,19 +264,7 @@ function BannerBackground({ bannerUrl }: { bannerUrl?: string }) {
       </>
     );
   }
-  return (
-    <>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.12)_0%,_transparent_50%),_radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.08)_0%,_transparent_50%),_linear-gradient(to_bottom,_#0a0a0a,_#111111)]" />
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          backgroundRepeat: "repeat",
-        }}
-      />
-    </>
-  );
+  return null;
 }
 
 /* ── Main Component ── */
