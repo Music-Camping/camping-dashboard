@@ -636,7 +636,7 @@ export function CompanyDisplay({
           <AnimatePresence mode="wait">
             <motion.div
               key={currentPage}
-              className="flex h-full flex-col gap-[1vh]"
+              className="grid h-full grid-rows-3 gap-[1vh] overflow-hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -647,7 +647,7 @@ export function CompanyDisplay({
                 return (
                   <div
                     key={performer}
-                    className="h-1/3 min-h-0 shrink-0 overflow-hidden rounded-2xl"
+                    className="min-h-0 overflow-hidden rounded-2xl"
                   >
                     <ArtistCard
                       name={performer}
