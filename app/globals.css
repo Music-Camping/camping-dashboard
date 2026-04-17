@@ -171,3 +171,15 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* TV WebView compensation: Android TV WebView reports viewport at half CSS
+ * resolution (960×540 on 1080p) due to devicePixelRatio=2. This makes
+ * rem/px-based sizes render proportionally 2x larger relative to the
+ * viewport. Shrinking the root font-size to ~2/3 brings rem-based sizes
+ * (size-*, text-[clamp(...rem...)], p-*, gap-*) back into the intended
+ * proportions. vh/vw/cqi/% are unaffected (already viewport-relative).
+ * Class is toggled by dashboard-client.tsx when presentation is active and
+ * devicePixelRatio > 1. */
+html.presentation-tv {
+  font-size: 66.67%;
+}

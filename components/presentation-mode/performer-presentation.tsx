@@ -354,7 +354,7 @@ export function PerformerPresentation({
                   className="flex min-h-0 flex-1 items-center gap-3 rounded-lg bg-white/[0.02] px-[1vh] py-[0.5vh] transition-colors duration-200 hover:bg-white/[0.06]"
                 >
                   {/* Thumbnail */}
-                  <div className="relative size-6 shrink-0 overflow-hidden rounded-md">
+                  <div className="relative size-9 shrink-0 overflow-hidden rounded-md">
                     {track.thumbnail ? (
                       <Image
                         src={track.thumbnail}
