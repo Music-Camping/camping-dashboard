@@ -202,7 +202,7 @@ function ArtistCard({
       <div className="relative z-10 flex h-full flex-col justify-end p-[1.5vh]">
         {/* Profile + Name */}
         <div className="mb-[0.5vh] flex items-center gap-3">
-          <div className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-white/10">
+          <div className="relative size-9 shrink-0 overflow-hidden rounded-xl bg-white/10">
             {profileUrl ? (
               <Image
                 src={profileUrl}
