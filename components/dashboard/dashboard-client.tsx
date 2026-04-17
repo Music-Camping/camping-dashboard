@@ -112,6 +112,26 @@ export function DashboardClient({
     setIsPresentationMode(presentation.isActive);
   }, [presentation.isActive, setIsPresentationMode]);
 
+  // Force viewport width to physical pixels when presentation mode is active.
+  // Android TV WebView (e.g. BrowseHere on Xiaomi TV Box) reports viewport as
+  // 960×540 CSS px on 1080p screens due to devicePixelRatio=2, making rem/px
+  // sizes render ~2x their intended physical size. Overriding the viewport
+  // meta forces WebView to treat the page as 1920 CSS px wide, restoring
+  // desktop-parity proportions. Restored on deactivation to avoid breaking
+  // mobile.
+  useEffect(() => {
+    if (!presentation.isActive) return undefined;
+    const meta = document.querySelector<HTMLMetaElement>(
+      'meta[name="viewport"]',
+    );
+    if (!meta) return undefined;
+    const original = meta.getAttribute("content");
+    meta.setAttribute("content", "width=1920, initial-scale=1");
+    return () => {
+      if (original) meta.setAttribute("content", original);
+    };
+  }, [presentation.isActive]);
+
   // Listen for presentation start event from header
   useEffect(() => {
     const handleStartPresentation = () => {
