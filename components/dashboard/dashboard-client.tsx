@@ -118,17 +118,23 @@ export function DashboardClient({
   // sizes render ~2x their intended physical size. Overriding the viewport
   // meta forces WebView to treat the page as 1920 CSS px wide, restoring
   // desktop-parity proportions. Restored on deactivation to avoid breaking
-  // mobile.
+  // mobile. The html.presentation-tv class (see globals.css) shrinks rem by
+  // ~2/3 on high-DPR devices to further compensate content that still
+  // overflows after the viewport override.
   useEffect(() => {
     if (!presentation.isActive) return undefined;
     const meta = document.querySelector<HTMLMetaElement>(
       'meta[name="viewport"]',
     );
-    if (!meta) return undefined;
-    const original = meta.getAttribute("content");
-    meta.setAttribute("content", "width=1920, initial-scale=1");
+    const original = meta?.getAttribute("content") ?? null;
+    meta?.setAttribute("content", "width=1920, initial-scale=1");
+    const isHighDpr = window.devicePixelRatio > 1;
+    if (isHighDpr) {
+      document.documentElement.classList.add("presentation-tv");
+    }
     return () => {
-      if (original) meta.setAttribute("content", original);
+      if (meta && original) meta.setAttribute("content", original);
+      document.documentElement.classList.remove("presentation-tv");
     };
   }, [presentation.isActive]);
 
@@ -410,7 +416,7 @@ export function DashboardClient({
                     ? (presentation.currentCompany?.name ?? "C")
                     : (presentation.currentPerformer ?? "●");
                   return profileSrc ? (
-                    <div className="relative size-14 shrink-0 overflow-hidden rounded-xl">
+                    <div className="relative size-20 shrink-0 overflow-hidden rounded-xl">
                       <img
                         src={profileSrc}
                         alt={label}
@@ -418,7 +424,7 @@ export function DashboardClient({
                       />
                     </div>
                   ) : (
-                    <div className="flex size-14 items-center justify-center rounded-xl bg-primary/20 text-2xl font-bold text-primary">
+                    <div className="flex size-20 items-center justify-center rounded-xl bg-primary/20 text-2xl font-bold text-primary">
                       {label.charAt(0)}
                     </div>
                   );
